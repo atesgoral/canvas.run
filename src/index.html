@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Canvas Fiddle</title>
+<style>
+#editor {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 50%;
+  left: 0;
+}
+#output {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-top: 1px solid #888;
+}
+#output canvas {
+  position: absolute;
+}
+</style>
+</head>
+<body>
+
+<div id="editor">var ctx = canvas.getContext('2d');
+ctx.fillStyle = '#888';
+ctx.fillRect(0, 0, canvas.width, canvas.height);</div>
+<div id="output">
+  <canvas id="canvas"></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.2/lodash.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js"></script>
+<script>
+  var editor = ace.edit('editor');
+
+  var rendererState = {};
+  var renderer = null;
+
+  function compileRenderer() {
+    renderer = new Function('canvas', 't', editor.getValue());
+  }
+
+  compileRenderer();
+
+  editor.on('change', _.debounce(compileRenderer, 250));
+
+  var canvas = document.getElementById('canvas');
+
+  function resizeCanvas() {
+    canvas.width = canvas.parentNode.offsetWidth;
+    canvas.height = canvas.parentNode.offsetHeight;
+  }
+
+  resizeCanvas();
+
+  window.addEventListener('resize', _.debounce(resizeCanvas, 250));
+
+  function renderError() {
+    var ctx = canvas.getContext('2d');
+    ctx.fillStyle = 'red';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function render(t) {
+    requestAnimationFrame(render);
+
+    if (renderer) {
+      try {
+        renderer.call(rendererState, canvas, t);
+      } catch (err) {
+        renderer = null;
+        console.error(err);
+        renderError();
+      }
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>
