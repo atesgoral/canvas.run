@@ -1,0 +1,9 @@
+{
+  "name": "canvas-fiddle",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "dependencies": {
+    "ace-builds": "1.2.5"
+  }
+}
