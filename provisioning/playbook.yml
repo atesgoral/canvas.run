@@ -1,0 +1,7 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: nodesource.node
+      nodejs_version: 6.x
+    - role: Stouts.mongodb
