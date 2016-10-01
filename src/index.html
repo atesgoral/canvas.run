@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <title>Canvas Fiddle</title>
 <style>
+body {
+  font-family: sans-serif;
+  font-size: 100%;
+}
 #editor {
   position: absolute;
   top: 1px;
@@ -22,6 +26,37 @@
 }
 #output canvas {
   position: absolute;
+}
+#error {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  padding: 2em;
+  z-index: 2;
+  display: none;
+  overflow: auto;
+}
+#error:after {
+  position: absolute;
+  font-size: 20em;
+  left: 50%;
+  margin-left: -10em;
+  top: 50%;
+  margin-top: -10em;
+  text-align: center;
+  width: 20em;
+  height: 20em;
+  line-height: 20em;
+  content: '\26a0';
+  color: red;
+  opacity: 0.25;
+}
+#error.-visible {
+  background: rgba(255, 255, 255, .5);
+  display: block;
 }
 </style>
 </head>
@@ -70,6 +105,7 @@ if (this.y < radius || this.y >= canvas.height - radius) {
 this.vy += 0.2;</div>
 <div id="output">
   <canvas id="canvas"></canvas>
+  <pre id="error"></pre>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.2/lodash.js"></script>
@@ -89,6 +125,7 @@ this.vy += 0.2;</div>
   editor.on('change', _.debounce(compileRenderer, 250));
 
   var canvas = document.getElementById('canvas');
+  var error = document.getElementById('error');
 
   function resizeCanvas() {
     canvas.width = canvas.parentNode.offsetWidth;
@@ -99,10 +136,15 @@ this.vy += 0.2;</div>
 
   window.addEventListener('resize', _.debounce(resizeCanvas, 250));
 
-  function renderError() {
-    var ctx = canvas.getContext('2d');
-    ctx.fillStyle = 'red';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  function renderError(err) {
+    error.className = '-visible';
+    error.innerHTML = err.stack
+      ? err.stack
+      : err.message ? err.message : err;
+  }
+
+  function hideError() {
+    error.className = '';
   }
 
   function render(t) {
@@ -111,10 +153,13 @@ this.vy += 0.2;</div>
     if (renderer) {
       try {
         renderer.call(rendererState, canvas, t);
+        hideError();
       } catch (err) {
         renderer = null;
-        console.error(err);
-        renderError();
+
+        if (err) {
+          renderError(err);
+        }
       }
     }
   }
