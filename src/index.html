@@ -34,28 +34,30 @@ body {
   bottom: 0;
   left: 0;
   margin: 0;
-  padding: 2em;
+  background: rgba(255, 255, 255, .75);
+  padding: 1em;
   z-index: 2;
   display: none;
   overflow: auto;
+  font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace;
+  font-size: .75em;
 }
 #error:after {
   position: absolute;
-  font-size: 20em;
+  font-size: 40em;
   left: 50%;
-  margin-left: -10em;
+  margin-left: -20em;
   top: 50%;
-  margin-top: -10em;
+  margin-top: -20em;
   text-align: center;
-  width: 20em;
-  height: 20em;
-  line-height: 20em;
+  width: 40em;
+  height: 40em;
+  line-height: 40em;
   content: '\26a0';
   color: red;
   opacity: 0.25;
 }
 #error.-visible {
-  background: rgba(255, 255, 255, .5);
   display: block;
 }
 </style>
