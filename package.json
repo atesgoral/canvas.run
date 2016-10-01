@@ -1,10 +1,11 @@
 {
-  "name": "canvas-fiddle",
+  "name": "canvas-run",
   "version": "0.0.0",
   "private": true,
   "license": "UNLICENSED",
   "dependencies": {
     "ace-builds": "1.2.5",
-    "lodash": "^4.16.2"
+    "express": "4.14.0",
+    "lodash": "4.16.2"
   }
 }
