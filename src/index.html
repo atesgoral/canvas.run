@@ -6,10 +6,12 @@
 <style>
 #editor {
   position: absolute;
-  top: 0;
+  top: 1px;
+  margin-top: -1px;
   right: 0;
   bottom: 50%;
   left: 0;
+  border-bottom: 1px solid #888;
 }
 #output {
   position: absolute;
@@ -17,7 +19,6 @@
   right: 0;
   bottom: 0;
   left: 0;
-  border-top: 1px solid #888;
 }
 #output canvas {
   position: absolute;
@@ -26,9 +27,47 @@
 </head>
 <body>
 
-<div id="editor">var ctx = canvas.getContext('2d');
-ctx.fillStyle = '#888';
-ctx.fillRect(0, 0, canvas.width, canvas.height);</div>
+<div id="editor">// Here, you're writing the contents of a function with the following signature:
+// function render(canvas, t)
+
+// Get the context you want from the "canvas" argument
+var ctx = canvas.getContext('2d');
+
+// The "t" argument gives you the milliseconds since the animation started
+ctx.fillStyle = 'hsl(200, ' + Math.floor((Math.sin(t / 500) + 1) * 50) + '%, 50%)';
+ctx.globalAlpha = 0.3;
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.globalAlpha = 1;
+
+// You can store state in "this"
+if (isNaN(this.x)) {
+  this.x = canvas.width / 2;
+  this.y = canvas.height / 5;
+  this.vx = 2;
+  this.vy = 0;
+}
+
+var radius = 10;
+
+ctx.fillStyle = '#fff';
+ctx.beginPath();
+ctx.arc(this.x, this.y, radius, 0, 2 * Math.PI, false);
+ctx.fill();
+
+this.x += this.vx;
+this.y += this.vy;
+
+if (this.x < radius || this.x >= canvas.width - radius) {
+  this.vx = -this.vx;
+  this.x += this.vx;
+}
+
+if (this.y < radius || this.y >= canvas.height - radius) {
+  this.vy = -this.vy;
+  this.y += this.vy;
+}
+
+this.vy += 0.2;</div>
 <div id="output">
   <canvas id="canvas"></canvas>
 </div>
