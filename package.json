@@ -4,6 +4,7 @@
   "private": true,
   "license": "UNLICENSED",
   "dependencies": {
-    "ace-builds": "1.2.5"
+    "ace-builds": "1.2.5",
+    "lodash": "^4.16.2"
   }
 }
