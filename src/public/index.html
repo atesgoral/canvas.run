@@ -143,7 +143,7 @@ this.vy += 0.2;</script>
         return fetch('/api/runs/' + encodeURIComponent(shortId))
           .then(function (response) {
             if (response.ok) {
-              return response.text();
+              return response.json();
             } else {
               switch (response.status) {
               case 404:
@@ -154,14 +154,45 @@ this.vy += 0.2;</script>
             }
           });
       } else {
-        return document.getElementById('default').innerHTML;
+        return {
+          source: document.getElementById('default').innerHTML
+        };
       }
     })
     .then(function (run) {
-      editor.setValue(run);
+      editor.setValue(run.source);
       compileRenderer();
     })
     .catch(renderError);
+
+  window.save = function () {
+    var formData = new FormData();
+
+    if (shortId) {
+      formData.set('shortId', shortId);
+    }
+
+    formData.set('source', editor.getValue());
+
+    fetch('/api/runs', { method: 'POST', body: formData })
+      .then(function (response) {
+        if (response.ok) {
+          return response.json();
+        } else {
+          console.error(response.status);
+          throw 'Saving failed';
+        }
+      })
+      .then(function (run) {
+        history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
+      });
+  };
+
+  window.addEventListener('popstate', function (event) {
+    if (event.state) {
+      editor.setValue(event.state.source);
+    }
+  });
 
   editor.on('change', _.debounce(compileRenderer, 250));
 

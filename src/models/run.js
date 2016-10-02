@@ -11,6 +11,10 @@ const runSchema = mongoose.Schema({
     alphabet: basek.alpha(),
     index: true
   },
+  source: {
+    type: String,
+    required: true,
+  },
   // owner: {
   //   type: mongoose.Schema.Types.ObjectId,
   //   ref: 'User',
