@@ -146,7 +146,7 @@ function initialize() {
     }
   }
 
-  render();
+  requestAnimationFrame(render);
 }
 
 setTimeout(initialize, 1);
