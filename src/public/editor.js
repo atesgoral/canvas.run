@@ -11,6 +11,7 @@ function initialize() {
   editor.getSession().setMode("ace/mode/javascript");
 
   var rendererState = {};
+  var rendererEpoch = null;
   var renderer = null;
 
   function compileRenderer() {
@@ -101,8 +102,13 @@ function initialize() {
 
   resizeCanvas();
 
-  function handleResize() {
+  function resetState() {
     rendererState = {};
+    rendererEpoch = null;
+  }
+
+  function handleResize() {
+    resetState();
     resizeCanvas();
   }
 
@@ -122,9 +128,13 @@ function initialize() {
   function render(t) {
     requestAnimationFrame(render);
 
+    if (rendererEpoch === null) {
+      rendererEpoch = t;
+    }
+
     if (renderer) {
       try {
-        renderer.call(null, canvas, rendererState, t);
+        renderer.call(null, canvas, rendererState, t - rendererEpoch);
         hideError();
       } catch (err) {
         renderer = null;
