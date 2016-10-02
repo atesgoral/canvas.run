@@ -8,6 +8,7 @@ function initialize() {
   var rendererState = {};
   var rendererEpoch = null;
   var renderer = null;
+  var hasSyntaxError = false;
 
   var editor = ace.edit($('#editor'));
   editor.$blockScrolling = Infinity;
@@ -20,8 +21,16 @@ function initialize() {
     });
 
     if (isErrorFound) {
-      renderer = null;
-      renderError('Syntax errors found');
+      if (!hasSyntaxError) {
+        hasSyntaxError = true;
+        renderer = null;
+        renderError('Syntax errors found');
+      }
+    } else {
+      if (hasSyntaxError) {
+        hasSyntaxError = false;
+        compileRenderer();
+      }
     }
   });
 
@@ -101,7 +110,13 @@ function initialize() {
     }
   });
 
-  editor.on('change', _.debounce(compileRenderer, 250));
+  function handleSourceChange() {
+    if (!hasSyntaxError) {
+      compileRenderer();
+    }
+  }
+
+  editor.on('change', _.debounce(handleSourceChange, 250));
 
   var canvas = $('#canvas');
   var error = $('#error');
