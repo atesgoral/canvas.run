@@ -5,14 +5,25 @@ function $(id) {
 }
 
 function initialize() {
+  var rendererState = {};
+  var rendererEpoch = null;
+  var renderer = null;
+
   var editor = ace.edit($('#editor'));
   editor.$blockScrolling = Infinity;
 
   editor.getSession().setMode("ace/mode/javascript");
 
-  var rendererState = {};
-  var rendererEpoch = null;
-  var renderer = null;
+  editor.getSession().on('changeAnnotation', function () {
+    var isErrorFound = editor.getSession().getAnnotations().some(function (annotation) {
+      return annotation.type === 'error';
+    });
+
+    if (isErrorFound) {
+      renderer = null;
+      renderError('Syntax errors found');
+    }
+  });
 
   function compileRenderer() {
     try {
