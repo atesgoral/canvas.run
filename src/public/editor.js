@@ -101,7 +101,12 @@ function initialize() {
 
   resizeCanvas();
 
-  window.addEventListener('resize', _.debounce(resizeCanvas, 250));
+  function handleResize() {
+    rendererState = {};
+    resizeCanvas();
+  }
+
+  window.addEventListener('resize', _.debounce(handleResize, 250));
 
   function renderError(err) {
     error.className = '-visible';
