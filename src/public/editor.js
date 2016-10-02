@@ -102,6 +102,7 @@ function initialize() {
   }
 
   $('#save').addEventListener('click', save);
+  $('#reset-state').addEventListener('click', resetState);
 
   window.addEventListener('popstate', function (event) {
     if (event.state) {
