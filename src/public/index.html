@@ -7,25 +7,52 @@
 body {
   font-family: sans-serif;
   font-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+#header {
+  height: 30px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+}
+#header button {
+  background: transparent;
+  height: 30px;
+  margin: 0;
+  border: none;
+  cursor: pointer;
 }
 #editor {
   position: absolute;
-  top: 1px;
-  margin-top: -1px;
+  top: 30px;
+  margin-top: 1px;
   right: 0;
   bottom: 50%;
+  margin-bottom: 15px;
   left: 0;
-  border-bottom: 1px solid #888;
+}
+#rendering {
+  position: absolute;
+  height: 30px;
+  background: #f0f0f0;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  margin-top: -15px;
 }
 #output {
   position: absolute;
   top: 50%;
+  margin-top: 17px;
   right: 0;
   bottom: 0;
   left: 0;
 }
 #output canvas {
   position: absolute;
+  background: #fff;
 }
 #error {
   position: absolute;
@@ -104,7 +131,11 @@ if (this.y < radius || this.y >= canvas.height - radius) {
 }
 
 this.vy += 0.2;</script>
+<div id="header">
+  <button id="save">Save</button>
+</div>
 <div id="editor"></div>
+<div id="rendering"></div>
 <div id="output">
   <canvas id="canvas"></canvas>
   <pre id="error"></pre>
@@ -160,12 +191,13 @@ this.vy += 0.2;</script>
       }
     })
     .then(function (run) {
-      editor.setValue(run.source);
+      editor.setValue(run.source, -1);
+      editor.focus();
       compileRenderer();
     })
     .catch(renderError);
 
-  window.save = function () {
+  function save() {
     var formData = new FormData();
 
     if (shortId) {
@@ -186,11 +218,14 @@ this.vy += 0.2;</script>
       .then(function (run) {
         history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
       });
-  };
+  }
+
+  document.getElementById('save').addEventListener('click', save);
 
   window.addEventListener('popstate', function (event) {
     if (event.state) {
-      editor.setValue(event.state.source);
+      editor.setValue(event.state.source, -1);
+      editor.focus();
     }
   });
 
