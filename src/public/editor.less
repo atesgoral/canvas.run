@@ -1,0 +1,86 @@
+body {
+  font-family: sans-serif;
+  font-size: 100%;
+  margin: 0;
+  padding: 0;
+}
+#header {
+  height: 30px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ccc;
+
+  button {
+    background: transparent;
+    height: 30px;
+    margin: 0;
+    border: none;
+    cursor: pointer;
+  }
+}
+#editor {
+  position: absolute;
+  top: 30px;
+  margin-top: 1px;
+  right: 0;
+  bottom: 50%;
+  margin-bottom: 15px;
+  left: 0;
+}
+#rendering {
+  position: absolute;
+  height: 30px;
+  background: #f0f0f0;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  margin-top: -15px;
+}
+#output {
+  position: absolute;
+  top: 50%;
+  margin-top: 17px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  canvas {
+    position: absolute;
+    background: #fff;
+  }
+}
+#error {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  background: rgba(255, 255, 255, .75);
+  padding: 1em;
+  z-index: 2;
+  display: none;
+  overflow: auto;
+  font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace;
+  font-size: .75em;
+
+  &:after {
+    position: absolute;
+    font-size: 40em;
+    left: 50%;
+    margin-left: -20em;
+    top: 50%;
+    margin-top: -20em;
+    text-align: center;
+    width: 40em;
+    height: 40em;
+    line-height: 40em;
+    content: '\26a0';
+    color: red;
+    opacity: 0.25;
+  }
+  &.-visible {
+    display: block;
+  }
+}

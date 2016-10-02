@@ -3,93 +3,22 @@
 <head>
 <meta charset="utf-8">
 <title>canvas.run</title>
-<style>
-body {
-  font-family: sans-serif;
-  font-size: 100%;
-  margin: 0;
-  padding: 0;
-}
-#header {
-  height: 30px;
-  background: #f0f0f0;
-  border-bottom: 1px solid #ccc;
-}
-#header button {
-  background: transparent;
-  height: 30px;
-  margin: 0;
-  border: none;
-  cursor: pointer;
-}
-#editor {
-  position: absolute;
-  top: 30px;
-  margin-top: 1px;
-  right: 0;
-  bottom: 50%;
-  margin-bottom: 15px;
-  left: 0;
-}
-#rendering {
-  position: absolute;
-  height: 30px;
-  background: #f0f0f0;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  margin-top: -15px;
-}
-#output {
-  position: absolute;
-  top: 50%;
-  margin-top: 17px;
-  right: 0;
-  bottom: 0;
-  left: 0;
-}
-#output canvas {
-  position: absolute;
-  background: #fff;
-}
-#error {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  margin: 0;
-  background: rgba(255, 255, 255, .75);
-  padding: 1em;
-  z-index: 2;
-  display: none;
-  overflow: auto;
-  font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace;
-  font-size: .75em;
-}
-#error:after {
-  position: absolute;
-  font-size: 40em;
-  left: 50%;
-  margin-left: -20em;
-  top: 50%;
-  margin-top: -20em;
-  text-align: center;
-  width: 40em;
-  height: 40em;
-  line-height: 40em;
-  content: '\26a0';
-  color: red;
-  opacity: 0.25;
-}
-#error.-visible {
-  display: block;
-}
-</style>
+<link rel="stylesheet/less" type="text/css" href="editor.less">
+<script src="vendor/less/dist/less.min.js"></script>
+<script src="vendor/lodash/lodash.min.js"></script>
+<script src="vendor/ace-builds/src-min-noconflict/ace.js"></script>
+<script src="vendor/ace-builds/src-min-noconflict/mode-javascript.js"></script>
 </head>
 <body>
+<div id="header">
+  <button id="save">Save</button>
+</div>
+<div id="editor"></div>
+<div id="rendering"></div>
+<div id="output">
+  <canvas id="canvas"></canvas>
+  <pre id="error"></pre>
+</div>
 <script type="text/default" id="default">// Here, you're writing the contents of a function with the following signature:
 // function render(canvas, t)
 
@@ -131,147 +60,6 @@ if (this.y < radius || this.y >= canvas.height - radius) {
 }
 
 this.vy += 0.2;</script>
-<div id="header">
-  <button id="save">Save</button>
-</div>
-<div id="editor"></div>
-<div id="rendering"></div>
-<div id="output">
-  <canvas id="canvas"></canvas>
-  <pre id="error"></pre>
-</div>
-
-<script src="vendor/lodash/lodash.min.js"></script>
-<script src="vendor/ace-builds/src-min-noconflict/ace.js"></script>
-<script src="vendor/ace-builds/src-min-noconflict/mode-javascript.js"></script>
-<script>
-  var editor = ace.edit('editor');
-  editor.$blockScrolling = Infinity;
-
-  editor.getSession().setMode("ace/mode/javascript");
-
-  var rendererState = {};
-  var renderer = null;
-
-  function compileRenderer() {
-    try {
-      renderer = new Function('canvas', 't', editor.getValue());
-      hideError();
-    } catch (err) {
-      renderer = null;
-
-      if (err) {
-        renderError(err);
-      }
-    }
-  }
-
-  var shortId = window.location.pathname.slice(1);
-
-  Promise.resolve()
-    .then(function () {
-      if (shortId) {
-        return fetch('/api/runs/' + encodeURIComponent(shortId))
-          .then(function (response) {
-            if (response.ok) {
-              return response.json();
-            } else {
-              switch (response.status) {
-              case 404:
-                throw new Error('Run not found');
-              default:
-                throw new Error('Could not fetch run');
-              }
-            }
-          });
-      } else {
-        return {
-          source: document.getElementById('default').innerHTML
-        };
-      }
-    })
-    .then(function (run) {
-      editor.setValue(run.source, -1);
-      editor.focus();
-      compileRenderer();
-    })
-    .catch(renderError);
-
-  function save() {
-    var formData = new FormData();
-
-    if (shortId) {
-      formData.set('shortId', shortId);
-    }
-
-    formData.set('source', editor.getValue());
-
-    fetch('/api/runs', { method: 'POST', body: formData })
-      .then(function (response) {
-        if (response.ok) {
-          return response.json();
-        } else {
-          console.error(response.status);
-          throw 'Saving failed';
-        }
-      })
-      .then(function (run) {
-        history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
-      });
-  }
-
-  document.getElementById('save').addEventListener('click', save);
-
-  window.addEventListener('popstate', function (event) {
-    if (event.state) {
-      editor.setValue(event.state.source, -1);
-      editor.focus();
-    }
-  });
-
-  editor.on('change', _.debounce(compileRenderer, 250));
-
-  var canvas = document.getElementById('canvas');
-  var error = document.getElementById('error');
-
-  function resizeCanvas() {
-    canvas.width = canvas.parentNode.offsetWidth;
-    canvas.height = canvas.parentNode.offsetHeight;
-  }
-
-  resizeCanvas();
-
-  window.addEventListener('resize', _.debounce(resizeCanvas, 250));
-
-  function renderError(err) {
-    error.className = '-visible';
-    error.innerHTML = err.stack
-      ? err.stack
-      : err.message ? err.message : err;
-  }
-
-  function hideError() {
-    error.className = '';
-  }
-
-  function render(t) {
-    requestAnimationFrame(render);
-
-    if (renderer) {
-      try {
-        renderer.call(rendererState, canvas, t);
-        hideError();
-      } catch (err) {
-        renderer = null;
-
-        if (err) {
-          renderError(err);
-        }
-      }
-    }
-  }
-
-  render();
-</script>
+<script src="editor.js"></script>
 </body>
 </html>
