@@ -2,3 +2,4 @@
 node_modules
 .vagrant
 provisioning/playbook.retry
+npm-debug.log

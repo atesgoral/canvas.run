@@ -5,7 +5,7 @@ const basek = require('basek');
 const ShortId = require('mongoose-shortid-nodeps');
 
 const runSchema = mongoose.Schema({
-  key: {
+  shortId: {
     type: ShortId,
     len: 5,
     alphabet: basek.alpha(),
@@ -23,9 +23,9 @@ const runSchema = mongoose.Schema({
   }
 });
 
-runSchema.statics.whenKeyFound = function (runKey) {
+runSchema.statics.whenShortIdFound = function (shortId) {
   return this
-    .findOne({ key: runKey })
+    .findOne({ shortId })
     .exec()
     .then((run) => {
       if (!run) {

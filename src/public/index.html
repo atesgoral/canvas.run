@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Canvas Run</title>
+<title>canvas.run</title>
 <style>
 body {
   font-family: sans-serif;
@@ -63,8 +63,7 @@ body {
 </style>
 </head>
 <body>
-
-<div id="editor">// Here, you're writing the contents of a function with the following signature:
+<script type="text/default" id="default">// Here, you're writing the contents of a function with the following signature:
 // function render(canvas, t)
 
 // Get the context you want from the "canvas" argument
@@ -104,7 +103,8 @@ if (this.y < radius || this.y >= canvas.height - radius) {
   this.y += this.vy;
 }
 
-this.vy += 0.2;</div>
+this.vy += 0.2;</script>
+<div id="editor"></div>
 <div id="output">
   <canvas id="canvas"></canvas>
   <pre id="error"></pre>
@@ -115,6 +115,7 @@ this.vy += 0.2;</div>
 <script src="vendor/ace-builds/src-min-noconflict/mode-javascript.js"></script>
 <script>
   var editor = ace.edit('editor');
+  editor.$blockScrolling = Infinity;
 
   editor.getSession().setMode("ace/mode/javascript");
 
@@ -122,10 +123,45 @@ this.vy += 0.2;</div>
   var renderer = null;
 
   function compileRenderer() {
-    renderer = new Function('canvas', 't', editor.getValue());
+    try {
+      renderer = new Function('canvas', 't', editor.getValue());
+      hideError();
+    } catch (err) {
+      renderer = null;
+
+      if (err) {
+        renderError(err);
+      }
+    }
   }
 
-  compileRenderer();
+  var shortId = window.location.pathname.slice(1);
+
+  Promise.resolve()
+    .then(function () {
+      if (shortId) {
+        return fetch('/api/runs/' + encodeURIComponent(shortId))
+          .then(function (response) {
+            if (response.ok) {
+              return response.text();
+            } else {
+              switch (response.status) {
+              case 404:
+                throw new Error('Run not found');
+              default:
+                throw new Error('Could not fetch run');
+              }
+            }
+          });
+      } else {
+        return document.getElementById('default').innerHTML;
+      }
+    })
+    .then(function (run) {
+      editor.setValue(run);
+      compileRenderer();
+    })
+    .catch(renderError);
 
   editor.on('change', _.debounce(compileRenderer, 250));
 
