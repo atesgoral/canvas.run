@@ -20,7 +20,7 @@
   <pre id="error"></pre>
 </div>
 <script type="text/default" id="default">// Here, you're writing the contents of a function with the following signature:
-// function render(canvas, t)
+// function render(canvas, state, t)
 
 // Get the context you want from the "canvas" argument
 var ctx = canvas.getContext('2d');
@@ -31,35 +31,35 @@ ctx.globalAlpha = 0.3;
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 ctx.globalAlpha = 1;
 
-// You can store state in "this"
-if (isNaN(this.x)) {
-  this.x = canvas.width / 2;
-  this.y = canvas.height / 5;
-  this.vx = 2;
-  this.vy = 0;
+// You can store state in "state"
+if (isNaN(state.x)) {
+  state.x = canvas.width / 2;
+  state.y = canvas.height / 5;
+  state.vx = 2;
+  state.vy = 0;
 }
 
 var radius = 10;
 
 ctx.fillStyle = '#fff';
 ctx.beginPath();
-ctx.arc(this.x, this.y, radius, 0, 2 * Math.PI, false);
+ctx.arc(state.x, state.y, radius, 0, 2 * Math.PI, false);
 ctx.fill();
 
-this.x += this.vx;
-this.y += this.vy;
+state.x += state.vx;
+state.y += state.vy;
 
-if (this.x < radius || this.x >= canvas.width - radius) {
-  this.vx = -this.vx;
-  this.x += this.vx;
+if (state.x < radius || state.x >= canvas.width - radius) {
+  state.vx = -state.vx;
+  state.x += state.vx;
 }
 
-if (this.y < radius || this.y >= canvas.height - radius) {
-  this.vy = -this.vy;
-  this.y += this.vy;
+if (state.y < radius || state.y >= canvas.height - radius) {
+  state.vy = -state.vy;
+  state.y += state.vy;
 }
 
-this.vy += 0.2;</script>
+state.vy += 0.2;</script>
 <script src="editor.js"></script>
 </body>
 </html>

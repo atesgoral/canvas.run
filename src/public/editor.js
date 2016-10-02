@@ -15,7 +15,7 @@ function initialize() {
 
   function compileRenderer() {
     try {
-      renderer = new Function('canvas', 't', editor.getValue());
+      renderer = new Function('canvas', 'state', 't', editor.getValue());
       hideError();
     } catch (err) {
       renderer = null;
@@ -119,7 +119,7 @@ function initialize() {
 
     if (renderer) {
       try {
-        renderer.call(rendererState, canvas, t);
+        renderer.call(null, canvas, rendererState, t);
         hideError();
       } catch (err) {
         renderer = null;
