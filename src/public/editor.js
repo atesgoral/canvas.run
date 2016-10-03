@@ -106,14 +106,12 @@ function initialize() {
       });
   }
 
-  function toggleLayout() {
-    var main = $('#main');
+  var isLayoutHorizontal = true;
 
-    if (main.className === '-horizontal-split') {
-      main.className = '';
-    } else {
-      main.className = '-horizontal-split';
-    }
+  function toggleLayout() {
+    isLayoutHorizontal = !isLayoutHorizontal;
+
+    $('#main').className = isLayoutHorizontal ? '-horizontal-split' : '';
 
     handleResize();
   }
@@ -121,6 +119,44 @@ function initialize() {
   $('#save').addEventListener('click', save);
   $('#reset-state').addEventListener('click', resetState);
   $('#toggle-layout').addEventListener('click', toggleLayout);
+
+  var splitter = $('#splitter');
+  var splitterDrag = null;
+
+  splitter.addEventListener('mousedown', function (event) {
+    splitterDrag = {
+      origin: isLayoutHorizontal ? splitter.offsetLeft : splitter.offsetTop,
+      start: isLayoutHorizontal ? event.clientX : event.clientY
+    };
+
+    function handleMouseMove(event) {
+      if (splitterDrag) {
+        var pos = isLayoutHorizontal ? event.clientX : event.clientY;
+        var offset = pos - splitterDrag.start;
+
+        if (isLayoutHorizontal) {
+          splitter.style.left = splitterDrag.origin + offset + 'px';
+        } else {
+          splitter.style.top = splitterDrag.origin + offset + 'px';
+        }
+      }
+    }
+
+    function handleMouseUp(event) {
+      if (splitterDrag) {
+        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', handleMouseMove);
+
+        var pos = isLayoutHorizontal ? event.clientX : event.clientY;
+        var offset = pos - splitterDrag.start;
+
+        splitterDrag = null;
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  });
 
   window.addEventListener('popstate', function (event) {
     if (event.state) {
@@ -146,17 +182,21 @@ function initialize() {
     canvas.height = canvas.parentNode.offsetHeight;
   }
 
-  resizeCanvas();
-
   function resetState() {
     rendererState = {};
     rendererEpoch = null;
   }
 
+  function repositionSpliter() {
+  }
+
   function handleResize() {
     resetState();
+    repositionSpliter();
     resizeCanvas();
   }
+
+  handleResize();
 
   window.addEventListener('resize', _.debounce(handleResize, 250));
 
