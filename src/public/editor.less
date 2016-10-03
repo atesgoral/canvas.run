@@ -7,17 +7,33 @@ body {
   margin: 0;
   padding: 0;
 }
-#header {
+header {
   height: @headerHeight;
   background: #f0f0f0;
   border-bottom: 1px solid #ccc;
 
+  h1 {
+    display: inline;
+    margin: 0;
+    padding: 0 20px;
+    height: @headerHeight;
+    line-height: @headerHeight;
+    font-size: 1em;
+  }
+
   button {
+    margin: 0;
+    padding: 0 5px;
+    border: none;
     background: transparent;
     height: @headerHeight;
-    margin: 0;
-    border: none;
+    line-height: @headerHeight;
+    font-size: 0.75em;
     cursor: pointer;
+
+    &:hover {
+      color: #22d;
+    }
   }
 }
 #editor {
