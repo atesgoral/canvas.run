@@ -47,10 +47,12 @@ function initialize() {
     }
   }
 
-  var shortId = window.location.pathname.slice(1);
+  var currentRun = null;
 
   Promise.resolve()
     .then(function () {
+      var shortId = window.location.pathname.slice(1);
+
       if (shortId) {
         return fetch('/api/runs/' + encodeURIComponent(shortId))
           .then(function (response) {
@@ -72,6 +74,7 @@ function initialize() {
       }
     })
     .then(function (run) {
+      currentRun = run;
       editor.setValue(run.source, -1);
       editor.focus();
       compileRenderer();
@@ -81,8 +84,8 @@ function initialize() {
   function save() {
     var formData = new FormData();
 
-    if (shortId) {
-      formData.set('shortId', shortId);
+    if (currentRun.shortId) {
+      formData.set('shortId', currentRun.shortId);
     }
 
     formData.set('source', editor.getValue());
@@ -97,7 +100,9 @@ function initialize() {
         }
       })
       .then(function (run) {
-        history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
+        currentRun = run;
+        history.pushState(currentRun, 'Run ' + currentRun.shortId, '/' + currentRun.shortId);
+        editor.focus();
       });
   }
 
@@ -106,7 +111,8 @@ function initialize() {
 
   window.addEventListener('popstate', function (event) {
     if (event.state) {
-      editor.setValue(event.state.source, -1);
+      currentRun = event.state;
+      editor.setValue(currentRun.source, -1);
       editor.focus();
     }
   });

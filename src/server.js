@@ -34,8 +34,26 @@ apiRoutes.get('/runs/:shortId', (req, res) => {
 });
 
 apiRoutes.post('/runs', upload, (req, res) => {
-  // @todo fork if req.body.shortId set
+  let shortId = req.body.shortId;
+
+  if (shortId) {
+    const tokens = /^([^.]+)(?:\.(\d+))?$/.exec(shortId);
+
+    let revision = parseInt(tokens[2], 10);
+
+    if (isNaN(revision)) {
+      revision = 1;
+    } else {
+      revision++;
+    }
+
+    tokens[2] = revision;
+
+    shortId = tokens.slice(1).join('.');
+  }
+
   const run = new Run({
+    shortId,
     source: req.body.source
   });
 
