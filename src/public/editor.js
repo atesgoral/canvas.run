@@ -12,7 +12,7 @@ function initialize() {
 
   var editor = ace.edit($('#editor'));
   editor.$blockScrolling = Infinity;
-
+  editor.setShowPrintMargin(false);
   editor.getSession().setMode("ace/mode/javascript");
 
   editor.getSession().on('changeAnnotation', function () {
@@ -106,8 +106,21 @@ function initialize() {
       });
   }
 
+  function toggleLayout() {
+    var main = $('#main');
+
+    if (main.className === '-horizontal-split') {
+      main.className = '';
+    } else {
+      main.className = '-horizontal-split';
+    }
+
+    handleResize();
+  }
+
   $('#save').addEventListener('click', save);
   $('#reset-state').addEventListener('click', resetState);
+  $('#toggle-layout').addEventListener('click', toggleLayout);
 
   window.addEventListener('popstate', function (event) {
     if (event.state) {
