@@ -9,7 +9,7 @@ const runSchema = mongoose.Schema({
     type: ShortId,
     len: 5,
     alphabet: basek.alpha(),
-    index: true
+    index: { unique: true }
   },
   source: {
     type: String,

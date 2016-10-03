@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const Run = require('./models/run');
 
 mongoose.Promise = Promise;
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/canvas-run');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/canvasrun');
 
 mongoose.connection.on('open', () => {
   console.log('Connected to DB');
