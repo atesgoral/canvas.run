@@ -78,7 +78,7 @@ function initialize() {
     .then(function (run) {
       currentRun = run;
       editor.setValue(run.source, -1);
-      editor.focus();
+      //editor.focus();
       compileRenderer();
     })
     .catch(renderError);
@@ -104,7 +104,7 @@ function initialize() {
       .then(function (run) {
         currentRun = run;
         history.pushState(currentRun, 'Run ' + currentRun.shortId, '/' + currentRun.shortId);
-        editor.focus();
+        //editor.focus();
       });
   }
 
@@ -177,7 +177,7 @@ function initialize() {
     if (event.state) {
       currentRun = event.state;
       editor.setValue(currentRun.source, -1);
-      editor.focus();
+      //editor.focus();
     }
   });
 
