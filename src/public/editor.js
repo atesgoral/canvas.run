@@ -193,8 +193,9 @@ function initialize() {
   var error = $('#error');
 
   function resizeCanvas() {
-    canvas.width = Math.floor(canvas.parentNode.offsetWidth) - 2;
-    canvas.height = Math.floor(canvas.parentNode.offsetHeight) - 2;
+    var bounds = canvas.parentNode.getBoundingClientRect();
+    canvas.width = bounds.width;
+    canvas.height = bounds.height;
   }
 
   function resetState() {

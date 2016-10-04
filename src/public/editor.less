@@ -6,6 +6,7 @@ body {
   font-size: 100%;
   margin: 0;
   padding: 0;
+  background: #fff;
 }
 header {
   height: @headerHeight;
@@ -78,10 +79,15 @@ main {
   flex: 1;
   position: relative;
   overflow: hidden;
+  display: flex;
 
-  canvas {
-    position: absolute;
-    background: #fff;
+  #canvas-wrapper {
+    flex: 1;
+
+    canvas {
+      position: absolute;
+      background: #fff;
+    }
   }
 }
 #error {
