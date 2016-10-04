@@ -106,12 +106,13 @@ function initialize() {
       });
   }
 
+  var main = $('#main');
   var isLayoutHorizontal = true;
 
   function toggleLayout() {
     isLayoutHorizontal = !isLayoutHorizontal;
 
-    $('#main').className = isLayoutHorizontal ? '-horizontal-split' : '';
+    main.className = isLayoutHorizontal ? '-horizontal-split' : '';
 
     handleResize();
   }
@@ -188,8 +189,8 @@ function initialize() {
   var error = $('#error');
 
   function resizeCanvas() {
-    canvas.width = canvas.parentNode.offsetWidth;
-    canvas.height = canvas.parentNode.offsetHeight;
+    canvas.width = canvas.parentNode.offsetWidth - 2;
+    canvas.height = canvas.parentNode.offsetHeight - 2;
   }
 
   function resetState() {
@@ -200,9 +201,18 @@ function initialize() {
   function repositionSpliter() {
   }
 
+  function resizePanes() {
+    if (isLayoutHorizontal) {
+
+    } else {
+
+    }
+  }
+
   function handleResize() {
     resetState();
     repositionSpliter();
+    resizePanes();
     resizeCanvas();
   }
 
