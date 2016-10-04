@@ -121,11 +121,13 @@ function initialize() {
   $('#toggle-layout').addEventListener('click', toggleLayout);
 
   var splitter = $('#splitter');
+  var splitterHandle = $('#splitter-handle');
   var splitterDrag = null;
 
-  splitter.addEventListener('mousedown', function (event) {
+  splitterHandle.addEventListener('mousedown', function (event) {
     splitterDrag = {
-      origin: isLayoutHorizontal ? splitter.offsetLeft : splitter.offsetTop,
+      pos: isLayoutHorizontal ? splitter.offsetLeft : splitter.offsetTop,
+      handlePos: isLayoutHorizontal ? splitterHandle.offsetLeft : splitterHandle.offsetTop,
       start: isLayoutHorizontal ? event.clientX : event.clientY
     };
 
@@ -135,9 +137,9 @@ function initialize() {
         var offset = pos - splitterDrag.start;
 
         if (isLayoutHorizontal) {
-          splitter.style.left = splitterDrag.origin + offset + 'px';
+          splitterHandle.style.left = splitterDrag.handlePos + offset + 'px';
         } else {
-          splitter.style.top = splitterDrag.origin + offset + 'px';
+          splitterHandle.style.top = splitterDrag.handlePos + offset + 'px';
         }
       }
     }
@@ -149,6 +151,14 @@ function initialize() {
 
         var pos = isLayoutHorizontal ? event.clientX : event.clientY;
         var offset = pos - splitterDrag.start;
+
+        if (isLayoutHorizontal) {
+          splitter.style.left = splitterDrag.pos + splitter.offsetWidth / 2 + offset + -1 + 'px';
+          splitterHandle.style.left = '-1px';
+        } else {
+          splitter.style.top = splitterDrag.pos + splitter.offsetHeight / 2 + offset + -1 + 'px';
+          splitterHandle.style.top = '-1px';
+        }
 
         splitterDrag = null;
       }
