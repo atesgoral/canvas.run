@@ -10,7 +10,9 @@ function initialize() {
   var renderer = null;
   var hasSyntaxError = false;
 
-  var editor = ace.edit($('#editor'));
+  var editorPane = $('#editor-pane');
+
+  var editor = ace.edit(editorPane);
   editor.$blockScrolling = Infinity;
   editor.setShowPrintMargin(false);
   editor.getSession().setMode("ace/mode/javascript");
@@ -106,14 +108,13 @@ function initialize() {
       });
   }
 
-  function toggleLayout() {
-    var main = $('#main');
+  var main = $('#main');
+  var isLayoutHorizontal = true;
 
-    if (main.className === '-horizontal-split') {
-      main.className = '';
-    } else {
-      main.className = '-horizontal-split';
-    }
+  function toggleLayout() {
+    isLayoutHorizontal = !isLayoutHorizontal;
+
+    main.className = isLayoutHorizontal ? '-horizontal-split' : '';
 
     handleResize();
   }
@@ -121,6 +122,56 @@ function initialize() {
   $('#save').addEventListener('click', save);
   $('#reset-state').addEventListener('click', resetState);
   $('#toggle-layout').addEventListener('click', toggleLayout);
+
+  var splitter = $('#splitter');
+  var splitterHandle = $('#splitter-handle');
+  var splitterDrag = null;
+
+  splitterHandle.addEventListener('mousedown', function (event) {
+    splitterDrag = {
+      pos: isLayoutHorizontal ? splitter.offsetLeft : splitter.offsetTop,
+      handlePos: isLayoutHorizontal ? splitterHandle.offsetLeft : splitterHandle.offsetTop,
+      start: isLayoutHorizontal ? event.clientX : event.clientY
+    };
+
+    function handleMouseMove(event) {
+      if (splitterDrag) {
+        var pos = isLayoutHorizontal ? event.clientX : event.clientY;
+        var offset = pos - splitterDrag.start;
+
+        if (isLayoutHorizontal) {
+          splitterHandle.style.left = splitterDrag.handlePos + offset + 'px';
+        } else {
+          splitterHandle.style.top = splitterDrag.handlePos + offset + 'px';
+        }
+      }
+    }
+
+    function handleMouseUp(event) {
+      if (splitterDrag) {
+        window.removeEventListener('mouseup', handleMouseUp);
+        window.removeEventListener('mousemove', handleMouseMove);
+
+        var pos = isLayoutHorizontal ? event.clientX : event.clientY;
+        var offset = pos - splitterDrag.start;
+
+        if (isLayoutHorizontal) {
+          editorPane.style.flexBasis = (editorPane.offsetWidth + offset) / (main.offsetWidth - splitter.offsetWidth) * 100 + '%';
+          splitterHandle.style.left = '-1px';
+        } else {
+          editorPane.style.flexBasis = (editorPane.offsetHeight + offset) / (main.offsetHeight - splitter.offsetHeight) * 100 + '%';
+          splitterHandle.style.top = '-1px';
+        }
+
+        splitterDrag = null;
+
+        handleResize();
+      }
+    }
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+  });
 
   window.addEventListener('popstate', function (event) {
     if (event.state) {
@@ -142,11 +193,9 @@ function initialize() {
   var error = $('#error');
 
   function resizeCanvas() {
-    canvas.width = canvas.parentNode.offsetWidth;
-    canvas.height = canvas.parentNode.offsetHeight;
+    canvas.width = canvas.parentNode.offsetWidth - 2;
+    canvas.height = canvas.parentNode.offsetHeight - 2;
   }
-
-  resizeCanvas();
 
   function resetState() {
     rendererState = {};
@@ -157,6 +206,8 @@ function initialize() {
     resetState();
     resizeCanvas();
   }
+
+  handleResize();
 
   window.addEventListener('resize', _.debounce(handleResize, 250));
 
