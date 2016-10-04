@@ -71,6 +71,22 @@ main {
     right: 0;
     cursor: ns-resize;
     opacity: .5;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+
+    @dotSize: @splitterSize - 6px;
+
+    &:before, &:after {
+      content: '';
+      width: @dotSize;
+      height: @dotSize;
+      background: #888;
+      border-radius: @dotSize / 2;
+      margin: 1px;
+    }
   }
 }
 #output-pane {
@@ -150,6 +166,7 @@ main.-horizontal-split {
       top: 0;
       bottom: 0;
       cursor: ew-resize;
+      flex-direction: column;
     }
   }
 }
