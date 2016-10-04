@@ -204,7 +204,7 @@ function initialize() {
 
   function handleResize() {
     resetState();
-    resizeCanvas();
+    setTimeout(resizeCanvas, 1);
   }
 
   handleResize();
