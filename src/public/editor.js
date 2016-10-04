@@ -194,8 +194,8 @@ function initialize() {
 
   function resizeCanvas() {
     var bounds = canvas.parentNode.getBoundingClientRect();
-    canvas.width = Math.round(bounds.width);
-    canvas.height = Math.round(bounds.height);
+    canvas.width = bounds.width;
+    canvas.height = bounds.height;
   }
 
   function resetState() {
