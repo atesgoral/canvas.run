@@ -46,7 +46,7 @@ main {
   display: flex;
   flex-direction: column;
 }
-#editor {
+#editor-pane {
   flex-basis: 50%;
 }
 #splitter {
@@ -72,10 +72,10 @@ main {
     opacity: .5;
   }
 }
-#output {
+#output-pane {
   padding: 1px;
   box-sizing: border-box;
-  flex-basis: 50%;
+  flex: 1;
   position: relative;
 
   canvas {

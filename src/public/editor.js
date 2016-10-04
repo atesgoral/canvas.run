@@ -10,7 +10,9 @@ function initialize() {
   var renderer = null;
   var hasSyntaxError = false;
 
-  var editor = ace.edit($('#editor'));
+  var editorPane = $('#editor-pane');
+
+  var editor = ace.edit(editorPane);
   editor.$blockScrolling = Infinity;
   editor.setShowPrintMargin(false);
   editor.getSession().setMode("ace/mode/javascript");
@@ -154,14 +156,16 @@ function initialize() {
         var offset = pos - splitterDrag.start;
 
         if (isLayoutHorizontal) {
-          splitter.style.left = splitterDrag.pos + splitter.offsetWidth / 2 + offset + -1 + 'px';
+          editorPane.style.flexBasis = (editorPane.offsetWidth + offset) / (main.offsetWidth - splitter.offsetWidth) * 100 + '%';
           splitterHandle.style.left = '-1px';
         } else {
-          splitter.style.top = splitterDrag.pos + splitter.offsetHeight / 2 + offset + -1 + 'px';
+          editorPane.style.flexBasis = (editorPane.offsetHeight + offset) / (main.offsetHeight - splitter.offsetHeight) * 100 + '%';
           splitterHandle.style.top = '-1px';
         }
 
         splitterDrag = null;
+
+        handleResize();
       }
     }
 
