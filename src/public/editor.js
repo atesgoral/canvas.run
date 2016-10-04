@@ -202,21 +202,8 @@ function initialize() {
     rendererEpoch = null;
   }
 
-  function repositionSpliter() {
-  }
-
-  function resizePanes() {
-    if (isLayoutHorizontal) {
-
-    } else {
-
-    }
-  }
-
   function handleResize() {
     resetState();
-    repositionSpliter();
-    resizePanes();
     resizeCanvas();
   }
 
