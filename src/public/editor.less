@@ -16,24 +16,35 @@ header {
   h1 {
     display: inline;
     margin: 0;
-    padding: 0 20px;
+    padding: 0 30px;
     height: @headerHeight;
     line-height: @headerHeight;
     font-size: 1em;
+    font-weight: normal;
+    color: #666;
   }
 
   button {
     margin: 0;
     padding: 0 5px;
-    border: none;
+    border: 1px solid #ccc;
+    border-radius: 3px;
     background: transparent;
-    height: @headerHeight;
-    line-height: @headerHeight;
+    height: @headerHeight - 6px;
+    line-height: @headerHeight - 6px;
     font-size: 0.75em;
     cursor: pointer;
+    margin-right: 3px;
+    transition: background 100ms;
+    color: #333;
 
     &:hover {
-      color: #22d;
+      background: #f8f8f8;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #4cf;
     }
   }
 }
