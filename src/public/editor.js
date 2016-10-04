@@ -87,10 +87,10 @@ function initialize() {
     var formData = new FormData();
 
     if (currentRun.shortId) {
-      formData.set('shortId', currentRun.shortId);
+      formData.append('shortId', currentRun.shortId);
     }
 
-    formData.set('source', editor.getValue());
+    formData.append('source', editor.getValue());
 
     fetch('/api/runs', { method: 'POST', body: formData })
       .then(function (response) {
