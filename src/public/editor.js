@@ -214,9 +214,7 @@ function initialize() {
 
   function renderError(err) {
     error.className = '-visible';
-    error.innerHTML = err.stack
-      ? err.stack
-      : err.message ? err.message : err;
+    error.innerHTML = err.message + '\n\n' + err.stack;
   }
 
   function hideError() {
