@@ -8,13 +8,14 @@
 <script src="vendor/lodash/lodash.min.js"></script>
 <script src="vendor/ace-builds/src-min-noconflict/ace.js"></script>
 <script src="vendor/ace-builds/src-min-noconflict/mode-javascript.js"></script>
+<script src="vendor/ace-builds/src-min-noconflict/theme-monokai.js"></script>
 </head>
 <body>
 <header>
-  <h1>&#x3008;<span>&#x25b8;</span>&#x3009;canvas.run</h1><!--
-  --><button id="save">Save</button><!--
-  --><button id="reset-state">Reset State</button><!--
-  --><button id="toggle-layout">Toggle Layout</button>
+  <h1><a href="/">canvas.run</a></h1><!--
+  --><button id="save" class="-accent-1">Save</button><!--
+  --><button id="reset-state" class="-accent-2">Reset State</button><!--
+  --><button id="toggle-layout" class="-accent-3">Toggle Layout</button>
 </header>
 <main id="main" class="-horizontal-split">
   <div id="editor-pane"></div>
@@ -35,7 +36,9 @@
 var ctx = canvas.getContext('2d');
 
 // The "t" argument gives you the milliseconds since the animation started
-ctx.fillStyle = 'hsl(200, ' + Math.floor((Math.sin(t / 500) + 1) * 50) + '%, 50%)';
+var hue = (t / 200) % 360;
+
+ctx.fillStyle = 'hsl(' + hue + ', 100%, 10%)';
 ctx.globalAlpha = 0.3;
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 ctx.globalAlpha = 1;
@@ -68,7 +71,9 @@ if (state.y < radius || state.y >= canvas.height - radius) {
   state.y += state.vy;
 }
 
-state.vy += 0.2;</script>
+var gravity = 0.2;
+
+state.vy += gravity;</script>
 <script src="editor.js"></script>
 </body>
 </html>

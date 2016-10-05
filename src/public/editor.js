@@ -15,10 +15,15 @@ function initialize() {
   var editor = ace.edit(editorPane);
   editor.$blockScrolling = Infinity;
   editor.setShowPrintMargin(false);
-  editor.getSession().setMode("ace/mode/javascript");
+  editor.setTheme("ace/theme/monokai");
+  editor.setFontSize(14);
 
-  editor.getSession().on('changeAnnotation', function () {
-    var isErrorFound = editor.getSession().getAnnotations().some(function (annotation) {
+  var session = editor.getSession();
+
+  session.setMode("ace/mode/javascript");
+
+  session.on('changeAnnotation', function () {
+    var isErrorFound = session.getAnnotations().some(function (annotation) {
       return annotation.type === 'error';
     });
 
@@ -157,10 +162,10 @@ function initialize() {
 
         if (isLayoutHorizontal) {
           editorPane.style.flexBasis = (editorPane.offsetWidth + offset) / (main.offsetWidth - splitter.offsetWidth) * 100 + '%';
-          splitterHandle.style.left = '-1px';
+          splitterHandle.style.left = 0;
         } else {
           editorPane.style.flexBasis = (editorPane.offsetHeight + offset) / (main.offsetHeight - splitter.offsetHeight) * 100 + '%';
-          splitterHandle.style.top = '-1px';
+          splitterHandle.style.top = 0;
         }
 
         splitterDrag = null;
