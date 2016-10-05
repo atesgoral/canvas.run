@@ -4,7 +4,7 @@
 @panelBg: hsl(0, 0%, 50%);
 @panelContent: hsl(0, 0%, 95%);
 @buttonBg: transparent;
-@buttonContent: hsl(0, 0%, 95%);
+@buttonContent: hsl(0, 0%, 90%);
 @buttonHoverContent: hsl(0, 0%, 100%);
 @buttonHoverAccent1: hsl(15, 100%, 60%);
 @buttonHoverAccent2: hsl(45, 100%, 60%);
@@ -13,7 +13,7 @@
 @splitterHandleBg: hsla(0, 0%, 50%, 50%);
 
 body {
-  font-family: sans-serif;
+  font-family: 'Varela Round', sans-serif;
   font-size: 100%;
   margin: 0;
   padding: 0;
@@ -33,7 +33,7 @@ header {
     line-height: @headerHeight;
     font-size: 1em;
     font-weight: normal;
-    color: hsl(0, 0%, 80%);
+    color: hsl(0, 0%, 100%);
 
     a {
       color: inherit;
@@ -59,6 +59,8 @@ header {
     color: @buttonContent;
     position: relative;
     overflow: hidden;
+    font-family: 'Varela Round', sans-serif;
+    text-transform: uppercase;
 
     &:after {
       content: '';
