@@ -79,9 +79,14 @@ header {
       }
     }
 
+    &:active {
+      &:after {
+        bottom: 8px;
+      }
+    }
+
     &:focus {
       outline: none;
-      border-color: #0af;
     }
 
     &.-accent-1:after { background: @buttonHoverAccent1; }
