@@ -277,4 +277,4 @@ function initialize() {
   requestAnimationFrame(render);
 }
 
-setTimeout(initialize, 1);
+setTimeout(initialize, 100);
