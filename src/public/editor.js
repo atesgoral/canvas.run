@@ -132,14 +132,14 @@ function initialize() {
   var splitterHandle = $('#splitter-handle');
   var splitterDrag = null;
 
-  splitterHandle.addEventListener('mousedown', function (event) {
+  function handleDragStart(event) {
     splitterDrag = {
       pos: isLayoutHorizontal ? splitter.offsetLeft : splitter.offsetTop,
       handlePos: isLayoutHorizontal ? splitterHandle.offsetLeft : splitterHandle.offsetTop,
       start: isLayoutHorizontal ? event.clientX : event.clientY
     };
 
-    function handleMouseMove(event) {
+    function handleDragMove(event) {
       if (splitterDrag) {
         var pos = isLayoutHorizontal ? event.clientX : event.clientY;
         var offset = pos - splitterDrag.start;
@@ -152,10 +152,10 @@ function initialize() {
       }
     }
 
-    function handleMouseUp(event) {
+    function handleDragEnd(event) {
       if (splitterDrag) {
-        window.removeEventListener('mouseup', handleMouseUp);
-        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleDragEnd);
+        window.removeEventListener('mousemove', handleDragMove);
 
         var pos = isLayoutHorizontal ? event.clientX : event.clientY;
         var offset = pos - splitterDrag.start;
@@ -174,9 +174,11 @@ function initialize() {
       }
     }
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-  });
+    window.addEventListener('mousemove', handleDragMove);
+    window.addEventListener('mouseup', handleDragEnd);
+  }
+
+  splitterHandle.addEventListener('mousedown', handleDragStart);
 
   window.addEventListener('popstate', function (event) {
     if (event.state) {
