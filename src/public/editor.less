@@ -1,16 +1,17 @@
 @headerHeight: 40px;
 @splitterSize: 13px;
 
-@panelBg: hsl(0, 0%, 35%);
-@panelContent: hsl(0, 0%, 95%);
+@panelBg: hsl(70, 3%, 30%);
+@panelHeading: hsl(70, 3%, 85%);
+@panelContent: hsl(70, 3%, 75%);
 @buttonBg: transparent;
-@buttonContent: hsl(0, 0%, 90%);
-@buttonHoverContent: hsl(0, 0%, 100%);
+@buttonContent: hsl(70, 3%, 75%);
+@buttonHoverContent: hsl(7, 3%, 100%);
 @buttonHoverAccent1: hsl(15, 100%, 60%);
 @buttonHoverAccent2: hsl(45, 100%, 60%);
 @buttonHoverAccent3: hsl(70, 100%, 60%);
 
-@splitterHandleBg: hsla(0, 0%, 35%, 50%);
+@splitterHandleBg: hsla(70, 3%, 30%, 50%);
 
 body {
   font-family: 'Varela Round', sans-serif;
@@ -32,6 +33,7 @@ header {
     height: @headerHeight;
     line-height: @headerHeight;
     font-size: 1em;
+    color: @panelHeading;
 
     a {
       color: inherit;
