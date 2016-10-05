@@ -4,7 +4,15 @@ function $(id) {
   }
 }
 
+var debug = window.location.search.match(/d=1/)
+  ? function () {
+    console.log.apply(console, arguments);
+  }
+  : function () {};
+
 function initialize() {
+  debug('Initializing');
+
   var rendererState = {};
   var rendererEpoch = null;
   var renderer = null;
@@ -42,6 +50,8 @@ function initialize() {
   });
 
   function compileRenderer() {
+    debug('compileRenderer');
+
     try {
       renderer = new Function('canvas', 'state', 't', editor.getValue());
       hideError();
@@ -89,13 +99,19 @@ function initialize() {
     .catch(renderError);
 
   function save() {
+    var source = editor.getValue();
+
+    if (!source) {
+      return;
+    }
+
     var formData = new FormData();
 
     if (currentRun.shortId) {
       formData.append('shortId', currentRun.shortId);
     }
 
-    formData.append('source', editor.getValue());
+    formData.append('source', source);
 
     fetch('/api/runs', { method: 'POST', body: formData })
       .then(function (response) {
@@ -181,6 +197,8 @@ function initialize() {
   splitterHandle.addEventListener('mousedown', handleDragStart);
 
   window.addEventListener('popstate', function (event) {
+    debug('popstate');
+
     if (event.state) {
       currentRun = event.state;
       editor.setValue(currentRun.source, -1);
@@ -194,13 +212,18 @@ function initialize() {
     }
   }
 
-  editor.on('change', _.debounce(handleSourceChange, 250));
+  editor.on('change', _.debounce(handleSourceChange, 1000));
 
   var canvas = $('#canvas');
   var error = $('#error');
 
   function resizeCanvas() {
+    debug('resizeCanvas');
+
     var bounds = canvas.parentNode.getBoundingClientRect();
+
+    debug('bounds', bounds.width, bounds.height);
+
     canvas.width = bounds.width;
     canvas.height = bounds.height;
   }
@@ -211,6 +234,8 @@ function initialize() {
   }
 
   function handleResize() {
+    debug('handleResize');
+
     resetState();
     setTimeout(resizeCanvas, 1);
   }
