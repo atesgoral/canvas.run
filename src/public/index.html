@@ -36,11 +36,8 @@
 // Get the context you want from the "canvas" argument
 var ctx = canvas.getContext('2d');
 
-// The "t" argument gives you the milliseconds since the animation started
-var hue = (t / 200) % 360;
-
-ctx.fillStyle = 'hsl(' + hue + ', 100%, 10%)';
-ctx.globalAlpha = 0.3;
+ctx.fillStyle = '#000';
+ctx.globalAlpha = 0.2;
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 ctx.globalAlpha = 1;
 
@@ -52,9 +49,11 @@ if (isNaN(state.x)) {
   state.vy = 0;
 }
 
-var radius = 10;
+// The "t" argument gives you the milliseconds since the animation started
+var radius = (Math.sin(t / 500) + 1) * 5 + 5;
+var hue = (t / 100) % 360;
 
-ctx.fillStyle = '#fff';
+ctx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
 ctx.beginPath();
 ctx.arc(state.x, state.y, radius, 0, 2 * Math.PI, false);
 ctx.fill();
