@@ -148,6 +148,8 @@ function initialize() {
   var splitterHandle = $('#splitter-handle');
   var splitterDrag = null;
 
+  var minPaneSize = 100;
+
   function handleDragStart(event) {
     var splitterHandleBounds = splitterHandle.getBoundingClientRect();
 
@@ -158,12 +160,20 @@ function initialize() {
 
     function handleDragMove(event) {
       if (splitterDrag) {
-        var pos = isLayoutHorizontal ? event.clientX : event.clientY;
-        var offset = pos - splitterDrag.start;
+        event.preventDefault();
+
+        var current = isLayoutHorizontal ? event.clientX : event.clientY;
+        var offset = current - splitterDrag.start;
+        var splitterBounds = splitter.getBoundingClientRect();
+        var mainBounds = main.getBoundingClientRect();
 
         if (isLayoutHorizontal) {
+          var left = Math.min(Math.max(splitterBounds.left + offset, mainBounds.left + minPaneSize), mainBounds.right - splitterBounds.width - minPaneSize);
+          offset = left - splitterBounds.left;
           splitterHandle.style.marginLeft = offset + 'px';
         } else {
+          var top = Math.min(Math.max(splitterBounds.top + offset, mainBounds.top + minPaneSize), mainBounds.bottom - minPaneSize);
+          offset = top - splitterBounds.top;
           splitterHandle.style.marginTop = offset + 'px';
         }
       }
@@ -174,16 +184,21 @@ function initialize() {
         window.removeEventListener('mouseup', handleDragEnd);
         window.removeEventListener('mousemove', handleDragMove);
 
-        var pos = isLayoutHorizontal ? event.clientX : event.clientY;
-        var offset = pos - splitterDrag.start;
-
+        var current = isLayoutHorizontal ? event.clientX : event.clientY;
+        var offset = current - splitterDrag.start;
+        var splitterBounds = splitter.getBoundingClientRect();
         var editorBounds = editorPane.getBoundingClientRect();
+        var mainBounds = main.getBoundingClientRect();
 
         if (isLayoutHorizontal) {
-          editorPane.style.flexBasis = (editorBounds.width + offset) / main.offsetWidth * 100 + '%';
+          var left = Math.min(Math.max(splitterBounds.left + offset, mainBounds.left + minPaneSize), mainBounds.right - splitterBounds.width - minPaneSize);
+          offset = left - splitterBounds.left;
+          editorPane.style.flexBasis = (editorBounds.width + offset) / mainBounds.width * 100 + '%';
           splitterHandle.style.marginLeft = 0;
         } else {
-          editorPane.style.flexBasis = (editorBounds.height + offset) / main.offsetHeight * 100 + '%';
+          var top = Math.min(Math.max(splitterBounds.top + offset, mainBounds.top + minPaneSize), mainBounds.bottom - minPaneSize);
+          offset = top - splitterBounds.top;
+          editorPane.style.flexBasis = (editorBounds.height + offset) / mainBounds.height * 100 + '%';
           splitterHandle.style.marginTop = 0;
         }
 

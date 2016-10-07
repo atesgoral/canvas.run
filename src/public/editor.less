@@ -115,6 +115,7 @@ main {
   flex: 0 0 @splitterSize;
   background: @panelBg;
   height: @splitterSize;
+  user-select: none;
 
   #splitter-handle {
     position: absolute;
@@ -128,6 +129,7 @@ main {
     justify-content: center;
     align-items: center;
     flex-direction: row;
+    user-select: none;
 
     &:after {
       content: '';
