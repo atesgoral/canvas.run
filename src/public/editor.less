@@ -11,6 +11,7 @@
 @buttonHoverAccent2: hsl(45, 100%, 60%);
 @buttonHoverAccent3: hsl(70, 100%, 60%);
 
+@errorMaskBg: hsla(70, 3%, 30%, 50%);
 @splitterHandleBg: hsla(70, 3%, 30%, 50%);
 
 body {
@@ -168,17 +169,15 @@ main {
   bottom: 0;
   left: 0;
   margin: 0;
-  background: rgba(255, 255, 255, .75);
+  background: @errorMaskBg;
+  color: @panelContent;
   padding: 1em;
   z-index: 2;
   display: none;
   overflow: auto;
-  font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, source-code-pro, monospace;
-  font-size: .75em;
 
   &:after {
     position: absolute;
-    font-size: 40em;
     left: 50%;
     margin-left: -20em;
     top: 50%;
@@ -186,10 +185,12 @@ main {
     text-align: center;
     width: 40em;
     height: 40em;
+    font-size: 40em;
     line-height: 40em;
     content: '\26a0';
     color: red;
-    opacity: 0.25;
+    opacity: .25;
+    transform: rotate(10deg);
   }
   &.-visible {
     display: block;
