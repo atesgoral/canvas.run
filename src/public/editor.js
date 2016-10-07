@@ -177,10 +177,10 @@ function initialize() {
         var offset = pos - splitterDrag.start;
 
         if (isLayoutHorizontal) {
-          editorPane.style.flexBasis = (editorPane.offsetWidth + offset) / (main.offsetWidth - splitter.offsetWidth) * 100 + '%';
+          editorPane.style.flexBasis = (editorPane.offsetWidth + offset) / main.offsetWidth * 100 + '%';
           splitterHandle.style.left = 0;
         } else {
-          editorPane.style.flexBasis = (editorPane.offsetHeight + offset) / (main.offsetHeight - splitter.offsetHeight) * 100 + '%';
+          editorPane.style.flexBasis = (editorPane.offsetHeight + offset) / main.offsetHeight * 100 + '%';
           splitterHandle.style.top = 0;
         }
 
