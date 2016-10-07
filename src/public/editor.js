@@ -176,11 +176,13 @@ function initialize() {
         var pos = isLayoutHorizontal ? event.clientX : event.clientY;
         var offset = pos - splitterDrag.start;
 
+        var editorBounds = editorPane.getBoundingClientRect();
+
         if (isLayoutHorizontal) {
-          editorPane.style.flexBasis = (editorPane.offsetWidth + offset) / main.offsetWidth * 100 + '%';
+          editorPane.style.flexBasis = (editorBounds.width + offset) / main.offsetWidth * 100 + '%';
           splitterHandle.style.left = 0;
         } else {
-          editorPane.style.flexBasis = (editorPane.offsetHeight + offset) / main.offsetHeight * 100 + '%';
+          editorPane.style.flexBasis = (editorBounds.height + offset) / main.offsetHeight * 100 + '%';
           splitterHandle.style.top = 0;
         }
 
