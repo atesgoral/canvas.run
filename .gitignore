@@ -1,5 +1,3 @@
 .DS_Store
-node_modules
-.vagrant
+.vagrant/
 provisioning/playbook.retry
-npm-debug.log
