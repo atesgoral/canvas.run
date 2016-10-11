@@ -18,8 +18,7 @@ mongoose.connection.on('error', (err) => {
 const app = express();
 const upload = multer().none();
 
-app.use('/', express.static(__dirname + '/public'));
-app.use('/vendor', express.static(__dirname + '/../node_modules'));
+app.use('/', express.static(__dirname + '../client/dist'));
 
 const apiRoutes = express.Router();
 
