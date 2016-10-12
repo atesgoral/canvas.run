@@ -107,7 +107,7 @@ export default {
 @splitterSize: 13px;
 
 @splitterHandleBg: hsla(70, 3%, 30%, 50%);
-// @todo From include
+// @todo from include
 @panelBg: hsl(70, 3%, 30%);
 @buttonHoverAccent3: hsl(70, 100%, 60%);
 

@@ -1,5 +1,5 @@
 <template>
-  <div id="editor-pane"></div>
+  <div class="editor-pane"></div>
 </template>
 
 <script>
@@ -24,9 +24,31 @@ export default {
     const session = editor.getSession()
 
     session.setMode('ace/mode/javascript')
+
+    session.on('changeAnnotation', () => {
+      var isErrorFound = session.getAnnotations().some(annotation => {
+        return annotation.type === 'error';
+      });
+
+      // if (isErrorFound) {
+      //   if (!hasSyntaxError) {
+      //     hasSyntaxError = true;
+      //     renderer = null;
+      //     renderError('Syntax errors found');
+      //   }
+      // } else {
+      //   if (hasSyntaxError) {
+      //     hasSyntaxError = false;
+      //     compileRenderer();
+      //   }
+      // }
+    });
   }
 }
 </script>
 
-<style>
+<style lang="less">
+.editor-pane {
+  flex-basis: 50%;
+}
 </style>

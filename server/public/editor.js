@@ -1,9 +1,3 @@
-function $(id) {
-  if (id[0] === '#') {
-    return document.getElementById(id.slice(1));
-  }
-}
-
 var debug = window.location.search.match(/d=1/)
   ? function () {
     console.log.apply(console, arguments);
@@ -17,37 +11,6 @@ function initialize() {
   var rendererEpoch = null;
   var renderer = null;
   var hasSyntaxError = false;
-
-  var editorPane = $('#editor-pane');
-
-  var editor = ace.edit(editorPane);
-  editor.$blockScrolling = Infinity;
-  editor.setShowPrintMargin(false);
-  editor.setTheme("ace/theme/monokai");
-  editor.setFontSize(14);
-
-  var session = editor.getSession();
-
-  session.setMode("ace/mode/javascript");
-
-  session.on('changeAnnotation', function () {
-    var isErrorFound = session.getAnnotations().some(function (annotation) {
-      return annotation.type === 'error';
-    });
-
-    if (isErrorFound) {
-      if (!hasSyntaxError) {
-        hasSyntaxError = true;
-        renderer = null;
-        renderError('Syntax errors found');
-      }
-    } else {
-      if (hasSyntaxError) {
-        hasSyntaxError = false;
-        compileRenderer();
-      }
-    }
-  });
 
   function compileRenderer() {
     debug('compileRenderer');
@@ -128,91 +91,6 @@ function initialize() {
         //editor.focus();
       });
   }
-
-  var main = $('#main');
-  var isLayoutHorizontal = true;
-
-  function toggleLayout() {
-    isLayoutHorizontal = !isLayoutHorizontal;
-
-    main.className = isLayoutHorizontal ? '-horizontal-split' : '';
-
-    handleResize();
-  }
-
-  $('#save').addEventListener('click', save);
-  $('#reset-state').addEventListener('click', resetState);
-  $('#toggle-layout').addEventListener('click', toggleLayout);
-
-  var splitter = $('#splitter');
-  var splitterHandle = $('#splitter-handle');
-  var splitterDrag = null;
-
-  var minPaneSize = 100;
-
-  function handleDragStart(event) {
-    var splitterHandleBounds = splitterHandle.getBoundingClientRect();
-
-    splitterDrag = {
-      handleOrigin: isLayoutHorizontal ? splitterHandleBounds.left : splitterHandleBounds.top,
-      start: isLayoutHorizontal ? event.clientX : event.clientY
-    };
-
-    function handleDragMove(event) {
-      if (splitterDrag) {
-        event.preventDefault();
-
-        var current = isLayoutHorizontal ? event.clientX : event.clientY;
-        var offset = current - splitterDrag.start;
-        var splitterBounds = splitter.getBoundingClientRect();
-        var mainBounds = main.getBoundingClientRect();
-
-        if (isLayoutHorizontal) {
-          var left = Math.min(Math.max(splitterBounds.left + offset, mainBounds.left + minPaneSize), mainBounds.right - splitterBounds.width - minPaneSize);
-          offset = left - splitterBounds.left;
-          splitterHandle.style.marginLeft = offset + 'px';
-        } else {
-          var top = Math.min(Math.max(splitterBounds.top + offset, mainBounds.top + minPaneSize), mainBounds.bottom - minPaneSize);
-          offset = top - splitterBounds.top;
-          splitterHandle.style.marginTop = offset + 'px';
-        }
-      }
-    }
-
-    function handleDragEnd(event) {
-      if (splitterDrag) {
-        window.removeEventListener('mouseup', handleDragEnd);
-        window.removeEventListener('mousemove', handleDragMove);
-
-        var current = isLayoutHorizontal ? event.clientX : event.clientY;
-        var offset = current - splitterDrag.start;
-        var splitterBounds = splitter.getBoundingClientRect();
-        var editorBounds = editorPane.getBoundingClientRect();
-        var mainBounds = main.getBoundingClientRect();
-
-        if (isLayoutHorizontal) {
-          var left = Math.min(Math.max(splitterBounds.left + offset, mainBounds.left + minPaneSize), mainBounds.right - splitterBounds.width - minPaneSize);
-          offset = left - splitterBounds.left;
-          editorPane.style.flexBasis = (editorBounds.width + offset) / mainBounds.width * 100 + '%';
-          splitterHandle.style.marginLeft = 0;
-        } else {
-          var top = Math.min(Math.max(splitterBounds.top + offset, mainBounds.top + minPaneSize), mainBounds.bottom - minPaneSize);
-          offset = top - splitterBounds.top;
-          editorPane.style.flexBasis = (editorBounds.height + offset) / mainBounds.height * 100 + '%';
-          splitterHandle.style.marginTop = 0;
-        }
-
-        splitterDrag = null;
-
-        handleResize();
-      }
-    }
-
-    window.addEventListener('mousemove', handleDragMove);
-    window.addEventListener('mouseup', handleDragEnd);
-  }
-
-  splitterHandle.addEventListener('mousedown', handleDragStart);
 
   window.addEventListener('popstate', function (event) {
     debug('popstate');
