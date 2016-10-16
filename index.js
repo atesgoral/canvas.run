@@ -18,8 +18,7 @@ mongoose.connection.on('error', (err) => {
 const app = express();
 const upload = multer().none();
 
-app.use('/', express.static(__dirname + '/public'));
-app.use('/vendor', express.static(__dirname + '/../node_modules'));
+app.use('/', express.static(__dirname + '/client/dist'));
 
 const apiRoutes = express.Router();
 
@@ -37,7 +36,12 @@ apiRoutes.post('/runs', upload, (req, res) => {
   let shortId = req.body.shortId;
 
   if (shortId) {
-    const tokens = /^([^.]+)(?:\.(\d+))?$/.exec(shortId);
+    const tokens = /^([^-]+)(?:-(\d+))?$/.exec(shortId);
+
+    if (!tokens) {
+      res.sendStatus(400);
+      return;
+    }
 
     let revision = parseInt(tokens[2], 10);
 
@@ -49,7 +53,7 @@ apiRoutes.post('/runs', upload, (req, res) => {
 
     tokens[2] = revision;
 
-    shortId = tokens.slice(1).join('.');
+    shortId = tokens.slice(1).join('-');
   }
 
   const run = new Run({
@@ -70,10 +74,12 @@ apiRoutes.post('/runs', upload, (req, res) => {
 app.use('/api', apiRoutes);
 
 app.get('*', (request, response) => {
-  response.sendFile(__dirname + '/public/index.html');
+  response.sendFile('index.html', {
+    root: __dirname + '/client/dist'
+  });
 });
 
-const port = parseInt(process.env.PORT || '5000', 10);
+const port = parseInt(process.env.PORT || '6543', 10);
 
 app.listen(port, () => {
   console.log('Listening on port ' + port);
