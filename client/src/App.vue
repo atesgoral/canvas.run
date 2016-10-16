@@ -72,6 +72,7 @@ state.vy += gravity;</script>
 
 <script>
 import * as _ from 'lodash/lodash.min'
+import 'whatwg-fetch';
 
 import EditorPane from './components/EditorPane'
 import Splitter from './components/Splitter'
