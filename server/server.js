@@ -18,7 +18,7 @@ mongoose.connection.on('error', (err) => {
 const app = express();
 const upload = multer().none();
 
-app.use('/', express.static(__dirname + '../client/dist'));
+app.use('/', express.static(__dirname + '/../client/dist'));
 
 const apiRoutes = express.Router();
 
@@ -74,7 +74,9 @@ apiRoutes.post('/runs', upload, (req, res) => {
 app.use('/api', apiRoutes);
 
 app.get('*', (request, response) => {
-  response.sendFile(__dirname + '/public/index.html');
+  response.sendFile('index.html', {
+    root: __dirname + '/../client/dist'
+  });
 });
 
 const port = parseInt(process.env.PORT || '6543', 10);
