@@ -36,7 +36,7 @@ apiRoutes.post('/runs', upload, (req, res) => {
   let shortId = req.body.shortId;
 
   if (shortId) {
-    const tokens = /^([^-]+)(?:-(\d+))?$/.exec(shortId);
+    const tokens = /^([A-Z\d]+)(?:-(\d+))?$/i.exec(shortId);
 
     if (!tokens) {
       res.sendStatus(400);
@@ -73,7 +73,7 @@ apiRoutes.post('/runs', upload, (req, res) => {
 
 app.use('/api', apiRoutes);
 
-app.get(/^\/([^-]+)(?:-(\d+))?$/, (request, response) => {
+app.get(/^\/([A-Z\d]+)(?:-(\d+))?$/i, (request, response) => {
   response.sendFile('index.html', {
     root: __dirname + '/client/dist'
   });
