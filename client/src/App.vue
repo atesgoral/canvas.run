@@ -133,9 +133,9 @@ export default {
         this.run = run;
 
         if (run.shortId) {
-          history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
+          history.replaceState(run, 'Run ' + run.shortId, '/' + run.shortId);
         } else {
-          history.pushState(run, 'Default run');
+          history.replaceState(run, 'Default run');
         }
       })
       .catch((error) => {
