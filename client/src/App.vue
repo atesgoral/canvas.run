@@ -7,40 +7,75 @@
       --><button id="toggle-layout" class="-accent-3" v-on:click="toggleLayout">Toggle Layout</button>
     </header>
     <main id="main" v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
-      <editor-pane ref="editorPane"></editor-pane>
-      <splitter v-bind:is-horizontal="isLayoutHorizontal" v-on:drag="resizeEditor"></splitter>
-      <output-pane></output-pane>
+      <editor-pane
+        ref="editorPane"
+        v-bind:run="run"
+        v-on:sourceUpdate="handleEditorSourceUpdate"
+        v-on:syntaxError="handleEditorSyntaxError"></editor-pane>
+      <splitter
+        v-bind:is-horizontal="isLayoutHorizontal"
+        v-on:drag="handleSplitterDrag"></splitter>
+      <output-pane
+        v-bind:layoutChangeCnt="layoutChangeCnt"
+        v-bind:renderer="renderer"
+        v-bind:rendererState="rendererState"
+        v-bind:error="error"
+        v-on:runtimeError="handleRuntimeError"></output-pane>
+      <!-- error element -->
     </main>
+<script type="text/default" id="default">// Here, you're writing the contents of a function with the following signature:
+// function render(canvas, state, t)
+
+// Get the context you want from the "canvas" argument
+var ctx = canvas.getContext('2d');
+
+ctx.fillStyle = '#000';
+ctx.globalAlpha = 0.05;
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.globalAlpha = 1;
+
+// You can store state in "state"
+if (isNaN(state.x)) {
+  state.x = canvas.width / 2;
+  state.y = canvas.height / 5;
+  state.vx = 2;
+  state.vy = 0;
+}
+
+// The "t" argument gives you the milliseconds since the animation started
+var radius = (Math.sin(t / 500) + 1) * 5 + 5;
+var hue = (t / 100) % 360;
+
+ctx.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
+ctx.beginPath();
+ctx.arc(state.x, state.y, radius, 0, 2 * Math.PI, false);
+ctx.fill();
+
+state.x += state.vx;
+state.y += state.vy;
+
+if (state.x < radius || state.x >= canvas.width - radius) {
+  state.vx = -state.vx;
+  state.x += state.vx;
+}
+
+if (state.y < radius || state.y >= canvas.height - radius) {
+  state.vy = -state.vy;
+  state.y += state.vy;
+}
+
+var gravity = 0.2;
+
+state.vy += gravity;</script>
   </body>
 </template>
 
 <script>
+import * as _ from 'lodash/lodash.min'
+
 import EditorPane from './components/EditorPane'
 import Splitter from './components/Splitter'
 import OutputPane from './components/OutputPane'
-
-function resizeCanvas() {
-  // debug('resizeCanvas');
-  //
-  // var bounds = canvas.parentNode.getBoundingClientRect();
-  //
-  // debug('bounds', bounds.width, bounds.height);
-  //
-  // canvas.width = bounds.width;
-  // canvas.height = bounds.height;
-}
-
-function resetState() {
-  // rendererState = {};
-  // rendererEpoch = null;
-}
-
-function handleResize() {
-  //debug('handleResize');
-
-  resetState();
-  setTimeout(resizeCanvas, 1);
-}
 
 export default {
   components: {
@@ -50,21 +85,105 @@ export default {
   },
   data() {
     return {
-      isLayoutHorizontal: true
+      isLayoutHorizontal: true,
+      layoutChangeCnt: 0,
+      run: null,
+      renderer: null,
+      rendererState: {},
+      error: null
     }
+  },
+  mounted() {
+    window.addEventListener('resize', _.debounce(() => {
+      this.resetState();
+      this.notifyLayoutChange();
+    }, 250));
+
+    window.addEventListener('popstate', (event) => {
+      if (event.state) {
+        this.run = event.state;
+      }
+    });
+
+    Promise.resolve()
+      .then(() => {
+        const shortId = window.location.pathname.slice(1);
+
+        if (shortId) {
+          return fetch('/api/runs/' + encodeURIComponent(shortId))
+            .then((response) => {
+              if (response.ok) {
+                return response.json();
+              } else {
+                switch (response.status) {
+                case 404:
+                  throw new Error('Run not found');
+                default:
+                  throw new Error('Could not fetch run');
+                }
+              }
+            });
+        } else {
+          return {
+            source: this.$el.querySelector('#default').innerHTML
+          };
+        }
+      })
+      .then((run) => {
+        this.run = run;
+
+        if (run.shortId) {
+          history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
+        } else {
+          history.pushState(run, 'Default run');
+        }
+      })
+      .catch((error) => {
+        this.error = error.message;
+      });
   },
   methods: {
     save() {
+      if (!this.run) {
+        return;
+      }
 
+      const formData = new FormData();
+
+      if (this.run.shortId) {
+        formData.append('shortId', this.run.shortId);
+      }
+
+      formData.append('source', this.run.source);
+
+      fetch('/api/runs', { method: 'POST', body: formData })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            console.error(response.status);
+            throw new Error('Saving failed');
+          }
+        })
+        .then((run) => {
+          this.run = run;
+          history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
+        });
     },
     resetState() {
-
+      this.rendererState = {};
+    },
+    notifyLayoutChange() {
+      setTimeout(() => {
+        this.layoutChangeCnt++;
+      }, 1);
     },
     toggleLayout() {
       this.isLayoutHorizontal = !this.isLayoutHorizontal
-      handleResize();
+      this.resetState();
+      this.notifyLayoutChange();
     },
-    resizeEditor(offset) {
+    handleSplitterDrag(offset) {
       const mainEl = this.$el.querySelector('main');
       const editorPaneEl = this.$refs.editorPane.$el;
       const mainBounds = mainEl.getBoundingClientRect();
@@ -76,7 +195,29 @@ export default {
         editorPaneEl.style.flexBasis = (editorBounds.height + offset) / mainBounds.height * 100 + '%';
       }
 
-      handleResize();
+      this.resetState();
+      this.notifyLayoutChange();
+    },
+    handleEditorSourceUpdate(source) {
+      try {
+        this.run.source = source;
+        this.renderer = new Function('canvas', 'state', 't', source);
+        this.error = null;
+      } catch (err) {
+        this.renderer = null;
+
+        if (err) {
+          this.error = 'Compilation error';
+        }
+      }
+    },
+    handleEditorSyntaxError() {
+      console.log('syntax error');
+      this.renderer = null;
+      this.error = 'Syntax error';
+    },
+    handleRuntimeError() {
+      this.error = 'Runtime error';
     }
   }
 }
@@ -94,8 +235,6 @@ export default {
 @buttonHoverAccent1: hsl(15, 100%, 60%);
 @buttonHoverAccent2: hsl(45, 100%, 60%);
 @buttonHoverAccent3: hsl(70, 100%, 60%);
-
-@errorMaskBg: hsla(70, 3%, 30%, 50%);
 
 body {
   font-family: 'Varela Round', sans-serif;

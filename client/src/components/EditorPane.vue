@@ -5,13 +5,13 @@
 <script>
 import 'ace-builds/src-min-noconflict/ace'
 import 'ace-builds/src-min-noconflict/mode-javascript'
+//import 'ace-builds/src-min-noconflict/worker-javascript'
 import 'ace-builds/src-min-noconflict/theme-monokai'
+import * as _ from 'lodash/lodash.min'
 
 export default {
-  data() {
-    return {
-      msg: 'Hello Vue!'
-    }
+  props: {
+    run: Object
   },
   mounted() {
     const editor = ace.edit(this.$el)
@@ -24,25 +24,53 @@ export default {
     const session = editor.getSession()
 
     session.setMode('ace/mode/javascript')
+    session.setUseSoftTabs(true)
+    session.setTabSize(2)
+
+    this.$watch('run', (run) => {
+      editor.setValue(run.source, -1);
+    });
+
+    const emitSyntaxError = () => {
+      this.$emit('syntaxError');
+    };
+
+    const emitSourceUpdate = (source) => {
+      this.$emit('sourceUpdate', source);
+    };
+
+    let hasSyntaxError = false;
 
     session.on('changeAnnotation', () => {
-      var isErrorFound = session.getAnnotations().some(annotation => {
+      const isErrorFound = session.getAnnotations().some(annotation => {
         return annotation.type === 'error';
       });
 
-      // if (isErrorFound) {
-      //   if (!hasSyntaxError) {
-      //     hasSyntaxError = true;
-      //     renderer = null;
-      //     renderError('Syntax errors found');
-      //   }
-      // } else {
-      //   if (hasSyntaxError) {
-      //     hasSyntaxError = false;
-      //     compileRenderer();
-      //   }
-      // }
+      if (isErrorFound) {
+        if (!hasSyntaxError) {
+          hasSyntaxError = true;
+          emitSyntaxError();
+        }
+      } else {
+        if (hasSyntaxError) {
+          hasSyntaxError = false;
+          emitSourceUpdate(editor.getValue());
+        }
+      }
     });
+
+    function handleChange(event) {
+      if (!hasSyntaxError) {
+        emitSourceUpdate(editor.getValue());
+      }
+    }
+
+    function handleBlur() {
+      emitSourceUpdate(editor.getValue());
+    }
+
+    editor.on('change', _.debounce(handleChange, 1000));
+    editor.on('blur', handleBlur);
   }
 }
 </script>

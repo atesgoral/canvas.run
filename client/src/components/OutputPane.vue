@@ -3,19 +3,54 @@
     <div class="_canvas-wrapper">
       <canvas></canvas>
     </div>
-    <div class="_error"></div>
+    <div class="_error" v-bind:class="{ '-visible': error }">{{ error }}</div>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      msg: 'Hello Vue!'
-    }
+  props: {
+    layoutChangeCnt: Number,
+    renderer: Function,
+    rendererState: Object,
+    error: String
   },
   mounted() {
     const canvasEl = this.$el.querySelector('canvas');
+
+    let layoutChangeCnt = null;
+    let rendererState = null;
+    let epoch = null;
+    let erroringRenderer = null;
+
+    const render = (t) => {
+      requestAnimationFrame(render);
+
+      if (this.renderer && this.renderer !== erroringRenderer) {
+        if (this.layoutChangeCnt !== layoutChangeCnt) {
+          const bounds = canvasEl.parentNode.getBoundingClientRect();
+
+          canvasEl.width = bounds.width;
+          canvasEl.height = bounds.height;
+
+          layoutChangeCnt = this.layoutChangeCnt;
+        }
+
+        if (this.rendererState !== rendererState) {
+          rendererState = this.rendererState;
+          epoch = t;
+        }
+
+        try {
+          this.renderer.call(null, canvasEl, rendererState, t - epoch);
+        } catch (err) {
+          erroringRenderer = this.renderer;
+          this.$emit('runtimeError');
+        }
+      }
+    };
+
+    requestAnimationFrame(render);
   }
 }
 </script>
