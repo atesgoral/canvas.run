@@ -7,7 +7,8 @@
     "node": "6.7.0"
   },
   "scripts": {
-    "start": "node src/server"
+    "start": "node index",
+    "postinstall": "cd client && npm run build"
   },
   "dependencies": {
     "basek": "1.0.5",
@@ -15,6 +16,5 @@
     "mongoose": "4.6.2",
     "mongoose-shortid-nodeps": "0.6.5",
     "multer": "1.2.0"
-  },
-  "devDependencies": {}
+  }
 }
