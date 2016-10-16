@@ -26,7 +26,7 @@ export default {
     session.setMode('ace/mode/javascript')
     session.setUseSoftTabs(true)
     session.setTabSize(2)
-    session.setOption('useWorker', false)
+    session.setUseWorker(false)
 
     this.$watch('run', (run) => {
       editor.setValue(run.source, -1);
