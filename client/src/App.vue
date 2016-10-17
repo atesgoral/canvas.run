@@ -2,9 +2,11 @@
   <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1><!--
-      --><button id="save" class="-accent-1" v-on:click="save">Save</button><!--
-      --><button id="reset-state" class="-accent-2" v-on:click="resetState">Reset State</button><!--
-      --><button id="toggle-layout" class="-accent-3" v-on:click="toggleLayout">Toggle Layout</button>
+    --><button id="save" class="-accent-1" v-on:click="save">Save</button><!--
+    --><button id="reset-state" class="-accent-2" v-on:click="resetState">Reset State</button><!--
+    --><button id="toggle-layout" class="-accent-3" v-on:click="toggleLayout">Toggle Layout</button><!--
+    --><button id="sign-in" class="-accent-1" v-on:click="signIn" v-if="!isSignedIn">Sign in</button><!--
+    --><button id="sign-out" class="-accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button>
     </header>
     <main id="main" v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
       <editor-pane
@@ -106,7 +108,8 @@ export default {
       run: null,
       renderer: null,
       rendererState: {},
-      error: null
+      error: null,
+      isSignedIn: false
     }
   },
   mounted() {
@@ -118,6 +121,17 @@ export default {
     window.addEventListener('popstate', (event) => {
       if (event.state) {
         this.run = event.state;
+      }
+    });
+
+    window.addEventListener('message', (event) => {
+      switch (event.data) {
+      case 'SIGNED_IN':
+        this.isSignedIn = true;
+        break;
+      case 'SIGNED_OUT':
+        this.isSignedIn = false;
+        break;
       }
     });
 
@@ -198,6 +212,12 @@ export default {
       this.isLayoutHorizontal = !this.isLayoutHorizontal
       this.resetState();
       this.notifyLayoutChange();
+    },
+    signIn() {
+      window.open('/auth/facebook', 'auth', 'width=500,height=600,menubar=no,toolbar=no,location=no,personalbar=no');
+    },
+    signOut() {
+      window.open('/auth/signOut', 'signOut', 'width=500,height=600,menubar=no,toolbar=no,location=no,personalbar=no');
     },
     handleSplitterDrag(offset) {
       const mainEl = this.$el.querySelector('main');

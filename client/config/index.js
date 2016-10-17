@@ -25,6 +25,9 @@ module.exports = {
     proxyTable: {
       '/api': {
         target: 'http://localhost:6543'
+      },
+      '/auth': {
+        target: 'http://localhost:6543'
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
