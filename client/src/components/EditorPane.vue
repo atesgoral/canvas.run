@@ -5,7 +5,6 @@
 <script>
 import 'ace-builds/src-min-noconflict/ace'
 import 'ace-builds/src-min-noconflict/mode-javascript'
-//import 'ace-builds/src-min-noconflict/worker-javascript'
 import 'ace-builds/src-min-noconflict/theme-monokai'
 import * as _ from 'lodash/lodash.min'
 
