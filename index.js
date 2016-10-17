@@ -22,9 +22,9 @@ app.use('/', express.static(__dirname + '/client/dist'));
 
 const apiRoutes = express.Router();
 
-apiRoutes.get('/runs/:shortId/:revision', (req, res) => {
+apiRoutes.get('/runs/:shortId/:revision?', (req, res) => {
   const shortId = req.params.shortId;
-  const revision = parseInt(req.params.revision, 10);
+  const revision = parseInt(req.params.revision || '0', 10);
 
   Run.whenFound(shortId, revision)
     .then(run => {

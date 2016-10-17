@@ -89,7 +89,7 @@ function pathToRunId(path) {
 
   return {
     shortId: tokens[0],
-    revision: tokens[1]
+    revision: tokens[1] || 0
   };
 }
 
