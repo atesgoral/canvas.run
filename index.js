@@ -77,7 +77,7 @@ apiRoutes.post('/runs', upload, (req, res) => {
 
 app.use('/api', apiRoutes);
 
-app.get(/^\/([A-Z\d]+)(?:-(\d+))?$/i, (request, response) => {
+app.get(/^\/([A-Z\d]+)(?:\/(\d+))?$/i, (request, response) => {
   response.sendFile('index.html', {
     root: __dirname + '/client/dist'
   });
