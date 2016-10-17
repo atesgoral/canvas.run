@@ -9,11 +9,16 @@ const runSchema = mongoose.Schema({
     type: ShortId,
     len: 5,
     alphabet: basek.alpha(),
-    index: { unique: true }
+    index: true
+  },
+  revision: {
+    type: Number,
+    required: true,
+    index: true
   },
   source: {
     type: String,
-    required: true,
+    required: true
   },
   // owner: {
   //   type: mongoose.Schema.Types.ObjectId,
@@ -27,9 +32,9 @@ const runSchema = mongoose.Schema({
   }
 });
 
-runSchema.statics.whenShortIdFound = function (shortId) {
+runSchema.statics.whenFound = function (shortId, revision) {
   return this
-    .findOne({ shortId })
+    .findOne({ shortId, revision })
     .exec()
     .then((run) => {
       if (!run) {

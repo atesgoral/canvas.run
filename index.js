@@ -22,8 +22,11 @@ app.use('/', express.static(__dirname + '/client/dist'));
 
 const apiRoutes = express.Router();
 
-apiRoutes.get('/runs/:shortId', (req, res) => {
-  Run.whenShortIdFound(req.params.shortId)
+apiRoutes.get('/runs/:shortId/:revision', (req, res) => {
+  const shortId = req.params.shortId;
+  const revision = parseInt(req.params.revision, 10);
+
+  Run.whenFound(shortId, revision)
     .then(run => {
       res.json(run.toObject());
     })
@@ -33,40 +36,41 @@ apiRoutes.get('/runs/:shortId', (req, res) => {
 });
 
 apiRoutes.post('/runs', upload, (req, res) => {
-  let shortId = req.body.shortId;
+  const shortId = req.body.shortId;
+  const source = req.body.source;
 
-  if (shortId) {
-    const tokens = /^([A-Z\d]+)(?:-(\d+))?$/i.exec(shortId);
-
-    if (!tokens) {
-      res.sendStatus(400);
-      return;
-    }
-
-    let revision = parseInt(tokens[2], 10);
-
-    if (isNaN(revision)) {
-      revision = 1;
-    } else {
-      revision++;
-    }
-
-    tokens[2] = revision;
-
-    shortId = tokens.slice(1).join('-');
-  }
-
-  const run = new Run({
-    shortId,
-    source: req.body.source
-  });
-
-  run.save()
+  Promise.resolve()
     .then(() => {
-      res.json(run.toObject());
+      if (shortId) {
+        return Run
+          .findOne({ shortId })
+          .sort({ revision: -1 })
+          .then((run) => {
+            return run.revision + 1;
+          });
+      } else {
+        return 0;
+      }
     })
-    .catch(err => {
-      console.error(err);
+    .then((revision) => {
+      const run = new Run({
+        shortId,
+        revision,
+        source
+      });
+
+      return run
+        .save()
+        .then(() => {
+          res.json({
+            shortId: run.shortId,
+            revision: run.revision,
+            source: run.source
+          });
+        });
+    })
+    .catch((error) => {
+      console.error(error);
       res.sendStatus(500);
     });
 });

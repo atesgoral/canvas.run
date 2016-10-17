@@ -78,6 +78,21 @@ import EditorPane from './components/EditorPane'
 import Splitter from './components/Splitter'
 import OutputPane from './components/OutputPane'
 
+function runIdToPath({ shortId, revision }) {
+  return revision
+    ? shortId + '/' + revision
+    : shortId;
+}
+
+function pathToRunId(path) {
+  const tokens = path.split('/');
+
+  return {
+    shortId: tokens[0],
+    revision: tokens[1]
+  };
+}
+
 export default {
   components: {
     EditorPane,
@@ -108,10 +123,10 @@ export default {
 
     Promise.resolve()
       .then(() => {
-        const shortId = window.location.pathname.slice(1);
+        const runId = pathToRunId(window.location.pathname.slice(1));
 
-        if (shortId) {
-          return fetch('/api/runs/' + encodeURIComponent(shortId))
+        if (runId.shortId) {
+          return fetch('/api/runs/' + runIdToPath(runId))
             .then((response) => {
               if (response.ok) {
                 return response.json();
@@ -134,7 +149,7 @@ export default {
         this.run = run;
 
         if (run.shortId) {
-          history.replaceState(run, 'Run ' + run.shortId, '/' + run.shortId);
+          history.replaceState(run, 'Run ' + runIdToPath(run), '/' + runIdToPath(run));
         } else {
           history.replaceState(run, 'Default run');
         }
@@ -168,7 +183,7 @@ export default {
         })
         .then((run) => {
           this.run = run;
-          history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
+          history.pushState(run, 'Run ' + runIdToPath(run), '/' + runIdToPath(run));
         });
     },
     resetState() {
