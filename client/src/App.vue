@@ -236,10 +236,10 @@ export default {
       this.notifyLayoutChange();
     },
     signIn() {
-      window.open('/auth/facebook', 'auth', 'width=500,height=600,menubar=no,toolbar=no,location=no,personalbar=no');
+      window.open('/auth/facebook', 'auth', 'width=580,height=400,menubar=no,toolbar=no,location=no,personalbar=no');
     },
     signOut() {
-      window.open('/auth/signOut', 'signOut', 'width=500,height=600,menubar=no,toolbar=no,location=no,personalbar=no');
+      window.open('/auth/signOut', 'signOut', 'width=580,height=400,menubar=no,toolbar=no,location=no,personalbar=no');
     },
     handleSplitterDrag(offset) {
       const mainEl = this.$el.querySelector('main');
