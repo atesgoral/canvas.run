@@ -2,9 +2,15 @@
   <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1><!--
-      --><button id="save" class="-accent-1" v-on:click="save">Save</button><!--
-      --><button id="reset-state" class="-accent-2" v-on:click="resetState">Reset State</button><!--
-      --><button id="toggle-layout" class="-accent-3" v-on:click="toggleLayout">Toggle Layout</button>
+     --><button id="save" class="-accent-1" v-on:click="save">Save</button><!--
+     --><button id="reset-state" class="-accent-2" v-on:click="resetState">Reset State</button><!--
+     --><button id="toggle-layout" class="-accent-3" v-on:click="toggleLayout">Toggle Layout</button><!--
+     --><button id="sign-in" class="-accent-1" v-on:click="signIn" v-if="!isSignedIn">Sign in</button><!--
+     --><button id="sign-out" class="-accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button><!--
+     --><span v-if="profile" class="_profile">
+        <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span><!--
+     --><span class="_display-name">{{ profile.displayName }}</span>
+      </span>
     </header>
     <main id="main" v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
       <editor-pane
@@ -106,7 +112,9 @@ export default {
       run: null,
       renderer: null,
       rendererState: {},
-      error: null
+      error: null,
+      isSignedIn: false,
+      profile: null
     }
   },
   mounted() {
@@ -118,6 +126,19 @@ export default {
     window.addEventListener('popstate', (event) => {
       if (event.state) {
         this.run = event.state;
+      }
+    });
+
+    window.addEventListener('message', (event) => {
+      switch (event.data.type) {
+      case 'SIGNED_IN':
+        this.isSignedIn = true;
+        this.profile = event.data.profile;
+        break;
+      case 'SIGNED_OUT':
+        this.isSignedIn = false;
+        this.profile = null;
+        break;
       }
     });
 
@@ -157,6 +178,21 @@ export default {
       .catch((error) => {
         this.error = error.message;
       });
+
+      fetch('/api/profile', { credentials: 'same-origin' })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Not signed in');
+          }
+        })
+        .then((profile) => {
+          if (profile) {
+            this.isSignedIn = true;
+            this.profile = profile;
+          }
+        });
   },
   methods: {
     save() {
@@ -198,6 +234,12 @@ export default {
       this.isLayoutHorizontal = !this.isLayoutHorizontal
       this.resetState();
       this.notifyLayoutChange();
+    },
+    signIn() {
+      window.open('/auth/facebook', 'auth', 'width=500,height=600,menubar=no,toolbar=no,location=no,personalbar=no');
+    },
+    signOut() {
+      window.open('/auth/signOut', 'signOut', 'width=500,height=600,menubar=no,toolbar=no,location=no,personalbar=no');
     },
     handleSplitterDrag(offset) {
       const mainEl = this.$el.querySelector('main');
@@ -260,6 +302,8 @@ body {
   background: #000;
 }
 header {
+  display: flex;
+  align-items: baseline;
   height: @headerHeight;
   background: @panelBg;
   color: @panelContent;
@@ -333,6 +377,28 @@ header {
     &.-accent-1:after { background: @buttonHoverAccent1; }
     &.-accent-2:after { background: @buttonHoverAccent2; }
     &.-accent-3:after { background: @buttonHoverAccent3; }
+  }
+
+  ._profile {
+    margin-left: auto;
+    margin-right: 10px;
+
+    ._picture {
+      display: inline-block;
+      vertical-align: middle;
+      width: @headerHeight - 10px;
+      height: @headerHeight - 10px;
+      border-radius: (@headerHeight - 10px) / 2;
+
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-size: cover;
+    }
+
+    ._display-name {
+      margin-left: 5px;
+      font-size: 0.75em;
+    }
   }
 }
 main {
