@@ -31,8 +31,8 @@ passport.use(
   new FacebookStrategy({
     clientID: process.env.AUTH_FACEBOOK_APP_ID,
     clientSecret: process.env.AUTH_FACEBOOK_APP_SECRET,
-    callbackURL: process.env.AUTH_FACEBOOK_CALLBACK_URL
-    //profileFields: ['id', 'name', 'first_name', 'last_name', 'locale', 'timezone', 'website', 'email']
+    callbackURL: process.env.AUTH_FACEBOOK_CALLBACK_URL,
+    profileFields: [ 'name', 'picture' ]
   },
   (accessToken, refreshToken, profile, callback) => {
     User
@@ -42,7 +42,17 @@ passport.use(
           return user;
         }
 
+        const displayNameParts = [];
+
+        profile.name.givenName && displayNameParts.push(profile.name.givenName);
+        profile.name.middleName && displayNameParts.push(profile.name.middleName);
+        profile.name.familyName && displayNameParts.push(profile.name.familyName);
+
         const newUser = new User({
+          profile: {
+            displayName: displayNameParts.join(' '),
+            pictureUrl: profile.photos && profile.photos[0].value
+          },
           facebookId: profile.id
         });
 
@@ -75,10 +85,22 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// function requireSignIn(req, res, next) {
+//   if (req.user) {
+//     next();
+//   } else {
+//     res.sendStatus(401);
+//   }
+// }
+
 const apiRoutes = express.Router();
 
-apiRoutes.get('/user', (req, res) => {
-  res.send(req.user);
+apiRoutes.get('/profile', (req, res) => {
+  if (req.user) {
+    res.json(req.user.profile);
+  } else {
+    res.json(null);
+  }
 });
 
 apiRoutes.get('/runs/:shortId/:revision?', (req, res) => {
@@ -140,22 +162,27 @@ const authRoutes = express.Router();
 
 authRoutes.get('/facebook', passport.authenticate('facebook'));
 
-function sendFunction(res, fn) {
-  res.end(`<script>(${fn})();</script>`);
+function sendFunction(res, fn, data) {
+  res.end(`<script>(${fn})(${JSON.stringify(data)});</script>`);
 }
 
 authRoutes.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
-  sendFunction(res, function () {
-    window.opener.postMessage('SIGNED_IN', '*');
+  sendFunction(res, function (profile) {
+    window.opener.postMessage({
+      type: 'SIGNED_IN',
+      profile: profile
+    }, '*');
     window.close();
-  });
+  }, req.user.profile);
 });
 
 authRoutes.get('/signOut', (req, res) => {
   req.logout();
 
   sendFunction(res, function () {
-    window.opener.postMessage('SIGNED_OUT', '*');
+    window.opener.postMessage({
+      type: 'SIGNED_OUT'
+    }, '*');
     window.close();
   });
 });
