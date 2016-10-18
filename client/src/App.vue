@@ -147,7 +147,7 @@ export default {
         const runId = pathToRunId(window.location.pathname.slice(1));
 
         if (runId.shortId) {
-          return fetch('/api/runs/' + runIdToPath(runId))
+          return fetch('/api/runs/' + runIdToPath(runId), { credentials: 'same-origin' })
             .then((response) => {
               if (response.ok) {
                 return response.json();
@@ -208,7 +208,7 @@ export default {
 
       formData.append('source', this.run.source);
 
-      fetch('/api/runs', { method: 'POST', body: formData })
+      fetch('/api/runs', { method: 'POST', body: formData, credentials: 'same-origin' })
         .then((response) => {
           if (response.ok) {
             return response.json();
