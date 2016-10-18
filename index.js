@@ -114,6 +114,10 @@ apiRoutes.get('/runs/:shortId/:revision?', (req, res) => {
           id: run._ownerId.id,
           profile: run._ownerId.profile
         },
+        parent: run._parentId && {
+          shortId: run._parentId.shortId,
+          revision: run._parentId.revision
+        },
         shortId: run.shortId,
         revision: run.revision,
         source: run.source,
@@ -129,6 +133,8 @@ apiRoutes.post('/runs', upload, (req, res) => {
   const shortId = req.body.shortId;
   const source = req.body.source;
 
+  let parentRun = undefined;
+
   Promise.resolve()
     .then(() => {
       if (shortId) {
@@ -136,6 +142,7 @@ apiRoutes.post('/runs', upload, (req, res) => {
           .findOne({ shortId })
           .sort({ revision: -1 })
           .then((run) => {
+            parentRun = run;
             return run.revision + 1;
           });
       } else {
@@ -144,20 +151,31 @@ apiRoutes.post('/runs', upload, (req, res) => {
     })
     .then((revision) => {
       const run = new Run({
+        _ownerId: req.user && req.user._id,
+        _parentId: parentRun && parentRun.id,
         shortId,
         revision,
-        source,
-        _ownerId: req.user && req.user._id
+        source
       });
 
       return run
         .save()
-        .then(() => Run.populate(run, { path: '_ownerId', select: 'profile.displayName' }))
+        .then(() => Run.populate(run, [{
+          path: '_ownerId',
+          select: 'profile.displayName'
+        }, {
+          path: '_parentId',
+          select: 'shortId revision'
+        }]))
         .then(() => {
           res.json({
             owner: run._ownerId && {
               id: run._ownerId.id,
               profile: run._ownerId.profile
+            },
+            parent: run._parentId && {
+              shortId: run._parentId.shortId,
+              revision: run._parentId.revision
             },
             shortId: run.shortId,
             revision: run.revision,

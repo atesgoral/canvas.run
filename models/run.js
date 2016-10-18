@@ -10,6 +10,11 @@ const runSchema = mongoose.Schema({
     ref: 'User',
     index: true
   },
+  _parentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Run',
+    index: true
+  },
   shortId: {
     type: ShortId,
     len: 5,
@@ -34,7 +39,13 @@ const runSchema = mongoose.Schema({
 runSchema.statics.whenFound = function (shortId, revision) {
   return this
     .findOne({ shortId, revision })
-    .populate({ path: '_ownerId', select: 'profile.displayName' })
+    .populate([{
+      path: '_ownerId',
+      select: 'profile.displayName'
+    }, {
+      path: '_parentId',
+      select: 'shortId revision'
+    }])
     .exec()
     .then((run) => {
       if (!run) {
