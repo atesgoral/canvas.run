@@ -5,6 +5,11 @@ const basek = require('basek');
 const ShortId = require('mongoose-shortid-nodeps');
 
 const runSchema = mongoose.Schema({
+  _ownerId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    index: true
+  },
   shortId: {
     type: ShortId,
     len: 5,
@@ -20,12 +25,6 @@ const runSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  // owner: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: 'User',
-  //   required: true,
-  //   index: true
-  // },
   createdAt: {
     type: Date,
     default: Date.now
@@ -35,6 +34,7 @@ const runSchema = mongoose.Schema({
 runSchema.statics.whenFound = function (shortId, revision) {
   return this
     .findOne({ shortId, revision })
+    .populate({ path: '_ownerId', select: 'profile.displayName' })
     .exec()
     .then((run) => {
       if (!run) {

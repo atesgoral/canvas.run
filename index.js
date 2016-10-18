@@ -109,7 +109,16 @@ apiRoutes.get('/runs/:shortId/:revision?', (req, res) => {
 
   Run.whenFound(shortId, revision)
     .then(run => {
-      res.json(run.toObject());
+      res.json({
+        owner: run._ownerId && {
+          id: run._ownerId.id,
+          profile: run._ownerId.profile
+        },
+        shortId: run.shortId,
+        revision: run.revision,
+        source: run.source,
+        createdAt: run.createdAt
+      });
     })
     .catch(err => {
       res.sendStatus(404);
@@ -137,16 +146,23 @@ apiRoutes.post('/runs', upload, (req, res) => {
       const run = new Run({
         shortId,
         revision,
-        source
+        source,
+        _ownerId: req.user && req.user._id
       });
 
       return run
         .save()
+        .then(() => Run.populate(run, { path: '_ownerId', select: 'profile.displayName' }))
         .then(() => {
           res.json({
+            owner: run._ownerId && {
+              id: run._ownerId.id,
+              profile: run._ownerId.profile
+            },
             shortId: run.shortId,
             revision: run.revision,
-            source: run.source
+            source: run.source,
+            createdAt: run.createdAt
           });
         });
     })
