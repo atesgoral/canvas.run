@@ -321,9 +321,26 @@ header {
     a {
       color: inherit;
       text-decoration: none;
+      cursor: pointer;
+      font-weight: normal;
+
+      &:before {
+        content: '';
+        display: inline-block;
+        height: 0.9em;
+        width: 1.8em;
+        vertical-align: middle;
+        margin-top: -3px;
+        background: @panelContent;
+        mask: url(/static/logo.svg) no-repeat;
+      }
 
       &:hover {
         color: hsl(0, 0%, 100%);
+
+        &:before {
+          background: hsl(0, 0%, 100%);
+        }
       }
     }
   }
