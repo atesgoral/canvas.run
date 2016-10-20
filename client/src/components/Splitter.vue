@@ -109,7 +109,7 @@ export default {
 @splitterHandleBg: hsla(70, 3%, 30%, 50%);
 // @todo from include
 @panelBg: hsl(70, 3%, 30%);
-@buttonHoverAccent3: hsl(70, 100%, 60%);
+@buttonHoverAccent3: #3FA9F5;
 
 .splitter {
   position: relative;

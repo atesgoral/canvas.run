@@ -290,9 +290,9 @@ export default {
 @buttonBg: transparent;
 @buttonContent: hsl(70, 3%, 75%);
 @buttonHoverContent: hsl(7, 3%, 100%);
-@buttonHoverAccent1: hsl(15, 100%, 60%);
-@buttonHoverAccent2: hsl(45, 100%, 60%);
-@buttonHoverAccent3: hsl(70, 100%, 60%);
+@buttonHoverAccent1: #7AC943;
+@buttonHoverAccent2: #FF931E;
+@buttonHoverAccent3: #3FA9F5;
 
 body {
   font-family: 'Varela Round', sans-serif;
