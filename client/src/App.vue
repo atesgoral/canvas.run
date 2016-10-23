@@ -238,19 +238,36 @@ export default {
       this.notifyLayoutChange();
     },
     signIn() {
-      if (signInPopup && !signInPopup.closed) {
-        signInPopup.focus();
+      if (this.signInPopup && !this.signInPopup.closed) {
+        this.signInPopup.focus();
         // @todo reload URL
       } else {
-        signInPopup = window.open('/auth/facebook', 'signIn', 'width=600,height=500,menubar=no,toolbar=no,location=no,personalbar=no');
+        const width = 600;
+        const height = 500;
+        const left = window.screenX + Math.floor(Math.max(0, window.outerWidth - width) / 2);
+        const top = window.screenY + Math.floor(Math.max(0, window.outerHeight - height) / 2);
+        const featureMap = {
+          width,
+          height,
+          left,
+          top,
+          menubar: 0,
+          toolbar: 0,
+          location: 0,
+          personalbar: 0
+        };
+        const featureStr = Object.keys(featureMap)
+          .map(name => `${name}=${featureMap[name]}`)
+          .join();
+        this.signInPopup = window.open('/auth/facebook', 'signIn', featureStr);
       }
     },
     signOut() {
-      if (signOutPopup && !signOutPopup.closed) {
-        signOutPopup.focus();
+      if (this.signOutPopup && !this.signOutPopup.closed) {
+        this.signOutPopup.focus();
         // @todo reload URL
       } else {
-        signOutPopup = window.open('/auth/signOut', 'signOut', 'width=600,height=500,menubar=no,toolbar=no,location=no,personalbar=no');
+        this.signOutPopup = window.open('/auth/signOut', 'signOut', 'width=600,height=500,menubar=no,toolbar=no,location=no,personalbar=no');
       }
     },
     handleSplitterDrag(offset) {
