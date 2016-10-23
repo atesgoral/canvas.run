@@ -114,7 +114,9 @@ export default {
       rendererState: {},
       error: null,
       isSignedIn: false,
-      profile: null
+      profile: null,
+      signInPopup: null,
+      signOutPopup: null
     }
   },
   mounted() {
@@ -236,10 +238,20 @@ export default {
       this.notifyLayoutChange();
     },
     signIn() {
-      window.open('/auth/facebook', 'auth', 'width=600,height=500,menubar=no,toolbar=no,location=no,personalbar=no');
+      if (signInPopup && !signInPopup.closed) {
+        signInPopup.focus();
+        // @todo reload URL
+      } else {
+        signInPopup = window.open('/auth/facebook', 'signIn', 'width=600,height=500,menubar=no,toolbar=no,location=no,personalbar=no');
+      }
     },
     signOut() {
-      window.open('/auth/signOut', 'signOut', 'width=600,height=500,menubar=no,toolbar=no,location=no,personalbar=no');
+      if (signOutPopup && !signOutPopup.closed) {
+        signOutPopup.focus();
+        // @todo reload URL
+      } else {
+        signOutPopup = window.open('/auth/signOut', 'signOut', 'width=600,height=500,menubar=no,toolbar=no,location=no,personalbar=no');
+      }
     },
     handleSplitterDrag(offset) {
       const mainEl = this.$el.querySelector('main');
