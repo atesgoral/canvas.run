@@ -115,8 +115,7 @@ export default {
       error: null,
       isSignedIn: false,
       profile: null,
-      signInPopup: null,
-      signOutPopup: null
+      signInPopup: null
     }
   },
   mounted() {
@@ -136,10 +135,6 @@ export default {
       case 'SIGNED_IN':
         this.isSignedIn = true;
         this.profile = event.data.profile;
-        break;
-      case 'SIGNED_OUT':
-        this.isSignedIn = false;
-        this.profile = null;
         break;
       }
     });
@@ -263,12 +258,14 @@ export default {
       }
     },
     signOut() {
-      if (this.signOutPopup && !this.signOutPopup.closed) {
-        this.signOutPopup.focus();
-        // @todo reload URL
-      } else {
-        this.signOutPopup = window.open('/auth/signOut', 'signOut', 'width=600,height=500,menubar=no,toolbar=no,location=no,personalbar=no');
-      }
+      fetch('/auth/signOut', { method: 'POST', credentials: 'same-origin' })
+        .then((response) => {
+          if (response.ok) {
+            this.isSignedIn = false;
+            this.profile = null;
+          }
+        });
+        // @todo show error?
     },
     handleSplitterDrag(offset) {
       const mainEl = this.$el.querySelector('main');

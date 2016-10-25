@@ -210,15 +210,9 @@ authRoutes.get('/facebook/callback', passport.authenticate('facebook', { failure
   }, req.user.profile);
 });
 
-authRoutes.get('/signOut', (req, res) => {
+authRoutes.post('/signOut', (req, res) => {
   req.logout();
-
-  sendFunction(res, function () {
-    window.opener.postMessage({
-      type: 'SIGNED_OUT'
-    }, '*');
-    window.close();
-  });
+  res.end();
 });
 
 app.use('/auth', authRoutes);
