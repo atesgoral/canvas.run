@@ -14,11 +14,15 @@ const userSchema = mongoose.Schema({
   },
   facebookId: {
     type: String,
-    index: { unique: true }
+    index: { unique: true, sparse: true }
   },
   twitterId: {
     type: String,
-    index: { unique: true }
+    index: { unique: true, sparse: true }
+  },
+  gitHubId: {
+    type: String,
+    index: { unique: true, sparse: true }
   },
   createdAt: {
     type: Date,
