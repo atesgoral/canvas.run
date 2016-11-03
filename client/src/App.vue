@@ -5,7 +5,8 @@
      --><button id="save" class="-accent-1" v-on:click="save">Save</button><!--
      --><button id="reset-state" class="-accent-2" v-on:click="resetState">Reset State</button><!--
      --><button id="toggle-layout" class="-accent-3" v-on:click="toggleLayout">Toggle Layout</button><!--
-     --><button id="sign-in" class="-accent-1" v-on:click="signIn" v-if="!isSignedIn">Sign in</button><!--
+     --><button id="sign-in" class="-accent-1" v-on:click="signIn('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
+     --><button id="sign-in" class="-accent-1" v-on:click="signIn('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
      --><button id="sign-out" class="-accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button><!--
      --><span v-if="profile" class="_profile">
         <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span><!--
@@ -232,7 +233,7 @@ export default {
       this.resetState();
       this.notifyLayoutChange();
     },
-    signIn() {
+    signIn(provider) {
       if (this.signInPopup && !this.signInPopup.closed) {
         this.signInPopup.focus();
         // @todo reload URL
@@ -254,7 +255,7 @@ export default {
         const featureStr = Object.keys(featureMap)
           .map(name => `${name}=${featureMap[name]}`)
           .join();
-        this.signInPopup = window.open('/auth/facebook', 'signIn', featureStr);
+        this.signInPopup = window.open('/auth/' + provider, 'signIn', featureStr);
       }
     },
     signOut() {
