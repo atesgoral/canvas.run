@@ -7,6 +7,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook');
+const TwitterStrategy = require('passport-twitter');
 
 const Run = require('./models/run');
 const User = require('./models/user');
@@ -32,7 +33,7 @@ passport.use(
     clientID: process.env.AUTH_FACEBOOK_APP_ID,
     clientSecret: process.env.AUTH_FACEBOOK_APP_SECRET,
     callbackURL: process.env.AUTH_FACEBOOK_CALLBACK_URL,
-    profileFields: [ 'name', 'picture' ]
+    profileFields: [ 'displayName', 'picture' ]
   },
   (accessToken, refreshToken, profile, callback) => {
     User
@@ -42,18 +43,43 @@ passport.use(
           return user;
         }
 
-        const displayNameParts = [];
-
-        profile.name.givenName && displayNameParts.push(profile.name.givenName);
-        profile.name.middleName && displayNameParts.push(profile.name.middleName);
-        profile.name.familyName && displayNameParts.push(profile.name.familyName);
-
         const newUser = new User({
           profile: {
-            displayName: displayNameParts.join(' '),
+            displayName: profile.displayName,
             pictureUrl: profile.photos && profile.photos[0].value
           },
           facebookId: profile.id
+        });
+
+        return newUser.save();
+      })
+      .then((user) => {
+        callback(null, user);
+      })
+      .catch(callback);
+  }
+));
+
+passport.use(
+  new TwitterStrategy({
+    consumerKey: process.env.AUTH_TWITTER_CONSUMER_KEY,
+    consumerSecret: process.env.AUTH_TWITTER_CONSUMER_SECRET,
+    callbackURL: process.env.AUTH_TWITTER_CALLBACK_URL
+  },
+  (accessToken, refreshToken, profile, callback) => {
+    User
+      .findOne({ twitterId: profile.id })
+      .then((user) => {
+        if (user) {
+          return user;
+        }
+
+        const newUser = new User({
+          profile: {
+            displayName: profile.displayName,
+            pictureUrl: profile.photos && profile.photos[0].value
+          },
+          twitterId: profile.id
         });
 
         return newUser.save();
@@ -195,12 +221,23 @@ app.use('/api', apiRoutes);
 const authRoutes = express.Router();
 
 authRoutes.get('/facebook', passport.authenticate('facebook'));
+authRoutes.get('/twitter', passport.authenticate('twitter'));
 
 function sendFunction(res, fn, data) {
   res.end(`<script>(${fn})(${JSON.stringify(data)});</script>`);
 }
 
 authRoutes.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
+  sendFunction(res, function (profile) {
+    window.opener.postMessage({
+      type: 'SIGNED_IN',
+      profile: profile
+    }, '*');
+    window.close();
+  }, req.user.profile);
+});
+
+authRoutes.get('/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), (req, res) => {
   sendFunction(res, function (profile) {
     window.opener.postMessage({
       type: 'SIGNED_IN',

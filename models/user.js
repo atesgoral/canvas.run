@@ -16,6 +16,10 @@ const userSchema = mongoose.Schema({
     type: String,
     index: { unique: true }
   },
+  twitterId: {
+    type: String,
+    index: { unique: true }
+  },
   createdAt: {
     type: Date,
     default: Date.now
