@@ -1,0 +1,20 @@
+version: '2'
+
+services:
+  mongodb:
+    image: mongo
+
+  web:
+    build: .
+    environment:
+      NODE_ENV: development
+      MONGODB_URI: mongodb://mongodb/canvasrun
+    ports:
+      - "6543:6543"
+    volumes:
+      - .:/canvas.run
+      - /canvas.run/node_modules
+    depends_on:
+      - mongodb
+    links:
+      - mongodb
