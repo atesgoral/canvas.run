@@ -8,6 +8,7 @@ const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook');
 const TwitterStrategy = require('passport-twitter');
+const GitHubStrategy = require('passport-github');
 
 const Run = require('./models/run');
 const User = require('./models/user');
@@ -80,6 +81,38 @@ passport.use(
             pictureUrl: profile.photos && profile.photos[0].value
           },
           twitterId: profile.id
+        });
+
+        return newUser.save();
+      })
+      .then((user) => {
+        callback(null, user);
+      })
+      .catch(callback);
+  }
+));
+
+passport.use(
+  new GitHubStrategy({
+    clientID: process.env.AUTH_GITHUB_CLIENT_ID,
+    clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET,
+    callbackURL: process.env.AUTH_GITHUB_CALLBACK_URL
+  },
+  (accessToken, refreshToken, profile, callback) => {
+    console.log(profile);
+    User
+      .findOne({ gitHubId: profile.id })
+      .then((user) => {
+        if (user) {
+          return user;
+        }
+
+        const newUser = new User({
+          profile: {
+            displayName: profile.displayName,
+            pictureUrl: profile.photos && profile.photos[0].value
+          },
+          gitHubId: profile.id
         });
 
         return newUser.save();
@@ -222,6 +255,7 @@ const authRoutes = express.Router();
 
 authRoutes.get('/facebook', passport.authenticate('facebook'));
 authRoutes.get('/twitter', passport.authenticate('twitter'));
+authRoutes.get('/github', passport.authenticate('github'));
 
 function sendFunction(res, fn, data) {
   res.end(`<script>(${fn})(${JSON.stringify(data)});</script>`);
@@ -238,6 +272,16 @@ authRoutes.get('/facebook/callback', passport.authenticate('facebook', { failure
 });
 
 authRoutes.get('/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), (req, res) => {
+  sendFunction(res, function (profile) {
+    window.opener.postMessage({
+      type: 'SIGNED_IN',
+      profile: profile
+    }, '*');
+    window.close();
+  }, req.user.profile);
+});
+
+authRoutes.get('/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
   sendFunction(res, function (profile) {
     window.opener.postMessage({
       type: 'SIGNED_IN',

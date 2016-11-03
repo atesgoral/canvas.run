@@ -7,6 +7,7 @@
      --><button id="toggle-layout" class="-accent-3" v-on:click="toggleLayout">Toggle Layout</button><!--
      --><button id="sign-in" class="-accent-1" v-on:click="signIn('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
      --><button id="sign-in" class="-accent-1" v-on:click="signIn('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
+     --><button id="sign-in" class="-accent-1" v-on:click="signIn('github')" v-if="!isSignedIn">Sign in with GitHub</button><!--
      --><button id="sign-out" class="-accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button><!--
      --><span v-if="profile" class="_profile">
         <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span><!--
