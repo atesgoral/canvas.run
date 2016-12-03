@@ -1,11 +1,17 @@
 FROM node
 
-RUN npm install -g yarn
-RUN yarn global add wait-for-port nodemon
+RUN npm install -g wait-for-port nodemon
 
-COPY . /canvas.run/
+COPY . /app/
 
-WORKDIR /canvas.run
-RUN yarn
+WORKDIR /app
 
-CMD [ 'bin/start.sh' ]
+RUN npm install
+
+WORKDIR /app/client
+
+RUN npm install
+
+WORKDIR /app
+
+CMD [ "bin/start.sh" ]

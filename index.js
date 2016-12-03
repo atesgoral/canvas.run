@@ -24,6 +24,8 @@ const authRouter = require('./routers/auth');
 const User = require('./models/user');
 
 mongoose.Promise = Promise;
+
+console.log('Using MongoDB URI', process.env.MONGODB_URI);
 mongoose.connect(process.env.MONGODB_URI);
 
 mongoose.connection.on('open', () => {

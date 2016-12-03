@@ -12,8 +12,9 @@ services:
     ports:
       - "6543:6543"
     volumes:
-      - .:/canvas.run
-      - /canvas.run/node_modules
+      - .:/app
+      - /app/node_modules
+      - /app/client/node_modules
     depends_on:
       - mongodb
     links:
