@@ -1,5 +1,6 @@
 require('env-deploy')();
 
+const crypto = require('crypto');
 const express = require('express');
 const multer = require('multer');
 const mongoose = require('mongoose');
@@ -209,12 +210,19 @@ apiRoutes.post('/runs', upload, (req, res) => {
       }
     })
     .then((revision) => {
+      const shasum = crypto.createHash('sha1');
+
+      shasum.update(source);
+
+      const hash = shasum.digest('hex');
+
       const run = new Run({
         _ownerId: req.user && req.user._id,
         _parentId: parentRun && parentRun.id,
         shortId,
         revision,
-        source
+        source,
+        hash
       });
 
       return run
