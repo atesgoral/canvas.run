@@ -1,56 +1,122 @@
 <template>
   <div class="output-pane">
-    <div class="_canvas-wrapper">
-      <canvas></canvas>
-    </div>
+    <iframe></iframe>
     <div class="_error" v-bind:class="{ '-visible': error }">{{ error }}</div>
   </div>
 </template>
 
 <script>
+function iframeBootstrap() {
+  var bodyEl = document.body;
+  var canvasEl = document.getElementsByTagName('canvas')[0];
+
+  bodyEl.style.margin = 0;
+  bodyEl.style.padding = 0;
+  canvasEl.style.position = 'absolute';
+  canvasEl.style.background = '#000';
+
+  var renderer = null;
+  var rendererState = {};
+  var epoch = null;
+
+  function notifyParent(type, data) {
+    window.parent.postMessage({
+      type: type,
+      data: data
+    }, '*');
+  }
+
+  function resizeCanvas() {
+    var bounds = canvasEl.parentNode.getBoundingClientRect();
+
+    canvasEl.width = bounds.width;
+    canvasEl.height = bounds.height;
+  }
+
+  window.addEventListener('message', function (event) {
+    switch (event.data.type) {
+    case 'RESIZE':
+      resizeCanvas();
+      break;
+    case 'SOURCE':
+      try {
+        renderer = new Function('canvas', 'state', 't', event.data.data);
+      } catch (err) {
+        renderer = null;
+        notifyParent('COMPILATION_ERROR');
+      }
+      break;
+    case 'STATE':
+      rendererState = event.data.data;
+      epoch = null;
+      break;
+    }
+  });
+
+  var render = function (t) {
+    window.requestAnimationFrame(render);
+
+    if (!renderer || !rendererState) {
+      return;
+    }
+
+    if (epoch === null) {
+      epoch = t;
+    }
+
+    try {
+      renderer.call(null, canvasEl, rendererState, t - epoch);
+    } catch (err) {
+      renderer = null;
+      notifyParent('RUNTIME_ERROR');
+    }
+  };
+
+  function run() {
+    window.requestAnimationFrame(render);
+  }
+
+  resizeCanvas();
+  run();
+}
+
 export default {
   props: {
     layoutChangeCnt: Number,
-    renderer: Function,
+    rendererSource: String,
     rendererState: Object,
     error: String
   },
+  methods: {
+    notifyIframe: function (type, data) {
+      this.iframeEl.contentWindow.postMessage({
+        type: type,
+        data: data
+      }, '*');
+    }
+  },
+  watch: {
+    layoutChangeCnt: function () {
+      this.notifyIframe('RESIZE');
+    },
+    rendererSource: function (source) {
+      this.notifyIframe('SOURCE', source);
+    },
+    rendererState: function (state) {
+      this.notifyIframe('STATE', state);
+    }
+  },
   mounted() {
-    const canvasEl = this.$el.querySelector('canvas');
+    this.iframeEl = this.$el.querySelector('iframe');
 
-    let layoutChangeCnt = null;
-    let rendererState = null;
-    let epoch = null;
-    let erroringRenderer = null;
+    const iframeHtml = '<canvas></canvas>'
+      + '<' + 'script>('
+      + iframeBootstrap.toString()
+      + ')()<' + '/script>';
 
-    const render = (t) => {
-      requestAnimationFrame(render);
+    const iframeUrl = 'data:text/html;base64,' + btoa(iframeHtml);
 
-      if (this.renderer && this.renderer !== erroringRenderer) {
-        if (this.layoutChangeCnt !== layoutChangeCnt) {
-          const bounds = canvasEl.parentNode.getBoundingClientRect();
-
-          canvasEl.width = bounds.width;
-          canvasEl.height = bounds.height;
-
-          layoutChangeCnt = this.layoutChangeCnt;
-        }
-
-        if (this.rendererState !== rendererState) {
-          rendererState = this.rendererState;
-          epoch = t;
-        }
-
-        try {
-          this.renderer.call(null, canvasEl, rendererState, t - epoch);
-        } catch (err) {
-          erroringRenderer = this.renderer;
-          this.$emit('runtimeError');
-        }
-      }
-    };
-
-    requestAnimationFrame(render);
+    this.iframeEl.src = iframeUrl;
   }
 }
 </script>
@@ -69,13 +135,9 @@ export default {
   overflow: hidden;
   display: flex;
 
-  > ._canvas-wrapper {
+  > iframe {
     flex: 1;
-
-    > canvas {
-      position: absolute;
-      background: #000;
-    }
+    border: 0;
   }
   > ._error {
     position: absolute;

@@ -25,10 +25,9 @@
         v-on:drag="handleSplitterDrag"></splitter>
       <output-pane
         v-bind:layoutChangeCnt="layoutChangeCnt"
-        v-bind:renderer="renderer"
+        v-bind:rendererSource="rendererSource"
         v-bind:rendererState="rendererState"
-        v-bind:error="error"
-        v-on:runtimeError="handleRuntimeError"></output-pane>
+        v-bind:error="error"></output-pane>
       <!-- error element -->
     </main>
 <script type="text/default" id="default">// Here, you're writing the contents of a function with the following signature:
@@ -112,7 +111,7 @@ export default {
       isLayoutHorizontal: true,
       layoutChangeCnt: 0,
       run: null,
-      renderer: null,
+      rendererSource: null,
       rendererState: {},
       error: null,
       isSignedIn: false,
@@ -137,6 +136,12 @@ export default {
       case 'SIGNED_IN':
         this.isSignedIn = true;
         this.profile = event.data.profile;
+        break;
+      case 'RUNTIME_ERROR':
+        this.error = 'Runtime error';
+        break;
+      case 'COMPILATION_ERROR':
+        this.error = 'Compilation error';
         break;
       }
     });
@@ -225,7 +230,7 @@ export default {
       this.rendererState = {};
     },
     notifyLayoutChange() {
-      setTimeout(() => {
+      window.setTimeout(() => {
         this.layoutChangeCnt++;
       }, 1);
     },
@@ -285,25 +290,14 @@ export default {
       this.notifyLayoutChange();
     },
     handleEditorSourceUpdate(source) {
-      try {
-        this.run.source = source;
-        this.renderer = new Function('canvas', 'state', 't', source);
-        this.error = null;
-      } catch (err) {
-        this.renderer = null;
-
-        if (err) {
-          this.error = 'Compilation error';
-        }
-      }
+      this.run.source = source;
+      this.rendererSource = source;
+      this.error = null;
     },
     handleEditorSyntaxError() {
       console.log('syntax error');
-      this.renderer = null;
+      this.rendererSource = null;
       this.error = 'Syntax error';
-    },
-    handleRuntimeError() {
-      this.error = 'Runtime error';
     }
   }
 }

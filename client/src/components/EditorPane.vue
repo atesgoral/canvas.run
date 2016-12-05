@@ -27,6 +27,7 @@ export default {
     session.setTabSize(2)
     session.setUseWorker(false)
 
+    // @todo use watch declaration
     this.$watch('run', (run) => {
       editor.setValue(run.source, -1);
     });
