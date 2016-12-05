@@ -7,22 +7,22 @@
 
 <script>
 function iframeBootstrap() {
-  var bodyEl = document.body;
-  var canvasEl = document.getElementsByTagName('canvas')[0];
+  const bodyEl = document.body;
+  const canvasEl = document.getElementsByTagName('canvas')[0];
 
   bodyEl.style.margin = 0;
   bodyEl.style.padding = 0;
   canvasEl.style.position = 'absolute';
   canvasEl.style.background = '#000';
 
-  var renderer = null;
-  var rendererState = {};
-  var epoch = null;
+  let renderer = null;
+  let rendererState = {};
+  let epoch = null;
 
   function notifyParent(type, data) {
     window.parent.postMessage({
-      type: type,
-      data: data
+      type,
+      data
     }, '*');
   }
 
@@ -33,7 +33,7 @@ function iframeBootstrap() {
     canvasEl.height = bounds.height;
   }
 
-  window.addEventListener('message', function (event) {
+  window.addEventListener('message', (event) => {
     switch (event.data.type) {
     case 'RESIZE':
       resizeCanvas();
@@ -53,7 +53,7 @@ function iframeBootstrap() {
     }
   });
 
-  var render = function (t) {
+  var render = (t) => {
     window.requestAnimationFrame(render);
 
     if (!renderer || !rendererState) {
@@ -78,7 +78,7 @@ function iframeBootstrap() {
 
   resizeCanvas();
   run();
-}
+};
 
 export default {
   props: {
@@ -90,8 +90,8 @@ export default {
   methods: {
     notifyIframe: function (type, data) {
       this.iframeEl.contentWindow.postMessage({
-        type: type,
-        data: data
+        type,
+        data
       }, '*');
     }
   },
@@ -109,10 +109,15 @@ export default {
   mounted() {
     this.iframeEl = this.$el.querySelector('iframe');
 
+    const bootstrapSrc = iframeBootstrap.toString();
+      // .replace('iframeBootstrap', '')
+      // .replace(/\s+(?![a-z])/gi, '')
+      // .replace(/(^|[^a-z])\s+/gi, '$1');
+
     const iframeHtml = '<canvas></canvas>'
       + '<' + 'script>('
-      + iframeBootstrap.toString()
-      + ')()<' + '/script>';
+      + bootstrapSrc
+      + ')();<' + '/script>';
 
     const iframeUrl = 'data:text/html;base64,' + btoa(iframeHtml);
 
