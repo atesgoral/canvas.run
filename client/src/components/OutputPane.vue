@@ -1,6 +1,7 @@
 <template>
   <div class="output-pane">
     <iframe></iframe>
+    <div class="_iframe-overlay"></div>
     <div class="_error" v-bind:class="{ '-visible': error }">{{ error }}</div>
   </div>
 </template>
@@ -146,6 +147,13 @@ export default {
     width: 100%;
     flex: 1;
     border: 0;
+  }
+  > ._iframe-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
   }
   > ._error {
     position: absolute;
