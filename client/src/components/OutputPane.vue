@@ -140,8 +140,10 @@ export default {
   position: relative;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
 
   > iframe {
+    width: 100%;
     flex: 1;
     border: 0;
   }
