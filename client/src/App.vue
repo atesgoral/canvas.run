@@ -2,16 +2,18 @@
   <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1><!--
-     --><button id="save" class="-accent-1" v-on:click="save">Save</button><!--
-     --><button id="reset-state" class="-accent-2" v-on:click="resetState">Reset State</button><!--
-     --><button id="toggle-layout" class="-accent-3" v-on:click="toggleLayout">Toggle Layout</button><!--
-     --><button id="sign-in" class="-accent-1" v-on:click="signIn('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
-     --><button id="sign-in" class="-accent-1" v-on:click="signIn('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
-     --><button id="sign-in" class="-accent-1" v-on:click="signIn('github')" v-if="!isSignedIn">Sign in with GitHub</button><!--
-     --><button id="sign-out" class="-accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button><!--
-     --><span v-if="profile" class="_profile">
-        <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span><!--
-     --><span class="_display-name">{{ profile.displayName }}</span>
+   --><button id="save" class="_tool -accent-1" v-on:click="save">Save</button><!--
+   --><button id="reset-state" class="_tool -accent-2" v-on:click="resetState">Reset State</button><!--
+   --><button id="toggle-layout" class="_tool -accent-3" v-on:click="toggleLayout">Toggle Layout</button><!--
+   --><button id="sign-in" class="_tool -accent-1" v-on:click="signIn('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
+   --><button id="sign-in" class="_tool -accent-1" v-on:click="signIn('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
+   --><button id="sign-in" class="_tool -accent-1" v-on:click="signIn('github')" v-if="!isSignedIn">Sign in with GitHub</button><!--
+   --><span class="_right-aligned">
+        <button class="_profile" v-if="profile">
+          <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span><!--
+       --><span class="_display-name">{{ profile.displayName }}</span>
+        </button><!--
+     --><button id="sign-out" class="_tool -accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button>
       </span>
     </header>
     <main id="main" v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
@@ -363,19 +365,30 @@ header {
 
   button {
     margin: 0;
-    padding: 0 5px;
     border: none;
-    height: @headerHeight;
-    line-height: @headerHeight;
-    font-size: 0.75em;
-    cursor: pointer;
-    margin-right: 4px;
-    transition: background 100ms;
     background: @buttonBg;
     color: @buttonContent;
+    cursor: pointer;
+    font-family: 'Varela Round', sans-serif;
+    height: @headerHeight;
+    line-height: @headerHeight;
+    padding: 0 5px;
+
+    &:hover {
+      color: @buttonHoverContent;
+    }
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  ._tool {
+    font-size: 0.75em;
+    margin-right: 4px;
+    transition: background 100ms;
     position: relative;
     overflow: hidden;
-    font-family: 'Varela Round', sans-serif;
     text-transform: uppercase;
 
     &:after {
@@ -390,8 +403,6 @@ header {
     }
 
     &:hover {
-      color: @buttonHoverContent;
-
       &:after {
         bottom: 6px;
       }
@@ -403,34 +414,41 @@ header {
       }
     }
 
-    &:focus {
-      outline: none;
-    }
-
     &.-accent-1:after { background: @buttonHoverAccent1; }
     &.-accent-2:after { background: @buttonHoverAccent2; }
     &.-accent-3:after { background: @buttonHoverAccent3; }
   }
 
-  ._profile {
-    margin-left: auto;
-    margin-right: 10px;
+  ._right-aligned {
+    flex-grow: 1;
+    text-align: right;
+    margin-right: 50px;
 
-    ._picture {
-      display: inline-block;
-      vertical-align: middle;
-      width: @headerHeight - 10px;
-      height: @headerHeight - 10px;
-      border-radius: (@headerHeight - 10px) / 2;
+    > ._profile {
+      font-size: 1em;
 
-      background-repeat: no-repeat;
-      background-position: 50% 50%;
-      background-size: cover;
+      ._picture {
+        display: inline-block;
+        vertical-align: middle;
+        width: @headerHeight - 10px;
+        height: @headerHeight - 10px;
+        border-radius: (@headerHeight - 10px) / 2;
+
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        background-size: cover;
+      }
+
+      ._display-name {
+        display: inline-block;
+        margin-left: 5px;
+        font-size: 0.75em;
+      }
     }
 
-    ._display-name {
-      margin-left: 5px;
-      font-size: 0.75em;
+    > ._tool {
+      margin-left: 4px;
+      margin-right: 0;
     }
   }
 }
