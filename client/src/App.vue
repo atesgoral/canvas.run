@@ -316,8 +316,9 @@ export default {
 @buttonHoverAccent2: hsl(45, 100%, 60%);
 @buttonHoverAccent3: hsl(70, 100%, 60%);
 
-@logoPadding: 10px;
-@logoHeight: @headerHeight - @logoPadding * 2;
+@logoVPadding: 10px;
+@logoHPadding: 50px;
+@logoHeight: @headerHeight - @logoVPadding * 2;
 @logoAspectRatio: 2036 / 280;
 
 body {
@@ -337,7 +338,7 @@ header {
   h1 {
     display: inline;
     margin: 0;
-    padding-left: @logoPadding;
+    padding-left: @logoHPadding;
     padding-right: @headerHeight;
     height: @headerHeight;
     line-height: @headerHeight;
