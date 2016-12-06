@@ -316,6 +316,10 @@ export default {
 @buttonHoverAccent2: hsl(45, 100%, 60%);
 @buttonHoverAccent3: hsl(70, 100%, 60%);
 
+@logoPadding: 10px;
+@logoHeight: @headerHeight - @logoPadding * 2;
+@logoAspectRatio: 2036 / 280;
+
 body {
   font-family: 'Varela Round', sans-serif;
   font-size: 100%;
@@ -333,36 +337,25 @@ header {
   h1 {
     display: inline;
     margin: 0;
-    padding-left: 15px;
+    padding-left: @logoPadding;
     padding-right: @headerHeight;
     height: @headerHeight;
     line-height: @headerHeight;
     font-size: 1em;
-    color: @panelHeading;
 
     a {
-      color: inherit;
-      text-decoration: none;
       cursor: pointer;
-      font-weight: normal;
-
-      &:before {
-        content: '';
-        display: inline-block;
-        height: 0.9em;
-        width: 1.8em;
-        vertical-align: middle;
-        margin-top: -3px;
-        background: @panelContent;
-        mask: url(/static/logo.svg) no-repeat;
-      }
+      text-indent: -9999px;
+      display: inline-block;
+      height: @logoHeight;
+      width: @logoHeight * @logoAspectRatio;
+      vertical-align: middle;
+      background: url(/static/logo.png) 0 0 no-repeat;
+      background-size: contain;
+      opacity: .75;
 
       &:hover {
-        color: hsl(0, 0%, 100%);
-
-        &:before {
-          background: hsl(0, 0%, 100%);
-        }
+        opacity: 1;
       }
     }
   }
