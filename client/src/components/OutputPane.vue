@@ -1,56 +1,129 @@
 <template>
   <div class="output-pane">
-    <div class="_canvas-wrapper">
-      <canvas></canvas>
-    </div>
+    <iframe></iframe>
+    <div class="_iframe-overlay"></div>
     <div class="_error" v-bind:class="{ '-visible': error }">{{ error }}</div>
   </div>
 </template>
 
 <script>
+function iframeBootstrap() {
+  const bodyEl = document.body;
+  const canvasEl = document.getElementsByTagName('canvas')[0];
+
+  bodyEl.style.margin = 0;
+  bodyEl.style.padding = 0;
+  bodyEl.style.height = '100%';
+  canvasEl.style.position = 'absolute';
+  canvasEl.style.background = '#000';
+
+  let renderer = null;
+  let rendererState = {};
+  let epoch = null;
+
+  function notifyParent(type, data) {
+    window.parent.postMessage({
+      type,
+      data
+    }, '*');
+  }
+
+  function resizeCanvas() {
+    var bounds = canvasEl.parentNode.getBoundingClientRect();
+
+    canvasEl.width = bounds.width;
+    canvasEl.height = bounds.height;
+  }
+
+  window.addEventListener('message', (event) => {
+    switch (event.data.type) {
+    case 'RESIZE':
+      resizeCanvas();
+      break;
+    case 'SOURCE':
+      try {
+        renderer = new Function('canvas', 'state', 't', event.data.data);
+      } catch (err) {
+        renderer = null;
+        notifyParent('COMPILATION_ERROR');
+      }
+      break;
+    case 'STATE':
+      rendererState = event.data.data;
+      epoch = null;
+      break;
+    }
+  });
+
+  var render = (t) => {
+    window.requestAnimationFrame(render);
+
+    if (!renderer || !rendererState) {
+      return;
+    }
+
+    if (epoch === null) {
+      epoch = t;
+    }
+
+    try {
+      renderer.call(null, canvasEl, rendererState, t - epoch);
+    } catch (err) {
+      renderer = null;
+      notifyParent('RUNTIME_ERROR');
+    }
+  };
+
+  function run() {
+    window.requestAnimationFrame(render);
+  }
+
+  resizeCanvas();
+  run();
+};
+
 export default {
   props: {
     layoutChangeCnt: Number,
-    renderer: Function,
+    rendererSource: String,
     rendererState: Object,
     error: String
   },
+  methods: {
+    notifyIframe: function (type, data) {
+      this.iframeEl.contentWindow.postMessage({
+        type,
+        data
+      }, '*');
+    }
+  },
+  watch: {
+    layoutChangeCnt: function () {
+      this.notifyIframe('RESIZE');
+    },
+    rendererSource: function (source) {
+      this.notifyIframe('SOURCE', source);
+    },
+    rendererState: function (state) {
+      this.notifyIframe('STATE', state);
+    }
+  },
   mounted() {
-    const canvasEl = this.$el.querySelector('canvas');
+    this.iframeEl = this.$el.querySelector('iframe');
 
-    let layoutChangeCnt = null;
-    let rendererState = null;
-    let epoch = null;
-    let erroringRenderer = null;
+    const bootstrapSrc = iframeBootstrap.toString();
+      // .replace('iframeBootstrap', '')
+      // .replace(/\s+(?![a-z])/gi, '')
+      // .replace(/(^|[^a-z])\s+/gi, '$1');
 
-    const render = (t) => {
-      requestAnimationFrame(render);
+    const iframeHtml = '<canvas></canvas>'
+      + '<' + 'script>('
+      + bootstrapSrc
+      + ')();<' + '/script>';
 
-      if (this.renderer && this.renderer !== erroringRenderer) {
-        if (this.layoutChangeCnt !== layoutChangeCnt) {
-          const bounds = canvasEl.parentNode.getBoundingClientRect();
+    const iframeUrl = 'data:text/html;base64,' + btoa(iframeHtml);
 
-          canvasEl.width = bounds.width;
-          canvasEl.height = bounds.height;
-
-          layoutChangeCnt = this.layoutChangeCnt;
-        }
-
-        if (this.rendererState !== rendererState) {
-          rendererState = this.rendererState;
-          epoch = t;
-        }
-
-        try {
-          this.renderer.call(null, canvasEl, rendererState, t - epoch);
-        } catch (err) {
-          erroringRenderer = this.renderer;
-          this.$emit('runtimeError');
-        }
-      }
-    };
-
-    requestAnimationFrame(render);
+    this.iframeEl.src = iframeUrl;
   }
 }
 </script>
@@ -68,14 +141,19 @@ export default {
   position: relative;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
 
-  > ._canvas-wrapper {
+  > iframe {
+    width: 100%;
     flex: 1;
-
-    > canvas {
-      position: absolute;
-      background: #000;
-    }
+    border: 0;
+  }
+  > ._iframe-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
   }
   > ._error {
     position: absolute;
