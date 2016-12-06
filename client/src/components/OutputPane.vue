@@ -129,10 +129,7 @@ export default {
 </script>
 
 <style lang="less">
-@errorMaskBg: hsla(70, 3%, 30%, 50%);
-
-// @todo from include
-@panelContent: hsl(70, 3%, 75%);
+@import "../colors";
 
 .output-pane {
   padding: 1px;
@@ -162,8 +159,8 @@ export default {
     bottom: 0;
     left: 0;
     margin: 0;
-    background: @errorMaskBg;
-    color: @panelContent;
+    background: @errorMaskBgColor;
+    color: @panelContentColor;
     padding: 1em;
     z-index: 2;
     display: none;

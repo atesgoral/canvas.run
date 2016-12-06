@@ -2,12 +2,12 @@
   <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1><!--
-   --><button id="save" class="_tool -accent-1" v-on:click="save">Save</button><!--
-   --><button id="reset-state" class="_tool -accent-2" v-on:click="resetState">Reset State</button><!--
-   --><button id="toggle-layout" class="_tool -accent-3" v-on:click="toggleLayout">Toggle Layout</button><!--
-   --><button id="sign-in" class="_tool -accent-1" v-on:click="signIn('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
-   --><button id="sign-in" class="_tool -accent-1" v-on:click="signIn('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
-   --><button id="sign-in" class="_tool -accent-1" v-on:click="signIn('github')" v-if="!isSignedIn">Sign in with GitHub</button><!--
+   --><button id="save" class="_tool -accent-3" v-on:click="save">Save</button><!--
+   --><button id="reset-state" class="_tool -accent-1" v-on:click="resetState">Reset State</button><!--
+   --><button id="toggle-layout" class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button><!--
+   --><button id="sign-in" class="_tool -accent-3" v-on:click="signIn('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
+   --><button id="sign-in" class="_tool -accent-3" v-on:click="signIn('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
+   --><button id="sign-in" class="_tool -accent-3" v-on:click="signIn('github')" v-if="!isSignedIn">Sign in with GitHub</button><!--
    --><span class="_right-aligned">
         <button class="_profile" v-if="profile">
           <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span><!--
@@ -306,17 +306,9 @@ export default {
 </script>
 
 <style lang="less">
-@headerHeight: 40px;
+@import "colors";
 
-@panelBg: hsl(70, 3%, 30%);
-@panelHeading: hsl(70, 3%, 85%);
-@panelContent: hsl(70, 3%, 75%);
-@buttonBg: transparent;
-@buttonContent: hsl(70, 3%, 75%);
-@buttonHoverContent: hsl(7, 3%, 100%);
-@buttonHoverAccent1: hsl(15, 100%, 60%);
-@buttonHoverAccent2: hsl(45, 100%, 60%);
-@buttonHoverAccent3: hsl(70, 100%, 60%);
+@headerHeight: 40px;
 
 @logoVPadding: 10px;
 @logoHPadding: 50px;
@@ -328,14 +320,14 @@ body {
   font-size: 100%;
   margin: 0;
   padding: 0;
-  background: #000;
+  background: @bodyBgColor;
 }
 header {
   display: flex;
   align-items: baseline;
   height: @headerHeight;
-  background: @panelBg;
-  color: @panelContent;
+  background: @panelBgColor;
+  color: @panelContentColor;
 
   h1 {
     display: inline;
@@ -366,8 +358,8 @@ header {
   button {
     margin: 0;
     border: none;
-    background: @buttonBg;
-    color: @buttonContent;
+    background: transparent;
+    color: @buttonContentColor;
     cursor: pointer;
     font-family: 'Varela Round', sans-serif;
     height: @headerHeight;
@@ -375,7 +367,7 @@ header {
     padding: 0 5px;
 
     &:hover {
-      color: @buttonHoverContent;
+      color: @buttonHoverContentColor;
     }
 
     &:focus {
@@ -414,9 +406,9 @@ header {
       }
     }
 
-    &.-accent-1:after { background: @buttonHoverAccent1; }
-    &.-accent-2:after { background: @buttonHoverAccent2; }
-    &.-accent-3:after { background: @buttonHoverAccent3; }
+    &.-accent-1:after { background: @buttonHoverAccent1Color; }
+    &.-accent-2:after { background: @buttonHoverAccent2Color; }
+    &.-accent-3:after { background: @buttonHoverAccent3Color; }
   }
 
   ._right-aligned {

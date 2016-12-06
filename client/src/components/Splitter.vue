@@ -104,25 +104,22 @@ export default {
 </script>
 
 <style lang="less">
-@splitterSize: 13px;
+@import "../colors";
 
-@splitterHandleBg: hsla(70, 3%, 30%, 50%);
-// @todo from include
-@panelBg: hsl(70, 3%, 30%);
-@buttonHoverAccent3: hsl(70, 100%, 60%);
+@splitterSize: 13px;
 
 .splitter {
   position: relative;
   z-index: 10;
   flex: 0 0 @splitterSize;
-  background: @panelBg;
+  background: @panelBgColor;
   height: @splitterSize;
   user-select: none;
 
   > ._handle {
     position: absolute;
     height: @splitterSize;
-    background: @splitterHandleBg;
+    background: @splitterHandleBgColor;
     left: 0;
     right: 0;
     cursor: ns-resize;
@@ -146,7 +143,7 @@ export default {
 
     &:hover {
       &:after {
-        background: @buttonHoverAccent3;
+        background: @accent2Color;
       }
     }
   }
