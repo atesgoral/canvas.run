@@ -13,6 +13,7 @@
           <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span><!--
        --><span class="_display-name">{{ profile.displayName }}</span>
         </button><!--
+     --><button id="sign-out" class="_tool -accent-3" v-on:click="signIn" v-if="!isSignedIn">Sign in</button><!--
      --><button id="sign-out" class="_tool -accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button>
       </span>
     </header>
