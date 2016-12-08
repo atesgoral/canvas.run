@@ -2,22 +2,19 @@
   <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1><!--
-   --><button id="save" class="_tool -accent-3" v-on:click="save">Save</button><!--
-   --><button id="reset-state" class="_tool -accent-1" v-on:click="resetState">Reset State</button><!--
-   --><button id="toggle-layout" class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button><!--
-   --><button id="sign-in" class="_tool -accent-3" v-on:click="signIn('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
-   --><button id="sign-in" class="_tool -accent-3" v-on:click="signIn('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
-   --><button id="sign-in" class="_tool -accent-3" v-on:click="signIn('github')" v-if="!isSignedIn">Sign in with GitHub</button><!--
+   --><button class="_tool -accent-3" v-on:click="save">Save</button><!--
+   --><button class="_tool -accent-1" v-on:click="resetState">Reset State</button><!--
+   --><button class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button><!--
    --><span class="_right-aligned">
         <button class="_profile" v-if="profile">
           <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span><!--
        --><span class="_display-name">{{ profile.displayName }}</span>
         </button><!--
-     --><button id="sign-out" class="_tool -accent-3" v-on:click="signIn" v-if="!isSignedIn">Sign in</button><!--
-     --><button id="sign-out" class="_tool -accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button>
+     --><button class="_tool -accent-3" v-on:click="signIn" v-if="!isSignedIn">Sign in</button><!--
+     --><button class="_tool -accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button>
       </span>
     </header>
-    <main id="main" v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
+    <main v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
       <editor-pane
         ref="editorPane"
         v-bind:run="run"
@@ -33,6 +30,12 @@
         v-bind:error="error"></output-pane>
       <!-- error element -->
     </main>
+    <popup v-if="isSignInPopupShown">
+      <h1>Authorization</h1>
+      <button class="_auth -facebook" v-on:click="auth('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
+   --><button class="_auth -twitter" v-on:click="auth('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
+   --><button class="_auth -github" v-on:click="auth('github')" v-if="!isSignedIn">Sign in with GitHub</button>
+    </popup>
 <script type="text/default" id="default">// Here, you're writing the contents of a function with the following signature:
 // function render(canvas, state, t)
 
@@ -84,6 +87,7 @@ state.vy += gravity;</script>
 import * as _ from 'lodash/lodash.min'
 import 'whatwg-fetch';
 
+import Popup from './components/Popup'
 import EditorPane from './components/EditorPane'
 import Splitter from './components/Splitter'
 import OutputPane from './components/OutputPane'
@@ -105,12 +109,14 @@ function pathToRunId(path) {
 
 export default {
   components: {
+    Popup,
     EditorPane,
     Splitter,
     OutputPane
   },
   data() {
     return {
+      isSignInPopupShown: false,
       isLayoutHorizontal: true,
       layoutChangeCnt: 0,
       run: null,
@@ -119,7 +125,7 @@ export default {
       error: null,
       isSignedIn: false,
       profile: null,
-      signInPopup: null
+      authPopupWindow: null
     }
   },
   mounted() {
@@ -242,30 +248,34 @@ export default {
       this.resetState();
       this.notifyLayoutChange();
     },
-    signIn(provider) {
-      if (this.signInPopup && !this.signInPopup.closed) {
-        this.signInPopup.focus();
-        // @todo reload URL
-      } else {
-        const width = 600;
-        const height = 500;
-        const left = window.screenX + Math.floor(Math.max(0, window.outerWidth - width) / 2);
-        const top = window.screenY + Math.floor(Math.max(0, window.outerHeight - height) / 2);
-        const featureMap = {
-          width,
-          height,
-          left,
-          top,
-          menubar: 0,
-          toolbar: 0,
-          location: 0,
-          personalbar: 0
-        };
-        const featureStr = Object.keys(featureMap)
-          .map(name => `${name}=${featureMap[name]}`)
-          .join();
-        this.signInPopup = window.open('/auth/' + provider, 'signIn', featureStr);
+    auth(provider) {
+      this.isSignInPopupShown = false;
+
+      if (this.authPopupWindow && !this.authPopupWindow.closed) {
+        this.authPopupWindow.close();
       }
+
+      const width = 600;
+      const height = 500;
+      const left = window.screenX + Math.floor(Math.max(0, window.outerWidth - width) / 2);
+      const top = window.screenY + Math.floor(Math.max(0, window.outerHeight - height) / 2);
+      const featureMap = {
+        width,
+        height,
+        left,
+        top,
+        menubar: 0,
+        toolbar: 0,
+        location: 0,
+        personalbar: 0
+      };
+      const featureStr = Object.keys(featureMap)
+        .map(name => `${name}=${featureMap[name]}`)
+        .join();
+      this.authPopupWindow = window.open('/auth/' + provider, 'auth', featureStr);
+    },
+    signIn() {
+      this.isSignInPopupShown = true;
     },
     signOut() {
       fetch('/auth/signOut', { method: 'POST', credentials: 'same-origin' })
