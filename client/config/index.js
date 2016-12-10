@@ -29,10 +29,10 @@ module.exports = {
       '/auth': {
         target: 'http://localhost:6543'
       },
-      '/worker-javascript.js': {
+      '/static/worker-javascript.js': {
         target: 'http://cdnjs.cloudflare.com',
         changeOrigin: true,
-        pathRewrite: { '^/worker-javascript.js': '/ajax/libs/ace/1.2.5/worker-javascript.js' }
+        pathRewrite: { '^/static': '/ajax/libs/ace/1.2.5' }
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"
