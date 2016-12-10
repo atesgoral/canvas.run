@@ -30,7 +30,7 @@
         v-bind:error="error"></output-pane>
       <!-- error element -->
     </main>
-    <popup v-if="isSignInPopupShown">
+    <popup v-if="signInPopup.isOpen" v-bind:onClose="signInPopup.close">
       <h1>Authorization</h1>
       <button class="_auth -facebook" v-on:click="auth('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
    --><button class="_auth -twitter" v-on:click="auth('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
@@ -116,7 +116,15 @@ export default {
   },
   data() {
     return {
-      isSignInPopupShown: false,
+      signInPopup: {
+        isOpen: false,
+        open: function () {
+          this.isOpen = true;
+          this.close = () => {
+            this.isOpen = false;
+          }
+        }
+      },
       isLayoutHorizontal: true,
       layoutChangeCnt: 0,
       run: null,
@@ -249,7 +257,7 @@ export default {
       this.notifyLayoutChange();
     },
     auth(provider) {
-      this.isSignInPopupShown = false;
+      this.signInPopup.close();
 
       if (this.authPopupWindow && !this.authPopupWindow.closed) {
         this.authPopupWindow.close();
@@ -275,7 +283,7 @@ export default {
       this.authPopupWindow = window.open('/auth/' + provider, 'auth', featureStr);
     },
     signIn() {
-      this.isSignInPopupShown = true;
+      this.signInPopup.open();
     },
     signOut() {
       fetch('/auth/signOut', { method: 'POST', credentials: 'same-origin' })
@@ -466,6 +474,28 @@ main {
 
   &.-horizontal-split {
     flex-direction: row;
+  }
+}
+._auth {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  text-indent: -9999px;
+  width: 60px;
+  height: 60px;
+
+  &.-facebook {
+    background: url(/static/facebook_logo.png);
+    background-size: cover;
+  }
+  &.-twitter {
+    background: url(/static/twitter_logo.png);
+    background-size: cover;
+  }
+  &.-github {
+    background: url(/static/github_logo.png);
+    background-size: cover;
   }
 }
 </style>
