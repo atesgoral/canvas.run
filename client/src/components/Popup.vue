@@ -55,7 +55,7 @@ export default {
   > ._frame {
     position: relative;
     z-index: 2;
-    margin: 70px auto 0;
+    margin: 80px auto 0;
     display: inline-block;
     box-sizing: border-box;
     background: @panelBgColor;
