@@ -1,0 +1,18 @@
+@import "colors";
+
+.button() {
+  background: transparent;
+  border: none;
+  color: @buttonContentColor;
+  cursor: pointer;
+  font-family: 'Varela Round', sans-serif;
+  margin: 0;
+
+  &:hover {
+    color: @buttonHoverContentColor;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}

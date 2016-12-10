@@ -1,11 +1,15 @@
 <template>
-  <div class="popup" tabindex="0" v-on:keyup.esc="onClose()">
-    <div class="_modal-mask"></div>
-    <div class="_frame">
-      <button class="_close-button" v-on:click="onClose()">Close</button>
-      <slot></slot>
+  <transition name="fade-slide">
+    <div class="popup" tabindex="0" v-on:keyup.esc="onClose()">
+      <div class="_modal-mask"></div>
+      <div class="_frame">
+        <button class="_close-button" title="Close" v-on:click="onClose()">Close</button>
+        <div class="_content">
+          <slot></slot>
+        </div>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
@@ -26,6 +30,7 @@ export default {
 
 <style lang="less">
 @import "../colors";
+@import "../button";
 
 .popup {
   position: absolute;
@@ -34,6 +39,9 @@ export default {
   left: 0;
   right: 0;
   z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
 
   > ._modal-mask {
     position: absolute;
@@ -48,23 +56,22 @@ export default {
     position: relative;
     z-index: 2;
     margin: 70px auto 0;
-    width: 800px;
-    height: 100px;
+    display: inline-block;
+    box-sizing: border-box;
     background: @panelBgColor;
     color: @panelContentColor;
 
     > ._close-button {
-      border: 0;
-      background: transparent;
+      .button();
+
       text-indent: -9999px;
       position: absolute;
       top: 0;
       right: 0;
-      width: 1.5em;
-      height: 1.5em;
-      font-size: 1.5em;
-      line-height: 1.5em;
-      cursor: pointer;
+      width: 3rem;
+      height: 3rem;
+      font-size: 1.5rem;
+      line-height: 3rem;
 
       &:before {
         content: '\2716';
@@ -83,10 +90,33 @@ export default {
           color: @buttonHoverContentColor;
         }
       }
+    }
 
-      &:focus {
-        outline: none;
+    > ._content {
+      padding: 3rem;
+
+      *:first-child {
+        margin-top: 0;
       }
+
+      *:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &.fade-slide-enter-active, &.fade-slide-leave-active {
+    transition: opacity .5s;
+
+    > ._frame {
+      transition: transform .5s;
+    }
+  }
+  &.fade-slide-enter, &.fade-slide-leave-active {
+    opacity: 0;
+
+    > ._frame {
+      transform: translateY(-500px);
     }
   }
 }

@@ -161,7 +161,7 @@ export default {
     margin: 0;
     background: @errorMaskBgColor;
     color: @panelContentColor;
-    padding: 1em;
+    padding: 1rem;
     z-index: 2;
     display: none;
     overflow: auto;
@@ -169,14 +169,14 @@ export default {
     &:after {
       position: absolute;
       left: 50%;
-      margin-left: -20em;
+      margin-left: -20rem;
       top: 50%;
-      margin-top: -20em;
+      margin-top: -20rem;
       text-align: center;
-      width: 40em;
-      height: 40em;
-      font-size: 40em;
-      line-height: 40em;
+      width: 40rem;
+      height: 40rem;
+      font-size: 40rem;
+      line-height: 40rem;
       content: '\26a0';
       color: red;
       opacity: .25;
