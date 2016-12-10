@@ -25,7 +25,6 @@ export default {
     session.setMode('ace/mode/javascript')
     session.setUseSoftTabs(true)
     session.setTabSize(2)
-    session.setUseWorker(false)
 
     // @todo use watch declaration
     this.$watch('run', (run) => {
