@@ -1,23 +1,20 @@
 <template>
   <body>
     <header>
-      <h1><a href="/">CanvasRun</a></h1><!--
-   --><button id="save" class="_tool -accent-3" v-on:click="save">Save</button><!--
-   --><button id="reset-state" class="_tool -accent-1" v-on:click="resetState">Reset State</button><!--
-   --><button id="toggle-layout" class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button><!--
-   --><button id="sign-in" class="_tool -accent-3" v-on:click="signIn('facebook')" v-if="!isSignedIn">Sign in with Facebook</button><!--
-   --><button id="sign-in" class="_tool -accent-3" v-on:click="signIn('twitter')" v-if="!isSignedIn">Sign in with Twitter</button><!--
-   --><button id="sign-in" class="_tool -accent-3" v-on:click="signIn('github')" v-if="!isSignedIn">Sign in with GitHub</button><!--
-   --><span class="_right-aligned">
+      <h1><a href="/">CanvasRun</a></h1>
+      <button class="_tool -accent-3" v-on:click="save">Save</button>
+      <button class="_tool -accent-1" v-on:click="resetState">Reset State</button>
+      <button class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
+      <span class="_right-aligned">
         <button class="_profile" v-if="profile">
-          <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span><!--
-       --><span class="_display-name">{{ profile.displayName }}</span>
-        </button><!--
-     --><button id="sign-out" class="_tool -accent-3" v-on:click="signIn" v-if="!isSignedIn">Sign in</button><!--
-     --><button id="sign-out" class="_tool -accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button>
+          <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span>
+          <span class="_display-name">{{ profile.displayName }}</span>
+        </button>
+        <button class="_tool -accent-3" v-on:click="signIn" v-if="!isSignedIn">Sign in</button>
+        <button class="_tool -accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button>
       </span>
     </header>
-    <main id="main" v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
+    <main v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
       <editor-pane
         ref="editorPane"
         v-bind:run="run"
@@ -33,6 +30,15 @@
         v-bind:error="error"></output-pane>
       <!-- error element -->
     </main>
+    <popup v-if="signInPopup.isOpen" v-bind:onClose="signInPopup.close">
+      <h2>Sign in using:</h2>
+      <div class="_auth">
+        <button class="-facebook" title="Facebook" v-on:click="auth('facebook')"><span>Facebook</span></button>
+        <button class="-twitter" title="Twitter" v-on:click="auth('twitter')"><span>Twitter</span></button>
+        <button class="-github" title="GitHub" v-on:click="auth('github')"><span>GitHub</span></button>
+        <!--button class="-google" title="Google" v-on:click="auth('google')"><span>Google</span></button-->
+      </div>
+    </popup>
 <script type="text/default" id="default">// Here, you're writing the contents of a function with the following signature:
 // function render(canvas, state, t)
 
@@ -84,6 +90,7 @@ state.vy += gravity;</script>
 import * as _ from 'lodash/lodash.min'
 import 'whatwg-fetch';
 
+import Popup from './components/Popup'
 import EditorPane from './components/EditorPane'
 import Splitter from './components/Splitter'
 import OutputPane from './components/OutputPane'
@@ -105,12 +112,22 @@ function pathToRunId(path) {
 
 export default {
   components: {
+    Popup,
     EditorPane,
     Splitter,
     OutputPane
   },
   data() {
     return {
+      signInPopup: {
+        isOpen: false,
+        open: function () {
+          this.isOpen = true;
+          this.close = () => {
+            this.isOpen = false;
+          }
+        }
+      },
       isLayoutHorizontal: true,
       layoutChangeCnt: 0,
       run: null,
@@ -119,7 +136,7 @@ export default {
       error: null,
       isSignedIn: false,
       profile: null,
-      signInPopup: null
+      authPopupWindow: null
     }
   },
   mounted() {
@@ -242,30 +259,34 @@ export default {
       this.resetState();
       this.notifyLayoutChange();
     },
-    signIn(provider) {
-      if (this.signInPopup && !this.signInPopup.closed) {
-        this.signInPopup.focus();
-        // @todo reload URL
-      } else {
-        const width = 600;
-        const height = 500;
-        const left = window.screenX + Math.floor(Math.max(0, window.outerWidth - width) / 2);
-        const top = window.screenY + Math.floor(Math.max(0, window.outerHeight - height) / 2);
-        const featureMap = {
-          width,
-          height,
-          left,
-          top,
-          menubar: 0,
-          toolbar: 0,
-          location: 0,
-          personalbar: 0
-        };
-        const featureStr = Object.keys(featureMap)
-          .map(name => `${name}=${featureMap[name]}`)
-          .join();
-        this.signInPopup = window.open('/auth/' + provider, 'signIn', featureStr);
+    auth(provider) {
+      this.signInPopup.close();
+
+      if (this.authPopupWindow && !this.authPopupWindow.closed) {
+        this.authPopupWindow.close();
       }
+
+      const width = 600;
+      const height = 500;
+      const left = window.screenX + Math.floor(Math.max(0, window.outerWidth - width) / 2);
+      const top = window.screenY + Math.floor(Math.max(0, window.outerHeight - height) / 2);
+      const featureMap = {
+        width,
+        height,
+        left,
+        top,
+        menubar: 0,
+        toolbar: 0,
+        location: 0,
+        personalbar: 0
+      };
+      const featureStr = Object.keys(featureMap)
+        .map(name => `${name}=${featureMap[name]}`)
+        .join();
+      this.authPopupWindow = window.open('/auth/' + provider, 'auth', featureStr);
+    },
+    signIn() {
+      this.signInPopup.open();
     },
     signOut() {
       fetch('/auth/signOut', { method: 'POST', credentials: 'same-origin' })
@@ -308,6 +329,7 @@ export default {
 
 <style lang="less">
 @import "colors";
+@import "button";
 
 @headerHeight: 40px;
 
@@ -330,14 +352,14 @@ header {
   background: @panelBgColor;
   color: @panelContentColor;
 
-  h1 {
+  > h1 {
     display: inline;
     margin: 0;
     padding-left: @logoHPadding;
     padding-right: @headerHeight;
     height: @headerHeight;
     line-height: @headerHeight;
-    font-size: 1em;
+    font-size: 1rem;
 
     a {
       cursor: pointer;
@@ -356,28 +378,13 @@ header {
     }
   }
 
-  button {
-    margin: 0;
-    border: none;
-    background: transparent;
-    color: @buttonContentColor;
-    cursor: pointer;
-    font-family: 'Varela Round', sans-serif;
+  ._tool {
+    .button();
+
     height: @headerHeight;
     line-height: @headerHeight;
     padding: 0 5px;
-
-    &:hover {
-      color: @buttonHoverContentColor;
-    }
-
-    &:focus {
-      outline: none;
-    }
-  }
-
-  ._tool {
-    font-size: 0.75em;
+    font-size: 0.75rem;
     margin-right: 4px;
     transition: background 100ms;
     position: relative;
@@ -418,7 +425,9 @@ header {
     margin-right: 50px;
 
     > ._profile {
-      font-size: 1em;
+      .button();
+
+      font-size: 1rem;
 
       ._picture {
         display: inline-block;
@@ -435,7 +444,7 @@ header {
       ._display-name {
         display: inline-block;
         margin-left: 5px;
-        font-size: 0.75em;
+        font-size: 0.75rem;
       }
     }
 
@@ -456,6 +465,56 @@ main {
 
   &.-horizontal-split {
     flex-direction: row;
+  }
+}
+._auth {
+  display: flex;
+  justify-content: center;
+
+  @authButtonSize: 120px;
+
+  > button {
+    .button();
+
+    border-radius: 10px;
+    height: @authButtonSize;
+    margin: 0 1rem;
+    position: relative;
+    transition: transform 50ms;
+    width: @authButtonSize;
+    margin-bottom: 2rem;
+
+    > span {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      top: @authButtonSize;
+      margin-top: 1rem;
+      height: 2rem;
+      line-height: 2rem;
+      font-size: 1rem;
+    }
+
+    &.-facebook {
+      background: url(/static/facebook_logo.png) 50% 50%;
+      background-size: cover;
+    }
+    &.-twitter {
+      background: url(/static/twitter_logo.png) 50% 50%;
+      background-size: cover;
+    }
+    &.-github {
+      background: white url(/static/github_logo.png) 50% 50%;
+      background-size: cover;
+    }
+    &.-google {
+      background: white url(/static/google_logo.png) 50% 50%;
+      background-size: cover;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 }
 </style>

@@ -8,11 +8,6 @@
 const minPaneSize = 100;
 
 export default {
-  data() {
-    return {
-      msg: 'Hello Vue!'
-    }
-  },
   props: {
     isHorizontal: Boolean
   },
