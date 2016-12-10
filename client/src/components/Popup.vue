@@ -17,11 +17,6 @@ export default {
   props: {
     onClose: Function
   },
-  // methods: {
-  //   close(result) {
-  //     this.onClose(result);
-  //   }
-  // },
   mounted() {
     this.$el.focus();
   }
