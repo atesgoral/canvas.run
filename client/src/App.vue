@@ -36,7 +36,7 @@
         <button class="-facebook" title="Facebook" v-on:click="auth('facebook')"><span>Facebook</span></button>
         <button class="-twitter" title="Twitter" v-on:click="auth('twitter')"><span>Twitter</span></button>
         <button class="-github" title="GitHub" v-on:click="auth('github')"><span>GitHub</span></button>
-        <!--button class="-google" title="Google" v-on:click="auth('google')"><span>Google</span></button-->
+        <button class="-google" title="Google" v-on:click="auth('google')"><span>Google</span></button>
       </div>
     </popup>
 <script type="text/default" id="default">// Here, you're writing the contents of a function with the following signature:
