@@ -1,5 +1,8 @@
 'use strict';
 
+const fs = require('fs');
+const path = require('path');
+
 const mongoose = require('mongoose');
 const basek = require('basek');
 const ShortId = require('mongoose-shortid-nodeps');
@@ -41,6 +44,20 @@ const runSchema = mongoose.Schema({
 });
 
 runSchema.statics.whenFound = function (shortId, revision) {
+  if (shortId === 'default') {
+    return new Promise((resolve, reject) => {
+      fs.readFile(path.join(__dirname, 'defaultRun.js'), 'utf8', (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({
+            source: data
+          });
+        }
+      })
+    });
+  }
+
   return this
     .findOne({ shortId, revision })
     .populate([{
