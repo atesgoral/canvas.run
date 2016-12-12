@@ -13,7 +13,7 @@ export default {
     run: Object
   },
   mounted() {
-    ace.config.set('workerPath', 'static');
+    ace.config.set('workerPath', '/static');
 
     const editor = ace.edit(this.$el)
 
