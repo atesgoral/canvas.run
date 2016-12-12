@@ -230,8 +230,7 @@ apiRoutes.post('/runs', upload, (req, res) => {
     .then(() => {
       if (shortId) {
         return Run
-          .findOne({ shortId })
-          .sort({ revision: -1 })
+          .whenFound(shortId)
           .then((run) => {
             parentRun = run;
             return run.revision + 1;
