@@ -51,21 +51,6 @@ import EditorPane from './components/EditorPane'
 import Splitter from './components/Splitter'
 import OutputPane from './components/OutputPane'
 
-function runIdToPath({ shortId, revision }) {
-  return revision
-    ? shortId + '/' + revision
-    : shortId;
-}
-
-function pathToRunId(path) {
-  const tokens = path.split('/');
-
-  return {
-    shortId: tokens[0],
-    revision: tokens[1] || 0
-  };
-}
-
 export default {
   components: {
     Popup,
@@ -122,15 +107,27 @@ export default {
       }
     });
 
+    const path = window.location.pathname.slice(1);
+
     Promise.resolve()
       .then(() => {
-        const runId = pathToRunId(window.location.pathname.slice(1));
+        const tokens = path.split('/');
+        const shortId = tokens[0];
+        const revision = tokens[1];
 
-        const path = runId.shortId
-          ? runIdToPath(runId)
-          : 'default';
+        let url = '/api/runs/';
 
-        return fetch('/api/runs/' + path, { credentials: 'same-origin' })
+        if (shortId) {
+          url += shortId;
+
+          if (revision) {
+            url += '/' + revision;
+          }
+        } else {
+          url += 'default';
+        }
+
+        return fetch(url, { credentials: 'same-origin' })
           .then((response) => {
             if (response.ok) {
               return response.json();
@@ -148,7 +145,7 @@ export default {
         this.run = run;
 
         if (run.shortId) {
-          history.replaceState(run, 'Run ' + runIdToPath(run), '/' + runIdToPath(run));
+          history.replaceState(run, 'Run ' + run.shortId, '/' + path);
         } else {
           history.replaceState(run, 'Default run');
         }
@@ -196,8 +193,12 @@ export default {
           }
         })
         .then((run) => {
+          if (run.shortId !== this.run.shortId) {
+            history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
+          } else {
+            history.replaceState(run, 'Run ' + run.shortId, '/' + run.shortId);
+          }
           this.run = run;
-          history.pushState(run, 'Run ' + runIdToPath(run), '/' + runIdToPath(run));
         });
     },
     resetState() {

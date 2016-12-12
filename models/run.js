@@ -58,8 +58,11 @@ runSchema.statics.whenFound = function (shortId, revision) {
     });
   }
 
-  return this
-    .findOne({ shortId, revision })
+  const query = revision === undefined
+    ? this.findOne({ shortId }).sort({ revision: -1 })
+    : this.findOne({ shortId, revision });
+
+  return query
     .populate([{
       path: '_ownerId',
       select: 'profile.displayName'

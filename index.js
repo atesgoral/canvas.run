@@ -196,7 +196,7 @@ apiRoutes.get('/profile', (req, res) => {
 
 apiRoutes.get('/runs/:shortId/:revision?', (req, res) => {
   const shortId = req.params.shortId;
-  const revision = parseInt(req.params.revision || '0', 10);
+  const revision = req.params.revision && parseInt(req.params.revision, 10);
 
   Run.whenFound(shortId, revision)
     .then(run => {
