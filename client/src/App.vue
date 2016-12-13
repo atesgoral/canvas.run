@@ -112,8 +112,9 @@ export default {
     Promise.resolve()
       .then(() => {
         const tokens = path.split('/');
-        const shortId = tokens[0];
-        const revision = tokens[1];
+        const username = tokens[0];
+        const shortId = tokens[1];
+        const revision = tokens[2];
 
         let url = '/api/runs/';
 
@@ -194,9 +195,9 @@ export default {
         })
         .then((run) => {
           if (run.shortId !== this.run.shortId) {
-            history.pushState(run, 'Run ' + run.shortId, '/' + run.shortId);
+            history.pushState(run, 'Run ' + run.shortId, '/' + '-' + '/' + run.shortId);
           } else {
-            history.replaceState(run, 'Run ' + run.shortId, '/' + run.shortId);
+            history.replaceState(run, 'Run ' + run.shortId, '/' + '-' + '/' + run.shortId);
           }
           this.run = run;
         });
