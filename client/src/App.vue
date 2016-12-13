@@ -6,7 +6,7 @@
       <button class="_tool -accent-1" v-on:click="resetState">Reset State</button>
       <button class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
       <span class="_right-aligned">
-        <button class="_profile" v-if="profile">
+        <button class="_profile" v-on:click="showProfile" v-if="profile">
           <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span>
           <span class="_display-name">{{ profile.displayName }}</span>
         </button>
@@ -31,6 +31,7 @@
       <!-- error element -->
     </main>
     <sign-in-popup v-bind:popup="signInPopup"></sign-in-popup>
+    <profile-popup v-bind:popup="profilePopup"></profile-popup>
   </body>
 </template>
 
@@ -42,25 +43,34 @@ import EditorPane from './components/EditorPane'
 import Splitter from './components/Splitter'
 import OutputPane from './components/OutputPane'
 import SignInPopup from './components/SignInPopup'
+import ProfilePopup from './components/ProfilePopup'
+
+class Popup {
+  constructor() {
+    this.isOpen = false;
+
+    this.close = () => {
+      this.isOpen = false;
+    };
+  }
+
+  open() {
+    this.isOpen = true;
+  }
+}
 
 export default {
   components: {
     EditorPane,
     Splitter,
     OutputPane,
-    SignInPopup
+    SignInPopup,
+    ProfilePopup
   },
   data() {
     return {
-      signInPopup: {
-        isOpen: false,
-        open: function () {
-          this.isOpen = true;
-          this.close = () => {
-            this.isOpen = false;
-          }
-        }
-      },
+      signInPopup: new Popup(),
+      profilePopup: new Popup(),
       isLayoutHorizontal: true,
       layoutChangeCnt: 0,
       run: null,
@@ -219,6 +229,9 @@ export default {
         });
         // @todo show error?
     },
+    showProfile() {
+      this.profilePopup.open();
+    },
     handleSplitterDrag(offset) {
       const mainEl = this.$el.querySelector('main');
       const editorPaneEl = this.$refs.editorPane.$el;
@@ -249,8 +262,8 @@ export default {
 </script>
 
 <style lang="less">
-@import "colors";
-@import "button";
+@import "components/common/colors";
+@import "components/common/button";
 
 @headerHeight: 40px;
 

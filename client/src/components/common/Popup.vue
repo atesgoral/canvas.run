@@ -24,8 +24,8 @@ export default {
 </script>
 
 <style lang="less">
-@import "../colors";
-@import "../button";
+@import "colors";
+@import "button";
 
 .popup {
   position: absolute;

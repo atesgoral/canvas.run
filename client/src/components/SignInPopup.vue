@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import Popup from './Popup'
+import Popup from './common/Popup'
 
 export default {
   components: {
@@ -52,7 +52,7 @@ export default {
 </script>
 
 <style lang="less">
-@import "../button";
+@import "common/button";
 
 .sign-in-popup {
   ._auth-methods {

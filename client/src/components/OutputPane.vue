@@ -129,7 +129,7 @@ export default {
 </script>
 
 <style lang="less">
-@import "../colors";
+@import "common/colors";
 
 .output-pane {
   padding: 1px;
