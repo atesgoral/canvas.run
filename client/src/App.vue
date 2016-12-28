@@ -112,7 +112,7 @@ export default {
     Promise.resolve()
       .then(() => {
         const tokens = path.split('/');
-        const username = tokens[0];
+        const mode = tokens[0];
         const shortId = tokens[1];
         const revision = tokens[2];
 
@@ -195,9 +195,9 @@ export default {
         })
         .then((run) => {
           if (run.shortId !== this.run.shortId) {
-            history.pushState(run, 'Run ' + run.shortId, '/' + '-' + '/' + run.shortId);
+            history.pushState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
           } else {
-            history.replaceState(run, 'Run ' + run.shortId, '/' + '-' + '/' + run.shortId);
+            history.replaceState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
           }
           this.run = run;
         });
