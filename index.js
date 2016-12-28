@@ -347,7 +347,7 @@ authRoutes.post('/signOut', (req, res) => {
 
 app.use('/auth', authRoutes);
 
-app.get(/^\/([A-Z\d]+)(?:\/(\d+))?$/i, (req, res) => {
+app.get(/^\/(edit|view|embed)\/[A-Z\d]+(\/\d+)?$/i, (req, res) => {
   res.sendFile('index.html', {
     root: __dirname + '/client/dist'
   });
