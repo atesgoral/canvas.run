@@ -2,8 +2,8 @@
   <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1>
-      <button class="_tool -accent-3" v-on:click="save">Save</button>
-      <button class="_tool -accent-1" v-on:click="resetState">Reset State</button>
+      <button class="_tool -accent-3" v-on:click="save" v-if="run">{{ run.shortId ? 'Update' : 'Save' }}</button>
+      <button class="_tool -accent-1" v-on:click="resetState" v-if="run">Reset State</button>
       <button class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
       <span class="_right-aligned">
         <button class="_profile" v-on:click="showProfile" v-if="profile">
