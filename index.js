@@ -262,7 +262,7 @@ apiRoutes.post('/runs', upload, (req, res) => {
         }]))
         .then(() => {
           res.json({
-            owner: run._ownerId && run._ownerId.id.getSummary(),
+            owner: run._ownerId && run._ownerId.getSummary(),
             parent: run._parentId && {
               shortId: run._parentId.shortId,
               revision: run._parentId.revision
