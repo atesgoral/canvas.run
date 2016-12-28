@@ -1,6 +1,6 @@
 <template>
-  <popup v-if="popup.isOpen" v-bind:onClose="popup.close" class="sign-in-popup">
-    <h2>Sign in using:</h2>
+  <popup title="Sign in" v-if="popup.isOpen" v-bind:onClose="popup.close" class="sign-in-popup">
+    <h3>Sign in using:</h3>
     <div class="_auth-methods">
       <button class="-facebook" title="Facebook" v-on:click="auth('facebook')"><span>Facebook</span></button>
       <button class="-twitter" title="Twitter" v-on:click="auth('twitter')"><span>Twitter</span></button>

@@ -3,6 +3,7 @@
     <div class="popup" tabindex="0" v-on:keyup.esc="onClose()">
       <div class="_modal-mask"></div>
       <div class="_frame">
+        <h2 class="_title">{{ title }}</h2>
         <button class="_close-button" title="Close" v-on:click="onClose()">Close</button>
         <div class="_content">
           <slot></slot>
@@ -15,6 +16,7 @@
 <script>
 export default {
   props: {
+    title: String,
     onClose: Function
   },
   mounted() {
@@ -55,6 +57,16 @@ export default {
     box-sizing: border-box;
     background: @panelBgColor;
     color: @panelContentColor;
+
+    > ._title {
+      height: 3rem;
+      font-size: 1.5rem;
+      line-height: 3rem;
+      margin: 0;
+      text-transform: uppercase;
+      text-align: center;
+      opacity: 0.5;
+    }
 
     > ._close-button {
       .button();

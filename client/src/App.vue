@@ -6,6 +6,7 @@
       <button class="_tool -accent-1" v-on:click="resetState" v-if="run">Reset State</button>
       <button class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
       <span class="_right-aligned">
+        <!--button class="_tool -accent-2" v-on:click="showSettings">Settings</button-->
         <button class="_profile" v-on:click="showProfile" v-if="profile">
           <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span>
           <span class="_display-name">{{ profile.displayName }}</span>
@@ -31,6 +32,7 @@
     </main>
     <sign-in-popup v-bind:popup="signInPopup"></sign-in-popup>
     <profile-popup v-bind:popup="profilePopup" v-bind:onSignOut="signOut"></profile-popup>
+    <settings-popup v-bind:popup="settingsPopup"></settings-popup>
   </body>
 </template>
 
@@ -43,6 +45,7 @@ import Splitter from './components/Splitter'
 import OutputPane from './components/OutputPane'
 import SignInPopup from './components/SignInPopup'
 import ProfilePopup from './components/ProfilePopup'
+import SettingsPopup from './components/SettingsPopup'
 
 class Popup {
   constructor() {
@@ -64,12 +67,14 @@ export default {
     Splitter,
     OutputPane,
     SignInPopup,
-    ProfilePopup
+    ProfilePopup,
+    SettingsPopup
   },
   data() {
     return {
       signInPopup: new Popup(),
       profilePopup: new Popup(),
+      settingsPopup: new Popup(),
       isLayoutHorizontal: true,
       layoutChangeCnt: 0,
       run: null,
@@ -230,6 +235,9 @@ export default {
     },
     showProfile() {
       this.profilePopup.open();
+    },
+    showSettings() {
+      this.settingsPopup.open();
     },
     handleSplitterDrag(offset) {
       const mainEl = this.$el.querySelector('main');

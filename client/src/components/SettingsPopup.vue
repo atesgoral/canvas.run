@@ -1,6 +1,5 @@
 <template>
-  <popup title="Profile" v-if="popup.isOpen" v-bind:onClose="popup.close" class="profile-popup">
-    <p>Signed in as Ates Goral &mdash; <button class="_action" v-on:click="signOut">Sign out</button></p>
+  <popup title="Settings" v-if="popup.isOpen" v-bind:onClose="popup.close" class="settings-popup">
     <div class="_actions">
       <button class="_action" v-on:click="popup.close">Close</button>
     </div>
@@ -30,7 +29,7 @@ export default {
 <style lang="less">
 @import "common/button";
 
-.profile-popup {
+.settings-popup {
   ._frame {
     width: 600px;
   }
