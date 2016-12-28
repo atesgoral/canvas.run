@@ -11,7 +11,6 @@
           <span class="_display-name">{{ profile.displayName }}</span>
         </button>
         <button class="_tool -accent-3" v-on:click="signIn" v-if="!isSignedIn">Sign in</button>
-        <button class="_tool -accent-1" v-on:click="signOut" v-if="isSignedIn">Sign out</button>
       </span>
     </header>
     <main v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
@@ -31,7 +30,7 @@
       <!-- error element -->
     </main>
     <sign-in-popup v-bind:popup="signInPopup"></sign-in-popup>
-    <profile-popup v-bind:popup="profilePopup"></profile-popup>
+    <profile-popup v-bind:popup="profilePopup" v-bind:onSignOut="signOut"></profile-popup>
   </body>
 </template>
 
@@ -320,7 +319,6 @@ header {
     padding: 0 5px;
     font-size: 0.75rem;
     margin-right: 4px;
-    transition: background 100ms;
     position: relative;
     overflow: hidden;
     text-transform: uppercase;
@@ -361,6 +359,7 @@ header {
     > ._profile {
       .button();
 
+      padding-right: 0;
       font-size: 1rem;
 
       ._picture {

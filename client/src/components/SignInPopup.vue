@@ -7,6 +7,9 @@
       <button class="-github" title="GitHub" v-on:click="auth('github')"><span>GitHub</span></button>
       <button class="-google" title="Google" v-on:click="auth('google')"><span>Google</span></button>
     </div>
+    <p class="_actions">
+      <button class="_action" v-on:click="popup.close">Cancel</button>
+    </p>
   </popup>
 </template>
 
@@ -58,12 +61,15 @@ export default {
   ._auth-methods {
     display: flex;
     justify-content: center;
+    margin-left: -1rem;
+    margin-right: -1rem;
 
     @authButtonSize: 120px;
 
     > button {
       .button();
 
+      border: 1px solid @buttonBorderColor;
       border-radius: 10px;
       height: @authButtonSize;
       margin: 0 1rem;
@@ -71,6 +77,18 @@ export default {
       transition: transform 50ms;
       width: @authButtonSize;
       margin-bottom: 2rem;
+
+      &:after {
+        content: '';
+        position: absolute;
+        border-radius: 7px;
+        left: 3px;
+        right: 3px;
+        top: 3px;
+        bottom: 3px;
+        background-size: cover;
+        background-position: 50% 50%;
+      }
 
       > span {
         position: absolute;
@@ -84,24 +102,30 @@ export default {
       }
 
       &.-facebook {
-        background: url(/static/facebook_logo.png) 50% 50%;
-        background-size: cover;
+        &:after {
+          background-image: url(/static/facebook_logo.png);
+        }
       }
       &.-twitter {
-        background: url(/static/twitter_logo.png) 50% 50%;
-        background-size: cover;
+        &:after {
+          background-image: url(/static/twitter_logo.png);
+        }
       }
       &.-github {
-        background: white url(/static/github_logo.png) 50% 50%;
-        background-size: cover;
+        &:after {
+          background-color: white;
+          background-image: url(/static/github_logo.png);
+        }
       }
       &.-google {
-        background: white url(/static/google_logo.png) 50% 50%;
-        background-size: cover;
+        &:after {
+          background-color: white;
+          background-image: url(/static/google_logo.png);
+        }
       }
 
       &:hover {
-        transform: scale(1.05);
+        border-color: @buttonHoverBorderColor;
       }
     }
   }
