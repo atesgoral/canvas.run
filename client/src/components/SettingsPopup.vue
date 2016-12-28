@@ -20,12 +20,11 @@ export default {
   },
   props: {
     popup: Object,
-    settings: Object,
-    onToggleLayout: Function
+    settings: Object
   },
   methods: {
     toggleLayout() {
-      this.onToggleLayout();
+      this.$emit('toggleLayout');
     }
   }
 }

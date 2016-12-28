@@ -30,8 +30,8 @@
       <!-- error element -->
     </main>
     <sign-in-popup v-bind:popup="signInPopup"></sign-in-popup>
-    <profile-popup v-bind:popup="profilePopup" v-bind:onSignOut="signOut"></profile-popup>
-    <settings-popup v-bind:popup="settingsPopup" v-bind:settings="settings" v-bind:onToggleLayout="toggleLayout"></settings-popup>
+    <profile-popup v-bind:popup="profilePopup" v-on:signOut="signOut"></profile-popup>
+    <settings-popup v-bind:popup="settingsPopup" v-bind:settings="settings" v-on:toggleLayout="toggleLayout"></settings-popup>
   </body>
 </template>
 

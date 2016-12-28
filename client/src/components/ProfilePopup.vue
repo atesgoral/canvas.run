@@ -19,13 +19,12 @@ export default {
     Popup
   },
   props: {
-    popup: Object,
-    onSignOut: Function
+    popup: Object
   },
   methods: {
     signOut() {
       this.popup.close();
-      this.onSignOut();
+      this.$emit('signOut');
     }
   }
 }
