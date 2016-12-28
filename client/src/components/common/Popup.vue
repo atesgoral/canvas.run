@@ -24,8 +24,8 @@ export default {
 </script>
 
 <style lang="less">
-@import "../colors";
-@import "../button";
+@import "colors";
+@import "button";
 
 .popup {
   position: absolute;
@@ -96,6 +96,31 @@ export default {
 
       *:last-child {
         margin-bottom: 0;
+      }
+
+      ._action {
+        .button();
+
+        font-size: 0.75rem;
+        text-transform: uppercase;
+
+        padding: 8px;
+        border: 1px solid @buttonBorderColor;
+        border-radius: 4px;
+
+        &:hover {
+          border-color: @buttonHoverBorderColor;
+        }
+      }
+      > ._actions {
+        margin-top: 3rem;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+
+        > button {
+          margin-left: 4px;
+        }
       }
     }
   }
