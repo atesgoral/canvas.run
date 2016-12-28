@@ -34,4 +34,11 @@ const userSchema = mongoose.Schema({
   }
 });
 
+userSchema.methods.getSummary = function () {
+  return {
+    id: this.id,
+    profile: this.profile
+  }
+};
+
 module.exports = mongoose.model('User', userSchema);

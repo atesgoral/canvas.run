@@ -6,11 +6,11 @@
       <button class="_tool -accent-1" v-on:click="resetState" v-if="run">Reset State</button>
       <span class="_right-aligned">
         <button class="_tool -accent-2" v-on:click="showSettings">Settings</button>
-        <button class="_profile" v-on:click="showProfile" v-if="profile">
-          <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + profile.pictureUrl + ')' }"></span>
-          <span class="_display-name">{{ profile.displayName }}</span>
+        <button class="_profile" v-on:click="showProfile" v-if="user">
+          <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + user.profile.pictureUrl + ')' }"></span>
+          <span class="_display-name">{{ user.profile.displayName }}</span>
         </button>
-        <button class="_tool -accent-3" v-on:click="signIn" v-if="!isSignedIn">Sign in</button>
+        <button class="_tool -accent-3" v-on:click="signIn" v-if="!user">Sign in</button>
       </span>
     </header>
     <main v-bind:class="{ '-horizontal-split': settings.isLayoutHorizontal }">
@@ -30,7 +30,7 @@
       <!-- error element -->
     </main>
     <sign-in-popup v-bind:popup="signInPopup"></sign-in-popup>
-    <profile-popup v-bind:popup="profilePopup" v-on:signOut="signOut"></profile-popup>
+    <profile-popup v-bind:popup="profilePopup" v-bind:user="user" v-on:signOut="signOut"></profile-popup>
     <settings-popup v-bind:popup="settingsPopup" v-bind:settings="settings" v-on:toggleLayout="toggleLayout"></settings-popup>
   </body>
 </template>
@@ -79,8 +79,7 @@ export default {
       rendererSource: null,
       rendererState: {},
       error: null,
-      isSignedIn: false,
-      profile: null,
+      user: null,
       settings: {
         isLayoutHorizontal: true
       }
@@ -101,8 +100,7 @@ export default {
     window.addEventListener('message', (event) => {
       switch (event.data.type) {
       case 'SIGNED_IN':
-        this.isSignedIn = true;
-        this.profile = event.data.profile;
+        this.user = event.data.user;
         break;
       case 'RUNTIME_ERROR':
         this.error = 'Runtime error';
@@ -161,7 +159,7 @@ export default {
         this.error = error.message;
       });
 
-      fetch('/api/profile', { credentials: 'same-origin' })
+      fetch('/api/user', { credentials: 'same-origin' })
         .then((response) => {
           if (response.ok) {
             return response.json();
@@ -169,12 +167,7 @@ export default {
             throw new Error('Not signed in');
           }
         })
-        .then((profile) => {
-          if (profile) {
-            this.isSignedIn = true;
-            this.profile = profile;
-          }
-        });
+        .then((user) => this.user = user);
   },
   methods: {
     save() {
@@ -228,8 +221,7 @@ export default {
       fetch('/auth/signOut', { method: 'POST', credentials: 'same-origin' })
         .then((response) => {
           if (response.ok) {
-            this.isSignedIn = false;
-            this.profile = null;
+            this.user = null;
           }
         });
         // @todo show error?

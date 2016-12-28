@@ -186,9 +186,9 @@ app.use(passport.session());
 
 const apiRoutes = express.Router();
 
-apiRoutes.get('/profile', (req, res) => {
+apiRoutes.get('/user', (req, res) => {
   if (req.user) {
-    res.json(req.user.profile);
+    res.json(req.user.getSummary())
   } else {
     res.json(null);
   }
@@ -201,10 +201,7 @@ apiRoutes.get('/runs/:shortId/:revision?', (req, res) => {
   Run.whenFound(shortId, revision)
     .then(run => {
       res.json({
-        owner: run._ownerId && {
-          id: run._ownerId.id,
-          profile: run._ownerId.profile
-        },
+        owner: run._ownerId && run._ownerId.getSummary(),
         parent: run._parentId && {
           shortId: run._parentId.shortId,
           revision: run._parentId.revision
@@ -258,18 +255,14 @@ apiRoutes.post('/runs', upload, (req, res) => {
       return run
         .save()
         .then(() => Run.populate(run, [{
-          path: '_ownerId',
-          select: 'profile.displayName'
+          path: '_ownerId'
         }, {
           path: '_parentId',
           select: 'shortId revision'
         }]))
         .then(() => {
           res.json({
-            owner: run._ownerId && {
-              id: run._ownerId.id,
-              profile: run._ownerId.profile
-            },
+            owner: run._ownerId && run._ownerId.id.getSummary(),
             parent: run._parentId && {
               shortId: run._parentId.shortId,
               revision: run._parentId.revision
@@ -301,43 +294,43 @@ function sendFunction(res, fn, data) {
 }
 
 authRoutes.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
-  sendFunction(res, function (profile) {
+  sendFunction(res, function (user) {
     window.opener.postMessage({
       type: 'SIGNED_IN',
-      profile: profile
+      user
     }, '*');
     window.close();
-  }, req.user.profile);
+  }, req.user.getSummary());
 });
 
 authRoutes.get('/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), (req, res) => {
-  sendFunction(res, function (profile) {
+  sendFunction(res, function (user) {
     window.opener.postMessage({
       type: 'SIGNED_IN',
-      profile: profile
+      user
     }, '*');
     window.close();
-  }, req.user.profile);
+  }, req.user.getSummary());
 });
 
 authRoutes.get('/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
-  sendFunction(res, function (profile) {
+  sendFunction(res, function (user) {
     window.opener.postMessage({
       type: 'SIGNED_IN',
-      profile: profile
+      user
     }, '*');
     window.close();
-  }, req.user.profile);
+  }, req.user.getSummary());
 });
 
 authRoutes.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  sendFunction(res, function (profile) {
+  sendFunction(res, function (user) {
     window.opener.postMessage({
       type: 'SIGNED_IN',
-      profile: profile
+      user
     }, '*');
     window.close();
-  }, req.user.profile);
+  }, req.user.getSummary());
 });
 
 authRoutes.post('/signOut', (req, res) => {

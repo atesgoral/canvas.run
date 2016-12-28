@@ -1,7 +1,7 @@
 <template>
   <popup title="Profile" v-if="popup.isOpen" v-bind:onClose="popup.close" class="profile-popup">
     <p>
-      Signed in as Ates Goral
+      Signed in as {{ user.profile.displayName }}
       &mdash;
       <button class="_action" v-on:click="signOut">Sign out</button>
     </p>
@@ -19,7 +19,8 @@ export default {
     Popup
   },
   props: {
-    popup: Object
+    popup: Object,
+    user: Object
   },
   methods: {
     signOut() {
