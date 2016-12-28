@@ -1,6 +1,10 @@
 <template>
   <popup title="Profile" v-if="popup.isOpen" v-bind:onClose="popup.close" class="profile-popup">
-    <p>Signed in as Ates Goral &mdash; <button class="_action" v-on:click="signOut">Sign out</button></p>
+    <p>
+      Signed in as Ates Goral
+      &mdash;
+      <button class="_action" v-on:click="signOut">Sign out</button>
+    </p>
     <div class="_actions">
       <button class="_action" v-on:click="popup.close">Close</button>
     </div>

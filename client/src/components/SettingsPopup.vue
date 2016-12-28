@@ -1,6 +1,10 @@
 <template>
   <popup title="Settings" v-if="popup.isOpen" v-bind:onClose="popup.close" class="settings-popup">
-    <button class="_action" v-on:click="toggleLayout">Toggle Layout</button>
+    <p>
+      Layout: {{ settings.isLayoutHorizontal ? 'Horizontal' : 'Vertical' }}
+      &mdash;
+      <button class="_action" v-on:click="toggleLayout">Toggle Layout</button>
+    </p>
     <div class="_actions">
       <button class="_action" v-on:click="popup.close">Close</button>
     </div>
@@ -16,6 +20,7 @@ export default {
   },
   props: {
     popup: Object,
+    settings: Object,
     onToggleLayout: Function
   },
   methods: {

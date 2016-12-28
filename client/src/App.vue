@@ -13,14 +13,14 @@
         <button class="_tool -accent-3" v-on:click="signIn" v-if="!isSignedIn">Sign in</button>
       </span>
     </header>
-    <main v-bind:class="{ '-horizontal-split': isLayoutHorizontal }">
+    <main v-bind:class="{ '-horizontal-split': settings.isLayoutHorizontal }">
       <editor-pane
         ref="editorPane"
         v-bind:run="run"
         v-on:sourceUpdate="handleEditorSourceUpdate"
         v-on:syntaxError="handleEditorSyntaxError"></editor-pane>
       <splitter
-        v-bind:is-horizontal="isLayoutHorizontal"
+        v-bind:is-horizontal="settings.isLayoutHorizontal"
         v-on:drag="handleSplitterDrag"></splitter>
       <output-pane
         v-bind:layoutChangeCnt="layoutChangeCnt"
@@ -31,7 +31,7 @@
     </main>
     <sign-in-popup v-bind:popup="signInPopup"></sign-in-popup>
     <profile-popup v-bind:popup="profilePopup" v-bind:onSignOut="signOut"></profile-popup>
-    <settings-popup v-bind:popup="settingsPopup" v-bind:onToggleLayout="toggleLayout"></settings-popup>
+    <settings-popup v-bind:popup="settingsPopup" v-bind:settings="settings" v-bind:onToggleLayout="toggleLayout"></settings-popup>
   </body>
 </template>
 
@@ -74,14 +74,16 @@ export default {
       signInPopup: new Popup(),
       profilePopup: new Popup(),
       settingsPopup: new Popup(),
-      isLayoutHorizontal: true,
       layoutChangeCnt: 0,
       run: null,
       rendererSource: null,
       rendererState: {},
       error: null,
       isSignedIn: false,
-      profile: null
+      profile: null,
+      settings: {
+        isLayoutHorizontal: true
+      }
     }
   },
   mounted() {
@@ -215,7 +217,7 @@ export default {
       }, 1);
     },
     toggleLayout() {
-      this.isLayoutHorizontal = !this.isLayoutHorizontal
+      this.settings.isLayoutHorizontal = !this.settings.isLayoutHorizontal
       this.resetState();
       this.notifyLayoutChange();
     },
@@ -244,7 +246,7 @@ export default {
       const mainBounds = mainEl.getBoundingClientRect();
       const editorBounds = editorPaneEl.getBoundingClientRect();
 
-      if (this.isLayoutHorizontal) {
+      if (this.settings.isLayoutHorizontal) {
         editorPaneEl.style.flexBasis = (editorBounds.width + offset) / mainBounds.width * 100 + '%';
       } else {
         editorPaneEl.style.flexBasis = (editorBounds.height + offset) / mainBounds.height * 100 + '%';
