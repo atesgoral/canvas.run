@@ -16,6 +16,7 @@
     <main v-bind:class="{ '-horizontal-split': settings.isLayoutHorizontal }">
       <editor-pane
         ref="editorPane"
+        v-bind:style="{ flexBasis: settings.splitterPercentage + '%' }"
         v-bind:run="run"
         v-on:sourceUpdate="handleEditorSourceUpdate"
         v-on:syntaxError="handleEditorSyntaxError"></editor-pane>
@@ -81,11 +82,24 @@ export default {
       error: null,
       user: null,
       settings: {
-        isLayoutHorizontal: true
+        isLayoutHorizontal: true,
+        splitterPercentage: 50
       }
     }
   },
+  watch: {
+    settings: {
+      handler: (settings) => {
+        localStorage.setItem('settings', JSON.stringify(settings));
+      },
+      deep: true
+    }
+  },
   mounted() {
+    try {
+      Object.assign(this.settings, JSON.parse(localStorage.getItem('settings')));
+    } catch (e) {}
+
     window.addEventListener('resize', _.debounce(() => {
       this.resetState();
       this.notifyLayoutChange();
@@ -238,11 +252,9 @@ export default {
       const mainBounds = mainEl.getBoundingClientRect();
       const editorBounds = editorPaneEl.getBoundingClientRect();
 
-      if (this.settings.isLayoutHorizontal) {
-        editorPaneEl.style.flexBasis = (editorBounds.width + offset) / mainBounds.width * 100 + '%';
-      } else {
-        editorPaneEl.style.flexBasis = (editorBounds.height + offset) / mainBounds.height * 100 + '%';
-      }
+      this.settings.splitterPercentage = this.settings.isLayoutHorizontal
+        ? (editorBounds.width + offset) / mainBounds.width * 100
+        : (editorBounds.height + offset) / mainBounds.height * 100;
 
       this.resetState();
       this.notifyLayoutChange();
