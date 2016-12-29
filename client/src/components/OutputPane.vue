@@ -7,80 +7,8 @@
 </template>
 
 <script>
-function iframeBootstrap() {
-  const bodyEl = document.body;
-  const canvasEl = document.getElementsByTagName('canvas')[0];
-
-  bodyEl.style.margin = 0;
-  bodyEl.style.padding = 0;
-  bodyEl.style.height = '100%';
-  canvasEl.style.position = 'absolute';
-  canvasEl.style.background = '#000';
-
-  let renderer = null;
-  let rendererState = {};
-  let epoch = null;
-
-  function notifyParent(type, data) {
-    window.parent.postMessage({
-      type,
-      data
-    }, '*');
-  }
-
-  function resizeCanvas() {
-    var bounds = canvasEl.parentNode.getBoundingClientRect();
-
-    canvasEl.width = bounds.width;
-    canvasEl.height = bounds.height;
-  }
-
-  window.addEventListener('message', (event) => {
-    switch (event.data.type) {
-    case 'RESIZE':
-      resizeCanvas();
-      break;
-    case 'SOURCE':
-      try {
-        renderer = new Function('canvas', 'state', 't', event.data.data);
-      } catch (err) {
-        renderer = null;
-        notifyParent('COMPILATION_ERROR');
-      }
-      break;
-    case 'STATE':
-      rendererState = event.data.data;
-      epoch = null;
-      break;
-    }
-  });
-
-  var render = (t) => {
-    window.requestAnimationFrame(render);
-
-    if (!renderer || !rendererState) {
-      return;
-    }
-
-    if (epoch === null) {
-      epoch = t;
-    }
-
-    try {
-      renderer.call(null, canvasEl, rendererState, t - epoch);
-    } catch (err) {
-      renderer = null;
-      notifyParent('RUNTIME_ERROR');
-    }
-  };
-
-  function run() {
-    window.requestAnimationFrame(render);
-  }
-
-  resizeCanvas();
-  run();
-};
+import iframeBootstrap from './iframeBootstrap';
+import iframeRuntime from './iframeRuntime';
 
 export default {
   props: {
@@ -91,10 +19,7 @@ export default {
   },
   methods: {
     notifyIframe: function (type, data) {
-      this.iframeEl.contentWindow.postMessage({
-        type,
-        data
-      }, '*');
+      this.iframeEl.contentWindow.postMessage({ type, data }, '*');
     }
   },
   watch: {
@@ -112,16 +37,17 @@ export default {
     this.iframeEl = this.$el.querySelector('iframe');
 
     const bootstrapSrc = iframeBootstrap.toString();
-      // .replace('iframeBootstrap', '')
-      // .replace(/\s+(?![a-z])/gi, '')
-      // .replace(/(^|[^a-z])\s+/gi, '$1');
+    const runtimeSrc = iframeRuntime.toString();
 
-    const iframeHtml = '<canvas></canvas>'
-      + '<' + 'script>('
-      + bootstrapSrc
-      + ')();<' + '/script>';
+    const iframeHtml = '<' + 'script>(' + bootstrapSrc + ')()<' + '/script>';
 
     const iframeUrl = 'data:text/html;base64,' + btoa(iframeHtml);
+
+    addEventListener('message', (e) => {
+      if (e.data.type === 'IFRAME_READY') {
+        this.notifyIframe('RUNTIME', runtimeSrc);
+      }
+    });
 
     this.iframeEl.src = iframeUrl;
   }
