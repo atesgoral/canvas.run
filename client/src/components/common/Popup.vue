@@ -14,6 +14,20 @@
 </template>
 
 <script>
+class Popup {
+  constructor() {
+    this.isOpen = false;
+
+    this.close = () => {
+      this.isOpen = false;
+    };
+  }
+
+  open() {
+    this.isOpen = true;
+  }
+}
+
 export default {
   props: {
     title: String,
@@ -21,7 +35,8 @@ export default {
   },
   mounted() {
     this.$el.focus();
-  }
+  },
+  Model: Popup
 }
 </script>
 

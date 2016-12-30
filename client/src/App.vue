@@ -13,6 +13,7 @@
         <button class="_tool -accent-3" v-on:click="signIn" v-if="!user">Sign in</button>
       </span>
     </header>
+    <status v-bind:status="status"></status>
     <main v-bind:class="{ '-horizontal-split': settings.isLayoutHorizontal }">
       <editor-pane
         ref="editorPane"
@@ -40,6 +41,8 @@
 import * as _ from 'lodash/lodash.min'
 import 'whatwg-fetch';
 
+import Popup from './components/common/Popup'
+import Status from './components/Status'
 import EditorPane from './components/EditorPane'
 import Splitter from './components/Splitter'
 import OutputPane from './components/OutputPane'
@@ -47,22 +50,9 @@ import SignInPopup from './components/SignInPopup'
 import ProfilePopup from './components/ProfilePopup'
 import SettingsPopup from './components/SettingsPopup'
 
-class Popup {
-  constructor() {
-    this.isOpen = false;
-
-    this.close = () => {
-      this.isOpen = false;
-    };
-  }
-
-  open() {
-    this.isOpen = true;
-  }
-}
-
 export default {
   components: {
+    Status,
     EditorPane,
     Splitter,
     OutputPane,
@@ -72,9 +62,10 @@ export default {
   },
   data() {
     return {
-      signInPopup: new Popup(),
-      profilePopup: new Popup(),
-      settingsPopup: new Popup(),
+      signInPopup: new Popup.Model(),
+      profilePopup: new Popup.Model(),
+      settingsPopup: new Popup.Model(),
+      status: new Status.Model(),
       layoutChangeCnt: 0,
       run: null,
       rendererSource: null,
@@ -173,11 +164,13 @@ export default {
         this.error = error.message;
       });
 
+      // @todo isInitializing etc. to hide Sign in button while this is happening
       fetch('/api/user', { credentials: 'same-origin' })
         .then((response) => {
           if (response.ok) {
             return response.json();
           } else {
+            // @todo if expected status like 403, don't treat as error
             throw new Error('Not signed in');
           }
         })
@@ -185,9 +178,7 @@ export default {
   },
   methods: {
     save() {
-      if (!this.run) {
-        return;
-      }
+      this.status.info('Saving');
 
       const formData = new FormData();
 
@@ -213,6 +204,11 @@ export default {
             history.replaceState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
           }
           this.run = run;
+          this.status.success('Saved')//.dismiss();
+        })
+        .catch((error) => {
+          console.error(error);
+          this.status.error('Saving failed').dismiss();
         });
     },
     resetState() {
