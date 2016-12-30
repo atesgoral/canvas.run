@@ -106,7 +106,6 @@ export default {
 .splitter {
   position: relative;
   z-index: 10;
-  flex: 0 0 @splitterSize;
   background: @panelBgColor;
   height: @splitterSize;
   user-select: none;
@@ -127,9 +126,8 @@ export default {
 
     &:after {
       content: '';
-      position: absolute;
-      left: 5px;
-      right: 5px;
+      margin: 0 5px;
+      width: 100%;
       height: 3px;
       border-radius: 1.5px;
       background: transparent;
@@ -156,11 +154,8 @@ export default {
       flex-direction: column;
 
       &:after {
-        left: auto;
-        right: auto;
-        height: auto;
-        top: 5px;
-        bottom: 5px;
+        margin: 5px 0;
+        height: 100%;
         width: 3px;
       }
     }
