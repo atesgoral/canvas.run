@@ -161,7 +161,8 @@ export default {
         }
       })
       .catch((error) => {
-        this.error = error.message;
+        this.run = { source: '' };
+        this.status.error(error.message).dismiss();
       });
 
       // @todo isInitializing etc. to hide Sign in button while this is happening
@@ -204,7 +205,7 @@ export default {
             history.replaceState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
           }
           this.run = run;
-          this.status.success('Saved')//.dismiss();
+          this.status.success('Saved').dismiss();
         })
         .catch((error) => {
           console.error(error);
