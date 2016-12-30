@@ -119,42 +119,23 @@ export default {
 
     const path = window.location.pathname.slice(1);
 
-    Promise.resolve()
-      .then(() => {
-        const tokens = path.split('/');
-        const mode = tokens[0];
-        const shortId = tokens[1];
-        const revision = tokens[2];
+    const tokens = path.split('/');
+    const mode = tokens[0];
+    const shortId = tokens[1];
+    const revision = tokens[2];
 
-        let url = '/api/runs/';
+    this.status.pending('Loading');
 
-        if (shortId) {
-          url += shortId;
+    Promise
+      .all([
+        this.fetchCurrentUser(),
+        this.fetchRun(shortId, revision)
+      ])
+      .then((results) => {
+        const user = results[0];
+        const run = results[1];
 
-          if (revision) {
-            url += '/' + revision;
-          }
-        } else {
-          url += 'default';
-        }
-
-        this.status.pending('Loading');
-
-        return fetch(url, { credentials: 'same-origin' })
-          .then((response) => {
-            if (response.ok) {
-              return response.json();
-            } else {
-              switch (response.status) {
-              case 404:
-                throw new Error('Run not found');
-              default:
-                throw new Error('Could not fetch run');
-              }
-            }
-          });
-      })
-      .then((run) => {
+        this.user = user;
         this.run = run;
 
         if (run.shortId) {
@@ -163,23 +144,42 @@ export default {
           history.replaceState(run, 'Default run');
         }
 
-        this.status.close();
         this.isLoading = false;
+        this.status.close();
       })
       .catch((error) => {
         this.run = { source: '' };
+        this.isLoading = false;
         this.status.error(error.message).dismiss();
       });
-
-      this.fetchCurrentUser()
-        .then((user) => this.user = user)
-        .catch((error) => {
-          this.status.error(error);
-        });
   },
   methods: {
-    fetchInitialRun() {
+    fetchRun(shortId, revision) {
+      let url = '/api/runs/';
 
+      if (shortId) {
+        url += shortId;
+
+        if (revision) {
+          url += '/' + revision;
+        }
+      } else {
+        url += 'default';
+      }
+
+      return fetch(url, { credentials: 'same-origin' })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            switch (response.status) {
+            case 404:
+              throw new Error('Run not found');
+            default:
+              throw new Error('Could not fetch run');
+            }
+          }
+        });
     },
     fetchCurrentUser() {
       return fetch('/api/user', { credentials: 'same-origin' })
