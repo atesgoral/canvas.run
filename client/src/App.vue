@@ -171,20 +171,26 @@ export default {
         this.status.error(error.message).dismiss();
       });
 
-      // @todo isInitializing etc. to hide Sign in button while this is happening
-      fetch('/api/user', { credentials: 'same-origin' })
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            return null;
-            // @todo handle non-403 response
-            // throw new Error();
-          }
-        })
-        .then((user) => this.user = user);
+      this.fetchCurrentUser()
+        .then((user) => this.user = user)
+        .catch((error) => {
+          this.status.error(error);
+        });
   },
   methods: {
+    fetchInitialRun() {
+
+    },
+    fetchCurrentUser() {
+      return fetch('/api/user', { credentials: 'same-origin' })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('User fetch failed');
+          }
+
+          return response.json();
+        });
+    },
     save() {
       this.status.pending('Saving');
 
