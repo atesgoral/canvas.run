@@ -4,7 +4,7 @@
       <h1><a href="/">CanvasRun</a></h1>
       <button class="_tool -accent-3" v-on:click="save" v-if="run">{{ run.shortId ? 'Update' : 'Save' }}</button>
       <button class="_tool -accent-1" v-on:click="resetState" v-if="run">Reset State</button>
-      <span class="_right-aligned">
+      <span class="_right-aligned" v-if="!isLoading">
         <button class="_tool -accent-2" v-on:click="showSettings">Settings</button>
         <button class="_profile" v-on:click="showProfile" v-if="user">
           <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + user.profile.pictureUrl + ')' }"></span>
@@ -65,6 +65,7 @@ export default {
       signInPopup: new Popup.Model(),
       profilePopup: new Popup.Model(),
       settingsPopup: new Popup.Model(),
+      isLoading: true,
       status: new Status.Model(),
       layoutChangeCnt: 0,
       run: null,
@@ -163,6 +164,7 @@ export default {
         }
 
         this.status.close();
+        this.isLoading = false;
       })
       .catch((error) => {
         this.run = { source: '' };
