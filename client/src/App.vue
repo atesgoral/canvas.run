@@ -137,6 +137,8 @@ export default {
           url += 'default';
         }
 
+        this.status.pending('Loading');
+
         return fetch(url, { credentials: 'same-origin' })
           .then((response) => {
             if (response.ok) {
@@ -159,6 +161,8 @@ export default {
         } else {
           history.replaceState(run, 'Default run');
         }
+
+        this.status.close();
       })
       .catch((error) => {
         this.run = { source: '' };
@@ -171,15 +175,16 @@ export default {
           if (response.ok) {
             return response.json();
           } else {
-            // @todo if expected status like 403, don't treat as error
-            throw new Error('Not signed in');
+            return null;
+            // @todo handle non-403 response
+            // throw new Error();
           }
         })
         .then((user) => this.user = user);
   },
   methods: {
     save() {
-      this.status.info('Saving');
+      this.status.pending('Saving');
 
       const formData = new FormData();
 
