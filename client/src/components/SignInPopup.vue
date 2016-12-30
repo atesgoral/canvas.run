@@ -58,6 +58,10 @@ export default {
 @import "common/button";
 
 .sign-in-popup {
+  ._frame {
+    width: 672px;
+  }
+
   ._auth-methods {
     display: flex;
     justify-content: center;
