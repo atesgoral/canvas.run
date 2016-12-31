@@ -2,7 +2,7 @@
   <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1>
-      <button class="_tool -accent-3" v-on:click="save" v-if="run">{{ run.shortId ? 'Update' : 'Save' }}</button>
+      <button class="_tool -accent-3" v-on:click="save" v-bind:disabled="!run.isDirty" v-if="run">{{ run.shortId ? 'Update' : 'Save' }}</button>
       <button class="_tool -accent-1" v-on:click="resetState" v-if="run">Reset State</button>
       <span class="_right-aligned" v-if="!isLoading">
         <button class="_tool -accent-2" v-on:click="showSettings">Settings</button>
@@ -270,6 +270,9 @@ export default {
       this.notifyLayoutChange();
     },
     handleEditorSourceUpdate(source) {
+      if (source !== this.run.source) {
+        this.run.isDirty = true;
+      }
       this.run.source = source;
       this.rendererSource = source;
       this.error = null;
