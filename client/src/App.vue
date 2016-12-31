@@ -107,6 +107,7 @@ export default {
       switch (event.data.type) {
       case 'SIGNED_IN':
         this.user = event.data.user;
+        this.status.success('Signed in').dismiss();
         break;
       case 'RUNTIME_ERROR':
         this.error = 'Runtime error';
@@ -124,7 +125,7 @@ export default {
     const shortId = tokens[1];
     const revision = tokens[2];
 
-    this.status.pending('Loading');
+    this.status.pending('Initializing');
 
     Promise
       .all([
@@ -150,7 +151,8 @@ export default {
       .catch((error) => {
         this.run = { source: '' };
         this.isLoading = false;
-        this.status.error(error.message).dismiss();
+        console.error(error.message);
+        this.status.error('Error during initialization').dismiss();
       });
   },
   methods: {
@@ -242,13 +244,22 @@ export default {
       this.signInPopup.open();
     },
     signOut() {
+      this.status.pending('Signing out');
+
       fetch('/auth/signOut', { method: 'POST', credentials: 'same-origin' })
         .then((response) => {
-          if (response.ok) {
-            this.user = null;
+          if (!response.ok) {
+            throw new Error('Error signing out');
           }
+        })
+        .then(() => {
+          this.user = null;
+          this.status.success('Signed out').dismiss();
+        })
+        .catch((error) => {
+          console.error(error);
+          this.status.error('Error while signing out').dismiss();
         });
-        // @todo show error?
     },
     showProfile() {
       this.profilePopup.open();
