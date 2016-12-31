@@ -12,10 +12,17 @@ export default {
   props: {
     run: Object
   },
+  watch: {
+    run: function (run) {
+      this.editor.setValue(run.source, -1);
+    }
+  },
   mounted() {
     ace.config.set('workerPath', '/static');
 
     const editor = ace.edit(this.$el)
+
+    this.editor = editor;
 
     editor.$blockScrolling = Infinity
     editor.setShowPrintMargin(false)
@@ -27,11 +34,6 @@ export default {
     session.setMode('ace/mode/javascript')
     session.setUseSoftTabs(true)
     session.setTabSize(2)
-
-    // @todo use watch declaration
-    this.$watch('run', (run) => {
-      editor.setValue(run.source, -1);
-    });
 
     const emitSyntaxError = () => {
       this.$emit('syntaxError');
