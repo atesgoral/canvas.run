@@ -107,7 +107,7 @@ export default {
         text-align: center;
       }
 
-      &:hover {
+      &:enabled:hover {
         &:before {
           color: @buttonHoverContentColor;
         }
@@ -169,7 +169,7 @@ export default {
         border: 1px solid @buttonBorderColor;
         border-radius: 4px;
 
-        &:hover {
+        &:enabled:hover {
           border-color: @buttonHoverBorderColor;
         }
 

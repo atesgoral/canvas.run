@@ -333,7 +333,7 @@ header {
         opacity: 1;
       }
 
-      &:hover {
+      &:enabled:hover {
         opacity: 1;
       }
     }
@@ -368,7 +368,7 @@ header {
       }
     }
 
-    &:hover {
+    &:enabled:hover {
       &:after {
         bottom: 6px;
       }

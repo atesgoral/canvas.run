@@ -4,12 +4,19 @@
   background: transparent;
   border: none;
   color: @buttonContentColor;
-  cursor: pointer;
   font-family: 'Varela Round', sans-serif;
   margin: 0;
 
-  &:hover {
-    color: @buttonHoverContentColor;
+  &:enabled {
+    cursor: pointer;
+
+    &:hover {
+      color: @buttonHoverContentColor;
+    }
+  }
+
+  &:disabled {
+    opacity: .5;
   }
 
   &:focus {
