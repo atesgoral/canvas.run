@@ -5,7 +5,14 @@
       &mdash;
       <button class="_action" v-on:click="signOut">Sign out</button>
     </p>
+    <p>
+      <label>
+        Display Name
+        <input value="Ates Goral">
+      </label>
+    </p>
     <div class="_actions">
+      <button class="_action">Update</button>
       <button class="_action" v-on:click="popup.close">Close</button>
     </div>
   </popup>

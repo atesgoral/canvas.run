@@ -112,17 +112,51 @@ export default {
           color: @buttonHoverContentColor;
         }
       }
+
+      &:focus {
+        &:before {
+          color: @accent2Color;
+        }
+      }
     }
 
     > ._content {
       padding: 3rem;
 
-      *:first-child {
+      > *:first-child {
         margin-top: 0;
       }
 
-      *:last-child {
+      > *:last-child {
         margin-bottom: 0;
+      }
+
+      label {
+        display: block;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+
+        input {
+          margin: 4px 0 0;
+          width: 100%;
+          box-sizing: border-box;
+          padding: 8px;
+          border: 1px solid @inputBackgroundColor;
+          border-radius: 4px;
+          background: @inputBackgroundColor;
+          color: @inputContentColor;
+          font-size: 1rem;
+
+          &:focus {
+            outline: none;
+            border: 1px solid @accent2Color;
+          }
+
+          &::selection {
+            background: @accent2Color;
+            color: @inputBackgroundColor;
+          }
+        }
       }
 
       ._action {
@@ -137,6 +171,10 @@ export default {
 
         &:hover {
           border-color: @buttonHoverBorderColor;
+        }
+
+        &:focus {
+          border-color: @accent2Color;
         }
       }
       > ._actions {
