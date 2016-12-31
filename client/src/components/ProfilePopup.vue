@@ -67,6 +67,9 @@ export default {
         })
         .then((profile) => {
           this.user.profile = profile;
+        })
+        .catch((error) => {
+          console.error(error);
         });
     }
   }

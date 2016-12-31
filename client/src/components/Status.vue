@@ -38,21 +38,10 @@ class Status {
     }
   }
 
-  pending(message) {
-    return this.open('PENDING', message);
-  }
-
-  info(message) {
-    return this.open('INFO', message);
-  }
-
-  success(message) {
-    return this.open('SUCCESS', message);
-  }
-
-  error(message) {
-    return this.open('ERROR', message);
-  }
+  pending(message) { return this.open('PENDING', message); }
+  info(message) { return this.open('INFO', message); }
+  success(message) { return this.open('SUCCESS', message); }
+  error(message) { return this.open('ERROR', message); }
 
   dismiss() {
     this.dismissTimeout = setTimeout(() => {
