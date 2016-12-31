@@ -278,7 +278,6 @@ export default {
       this.error = null;
     },
     handleEditorSyntaxError() {
-      console.log('syntax error');
       this.rendererSource = null;
       this.error = 'Syntax error';
     }
