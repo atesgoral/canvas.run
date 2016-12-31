@@ -12,8 +12,8 @@ const GitHubStrategy = require('passport-github');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const errors = require('./errors');
-const userRoutes = require('./routes/user');
-const runRoutes = require('./routes/run');
+const userRouter = require('./routers/user');
+const runRouter = require('./routers/run');
 const User = require('./models/user');
 
 mongoose.Promise = Promise;
@@ -192,25 +192,25 @@ app.use(passport.session());
 //   }
 // }
 
-const apiRoutes = express.Router();
+const apiRouter = express.Router();
 
-apiRoutes.use('/user', userRoutes);
-apiRoutes.use('/runs', runRoutes);
+apiRouter.use('/user', userRouter);
+apiRouter.use('/runs', runRouter);
 
-app.use('/api', apiRoutes);
+app.use('/api', apiRouter);
 
-const authRoutes = express.Router();
+const authRouter = express.Router();
 
-authRoutes.get('/facebook', passport.authenticate('facebook'));
-authRoutes.get('/twitter', passport.authenticate('twitter'));
-authRoutes.get('/github', passport.authenticate('github'));
-authRoutes.get('/google', passport.authenticate('google', { scope: [ 'profile' ] }));
+authRouter.get('/facebook', passport.authenticate('facebook'));
+authRouter.get('/twitter', passport.authenticate('twitter'));
+authRouter.get('/github', passport.authenticate('github'));
+authRouter.get('/google', passport.authenticate('google', { scope: [ 'profile' ] }));
 
 function sendFunction(res, fn, data) {
   res.end(`<script>(${fn})(${JSON.stringify(data)});</script>`);
 }
 
-authRoutes.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
+authRouter.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
   sendFunction(res, function (user) {
     window.opener.postMessage({
       type: 'SIGNED_IN',
@@ -220,7 +220,7 @@ authRoutes.get('/facebook/callback', passport.authenticate('facebook', { failure
   }, req.user.getSummary());
 });
 
-authRoutes.get('/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), (req, res) => {
+authRouter.get('/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), (req, res) => {
   sendFunction(res, function (user) {
     window.opener.postMessage({
       type: 'SIGNED_IN',
@@ -230,7 +230,7 @@ authRoutes.get('/twitter/callback', passport.authenticate('twitter', { failureRe
   }, req.user.getSummary());
 });
 
-authRoutes.get('/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
+authRouter.get('/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
   sendFunction(res, function (user) {
     window.opener.postMessage({
       type: 'SIGNED_IN',
@@ -240,7 +240,7 @@ authRoutes.get('/github/callback', passport.authenticate('github', { failureRedi
   }, req.user.getSummary());
 });
 
-authRoutes.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+authRouter.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
   sendFunction(res, function (user) {
     window.opener.postMessage({
       type: 'SIGNED_IN',
@@ -250,12 +250,12 @@ authRoutes.get('/google/callback', passport.authenticate('google', { failureRedi
   }, req.user.getSummary());
 });
 
-authRoutes.post('/signOut', (req, res) => {
+authRouter.post('/signOut', (req, res) => {
   req.logout();
   res.end();
 });
 
-app.use('/auth', authRoutes);
+app.use('/auth', authRouter);
 
 app.get(/^\/(edit|view|embed)\/[A-Z\d]+(\/\d+)?$/i, (req, res) => {
   res.sendFile('index.html', {
