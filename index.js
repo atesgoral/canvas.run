@@ -2,18 +2,21 @@ require('env-deploy')();
 
 const express = require('express');
 const bifrost = require('express-bifrost');
-const mongoose = require('mongoose');
 const session = require('express-session');
+const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
-const FacebookStrategy = require('passport-facebook');
-const TwitterStrategy = require('passport-twitter');
-const GitHubStrategy = require('passport-github');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const errors = require('./errors');
-const userRouter = require('./routers/user');
-const runRouter = require('./routers/run');
+
+const facebookStrategy = require('./strategies/facebook');
+const twitterStrategy = require('./strategies/twitter');
+const gitHubStrategy = require('./strategies/gitHub');
+const googleStrategy = require('./strategies/google');
+
+const apiRouter = require('./routers/api');
+const authRouter = require('./routers/auth');
+
 const User = require('./models/user');
 
 mongoose.Promise = Promise;
@@ -27,8 +30,6 @@ mongoose.connection.on('error', (err) => {
   console.error('DB connection error', err);
 });
 
-const app = express();
-
 bifrost.defaults.err = (res, next, error) => {
   if (error instanceof errors.ResourceNotFoundError) {
     res.status(404).end();
@@ -37,140 +38,17 @@ bifrost.defaults.err = (res, next, error) => {
   }
 };
 
+passport.use(facebookStrategy);
+passport.use(twitterStrategy);
+passport.use(gitHubStrategy);
+passport.use(googleStrategy);
+
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser((userId, done) => User.findById(userId, done));
+
+const app = express();
+
 app.use('/', express.static(__dirname + '/client/dist'));
-
-passport.use(
-  new FacebookStrategy({
-    clientID: process.env.AUTH_FACEBOOK_APP_ID,
-    clientSecret: process.env.AUTH_FACEBOOK_APP_SECRET,
-    callbackURL: process.env.AUTH_FACEBOOK_CALLBACK_URL,
-    profileFields: [ 'displayName', 'picture' ]
-  },
-  (accessToken, refreshToken, profile, callback) => {
-    User
-      .findOne({ facebookId: profile.id })
-      .then((user) => {
-        if (user) {
-          return user;
-        }
-
-        const newUser = new User({
-          profile: {
-            displayName: profile.displayName,
-            pictureUrl: profile.photos && profile.photos[0].value
-          },
-          facebookId: profile.id
-        });
-
-        return newUser.save();
-      })
-      .then((user) => {
-        callback(null, user);
-      })
-      .catch(callback);
-  }
-));
-
-passport.use(
-  new TwitterStrategy({
-    consumerKey: process.env.AUTH_TWITTER_CONSUMER_KEY,
-    consumerSecret: process.env.AUTH_TWITTER_CONSUMER_SECRET,
-    callbackURL: process.env.AUTH_TWITTER_CALLBACK_URL
-  },
-  (accessToken, refreshToken, profile, callback) => {
-    User
-      .findOne({ twitterId: profile.id })
-      .then((user) => {
-        if (user) {
-          return user;
-        }
-
-        const newUser = new User({
-          profile: {
-            displayName: profile.displayName,
-            pictureUrl: profile.photos && profile.photos[0].value
-          },
-          twitterId: profile.id
-        });
-
-        return newUser.save();
-      })
-      .then((user) => {
-        callback(null, user);
-      })
-      .catch(callback);
-  }
-));
-
-passport.use(
-  new GitHubStrategy({
-    clientID: process.env.AUTH_GITHUB_CLIENT_ID,
-    clientSecret: process.env.AUTH_GITHUB_CLIENT_SECRET,
-    callbackURL: process.env.AUTH_GITHUB_CALLBACK_URL
-  },
-  (accessToken, refreshToken, profile, callback) => {
-    User
-      .findOne({ gitHubId: profile.id })
-      .then((user) => {
-        if (user) {
-          return user;
-        }
-
-        const newUser = new User({
-          profile: {
-            displayName: profile.displayName,
-            pictureUrl: profile.photos && profile.photos[0].value
-          },
-          gitHubId: profile.id
-        });
-
-        return newUser.save();
-      })
-      .then((user) => {
-        callback(null, user);
-      })
-      .catch(callback);
-  }
-));
-
-passport.use(
-  new GoogleStrategy({
-    clientID: process.env.AUTH_GOOGLE_CLIENT_ID,
-    clientSecret: process.env.AUTH_GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.AUTH_GOOGLE_CALLBACK_URL
-  },
-  (accessToken, refreshToken, profile, callback) => {
-    User
-      .findOne({ googleId: profile.id })
-      .then((user) => {
-        if (user) {
-          return user;
-        }
-
-        const newUser = new User({
-          profile: {
-            displayName: profile.displayName,
-            pictureUrl: profile.photos && profile.photos[0].value
-          },
-          googleId: profile.id
-        });
-
-        return newUser.save();
-      })
-      .then((user) => {
-        callback(null, user);
-      })
-      .catch(callback);
-  }
-));
-
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-passport.deserializeUser((userId, done) => {
-  User.findById(userId, done);
-});
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -181,80 +59,11 @@ app.use(session({
     touchAfter: 24 * 3600
   })
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
-// function requireSignIn(req, res, next) {
-//   if (req.user) {
-//     next();
-//   } else {
-//     res.sendStatus(401);
-//   }
-// }
-
-const apiRouter = express.Router();
-
-apiRouter.use('/user', userRouter);
-apiRouter.use('/runs', runRouter);
-
 app.use('/api', apiRouter);
-
-const authRouter = express.Router();
-
-authRouter.get('/facebook', passport.authenticate('facebook'));
-authRouter.get('/twitter', passport.authenticate('twitter'));
-authRouter.get('/github', passport.authenticate('github'));
-authRouter.get('/google', passport.authenticate('google', { scope: [ 'profile' ] }));
-
-function sendFunction(res, fn, data) {
-  res.end(`<script>(${fn})(${JSON.stringify(data)});</script>`);
-}
-
-authRouter.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), (req, res) => {
-  sendFunction(res, function (user) {
-    window.opener.postMessage({
-      type: 'SIGNED_IN',
-      user
-    }, '*');
-    window.close();
-  }, req.user.getSummary());
-});
-
-authRouter.get('/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), (req, res) => {
-  sendFunction(res, function (user) {
-    window.opener.postMessage({
-      type: 'SIGNED_IN',
-      user
-    }, '*');
-    window.close();
-  }, req.user.getSummary());
-});
-
-authRouter.get('/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), (req, res) => {
-  sendFunction(res, function (user) {
-    window.opener.postMessage({
-      type: 'SIGNED_IN',
-      user
-    }, '*');
-    window.close();
-  }, req.user.getSummary());
-});
-
-authRouter.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  sendFunction(res, function (user) {
-    window.opener.postMessage({
-      type: 'SIGNED_IN',
-      user
-    }, '*');
-    window.close();
-  }, req.user.getSummary());
-});
-
-authRouter.post('/signOut', (req, res) => {
-  req.logout();
-  res.end();
-});
-
 app.use('/auth', authRouter);
 
 app.get(/^\/(edit|view|embed)\/[A-Z\d]+(\/\d+)?$/i, (req, res) => {
