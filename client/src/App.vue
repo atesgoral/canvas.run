@@ -328,6 +328,11 @@ header {
       background-size: contain;
       opacity: .75;
 
+      &:focus {
+        outline: none;
+        opacity: 1;
+      }
+
       &:hover {
         opacity: 1;
       }
@@ -355,6 +360,12 @@ header {
       border-radius: 1.5px;
       bottom: -3px;
       transition: bottom 100ms;
+    }
+
+    &:focus {
+      &:after {
+        bottom: 4px;
+      }
     }
 
     &:hover {
@@ -401,6 +412,10 @@ header {
         display: inline-block;
         margin-left: 5px;
         font-size: 0.75rem;
+      }
+
+      &:focus {
+        color: @buttonHoverContentColor;
       }
     }
 

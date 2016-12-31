@@ -128,6 +128,14 @@ export default {
         }
       }
 
+      &:focus {
+        border-color: @accent2Color;
+
+        > span {
+          color: @accent2Color;
+        }
+      }
+
       &:hover {
         border-color: @buttonHoverBorderColor;
       }
