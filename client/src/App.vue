@@ -31,9 +31,9 @@
         v-bind:error="error"></output-pane>
       <!-- error element -->
     </main>
-    <sign-in-popup v-bind:popup="signInPopup"></sign-in-popup>
-    <profile-popup v-bind:popup="profilePopup" v-bind:user="user" v-on:signOut="signOut"></profile-popup>
-    <settings-popup v-bind:popup="settingsPopup" v-bind:settings="settings" v-on:toggleLayout="toggleLayout"></settings-popup>
+    <sign-in-popup v-if="signInPopup.isOpen" v-bind:popup="signInPopup"></sign-in-popup>
+    <profile-popup v-if="profilePopup.isOpen" v-bind:popup="profilePopup" v-bind:user="user" v-on:signOut="signOut"></profile-popup>
+    <settings-popup v-if="settingsPopup.isOpen" v-bind:popup="settingsPopup" v-bind:settings="settings" v-on:toggleLayout="toggleLayout"></settings-popup>
   </body>
 </template>
 
@@ -196,15 +196,21 @@ export default {
     save() {
       this.status.pending('Saving');
 
-      const formData = new FormData();
+      const body = new FormData();
 
       if (this.run.shortId) {
-        formData.append('shortId', this.run.shortId);
+        body.append('shortId', this.run.shortId);
       }
 
-      formData.append('source', this.run.source);
+      body.append('source', this.run.source);
 
-      fetch('/api/runs', { method: 'POST', body: formData, credentials: 'same-origin' })
+      const options = {
+        method: 'POST',
+        body,
+        credentials: 'same-origin'
+      };
+
+      fetch('/api/runs', options)
         .then((response) => {
           if (response.ok) {
             return response.json();
