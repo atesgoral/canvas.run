@@ -48,7 +48,7 @@ const runSchema = mongoose.Schema({
 runSchema.statics.whenFound = function (shortId, revision) {
   if (shortId === 'default') {
     return new Promise((resolve, reject) => {
-      fs.readFile(path.join(__dirname, 'defaultRun.js'), 'utf8', (err, data) => {
+      fs.readFile(path.join(__dirname, '..', 'data', 'defaultRun.js'), 'utf8', (err, data) => {
         if (err) {
           reject(err);
         } else {
