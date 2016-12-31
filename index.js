@@ -11,9 +11,10 @@ const TwitterStrategy = require('passport-twitter');
 const GitHubStrategy = require('passport-github');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-const User = require('./models/user');
 const errors = require('./errors');
+const userRoutes = require('./routes/user');
 const runRoutes = require('./routes/run');
+const User = require('./models/user');
 
 mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGODB_URI);
@@ -193,14 +194,7 @@ app.use(passport.session());
 
 const apiRoutes = express.Router();
 
-apiRoutes.get('/user', (req, res) => {
-  if (req.user) {
-    res.json(req.user.getSummary())
-  } else {
-    res.json(null);
-  }
-});
-
+apiRoutes.use('/user', userRoutes);
 apiRoutes.use('/runs', runRoutes);
 
 app.use('/api', apiRoutes);
