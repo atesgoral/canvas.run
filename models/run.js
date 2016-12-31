@@ -7,6 +7,8 @@ const mongoose = require('mongoose');
 const basek = require('basek');
 const ShortId = require('mongoose-shortid-nodeps');
 
+const errors = require('../errors');
+
 const runSchema = mongoose.Schema({
   _ownerId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -73,7 +75,7 @@ runSchema.statics.whenFound = function (shortId, revision) {
     .exec()
     .then((run) => {
       if (!run) {
-        throw new Error('Run not found');
+        throw new errors.ResourceNotFoundError('Run not found');
       }
 
       return run;

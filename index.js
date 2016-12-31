@@ -1,8 +1,7 @@
 require('env-deploy')();
 
-const crypto = require('crypto');
 const express = require('express');
-const multer = require('multer');
+const bifrost = require('express-bifrost');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
@@ -12,8 +11,9 @@ const TwitterStrategy = require('passport-twitter');
 const GitHubStrategy = require('passport-github');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-const Run = require('./models/run');
 const User = require('./models/user');
+const errors = require('./errors');
+const runRoutes = require('./routes/run');
 
 mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGODB_URI);
@@ -27,7 +27,14 @@ mongoose.connection.on('error', (err) => {
 });
 
 const app = express();
-const upload = multer().none();
+
+bifrost.defaults.err = (res, next, error) => {
+  if (error instanceof errors.ResourceNotFoundError) {
+    res.status(404).end();
+  } else {
+    res.status(500).end();
+  }
+};
 
 app.use('/', express.static(__dirname + '/client/dist'));
 
@@ -194,91 +201,7 @@ apiRoutes.get('/user', (req, res) => {
   }
 });
 
-apiRoutes.get('/runs/:shortId/:revision?', (req, res) => {
-  const shortId = req.params.shortId;
-  const revision = req.params.revision && parseInt(req.params.revision, 10);
-
-  Run.whenFound(shortId, revision)
-    .then(run => {
-      res.json({
-        owner: run._ownerId && run._ownerId.getSummary(),
-        parent: run._parentId && {
-          shortId: run._parentId.shortId,
-          revision: run._parentId.revision
-        },
-        shortId: run.shortId,
-        revision: run.revision,
-        source: run.source,
-        createdAt: run.createdAt
-      });
-    })
-    .catch(err => {
-      res.sendStatus(404);
-    });
-});
-
-apiRoutes.post('/runs', upload, (req, res) => {
-  const shortId = req.body.shortId;
-  const source = req.body.source;
-
-  let parentRun = undefined;
-
-  Promise.resolve()
-    .then(() => {
-      if (shortId) {
-        return Run
-          .whenFound(shortId)
-          .then((run) => {
-            parentRun = run;
-            return run.revision + 1;
-          });
-      } else {
-        return 0;
-      }
-    })
-    .then((revision) => {
-      const shasum = crypto.createHash('sha1');
-
-      shasum.update(source);
-
-      const hash = shasum.digest('hex');
-
-      const run = new Run({
-        _ownerId: req.user && req.user._id,
-        _parentId: parentRun && parentRun.id,
-        shortId,
-        revision,
-        source,
-        hash
-      });
-
-      return run
-        .save()
-        .then(() => Run.populate(run, [{
-          path: '_ownerId'
-        }, {
-          path: '_parentId',
-          select: 'shortId revision'
-        }]))
-        .then(() => {
-          res.json({
-            owner: run._ownerId && run._ownerId.getSummary(),
-            parent: run._parentId && {
-              shortId: run._parentId.shortId,
-              revision: run._parentId.revision
-            },
-            shortId: run.shortId,
-            revision: run.revision,
-            source: run.source,
-            createdAt: run.createdAt
-          });
-        });
-    })
-    .catch((error) => {
-      console.error(error);
-      res.sendStatus(500);
-    });
-});
+apiRoutes.use('/runs', runRoutes);
 
 app.use('/api', apiRoutes);
 
