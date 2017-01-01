@@ -1,5 +1,5 @@
 <template>
-  <popup title="Settings" v-bind:onClose="popup.close" class="settings-popup">
+  <popup title="Settings" v-bind:popup="popup" class="settings-popup">
     <p>
       Layout: {{ settings.isLayoutHorizontal ? 'Horizontal' : 'Vertical' }}
       &mdash;

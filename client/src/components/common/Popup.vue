@@ -1,10 +1,11 @@
 <template>
   <transition name="fade-slide">
-    <div class="popup" tabindex="0" v-on:keyup.esc="onClose()">
+    <div class="popup" tabindex="0" v-on:keyup.esc="popup.close">
       <div class="_modal-mask"></div>
       <div class="_frame">
         <h2 class="_title">{{ title }}</h2>
-        <button class="_close-button" title="Close" v-on:click="onClose()">Close</button>
+        <button class="_close-button" title="Close" v-on:click="popup.close">Close</button>
+        <status v-bind:status="popup.status"></status>
         <div class="_content">
           <slot></slot>
         </div>
@@ -14,9 +15,12 @@
 </template>
 
 <script>
+import Status from './Status';
+
 class Popup {
   constructor() {
     this.isOpen = false;
+    this.status = new Status.Model();
 
     this.close = () => {
       this.isOpen = false;
@@ -29,9 +33,12 @@ class Popup {
 }
 
 export default {
+  components: {
+    Status
+  },
   props: {
     title: String,
-    onClose: Function
+    popup: Object
   },
   mounted() {
     this.$el.focus();
@@ -118,6 +125,13 @@ export default {
           color: @accent2Color;
         }
       }
+    }
+
+    > .status {
+      position: absolute;
+      bottom: .5rem;
+      left: 50%;
+      z-index: 2;
     }
 
     > ._content {

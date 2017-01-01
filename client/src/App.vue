@@ -42,7 +42,7 @@ import * as _ from 'lodash/lodash.min'
 import 'whatwg-fetch';
 
 import Popup from './components/common/Popup'
-import Status from './components/Status'
+import Status from './components/common/Status'
 import EditorPane from './components/EditorPane'
 import Splitter from './components/Splitter'
 import OutputPane from './components/OutputPane'
@@ -443,6 +443,12 @@ header {
       margin-right: 0;
     }
   }
+}
+body > .status {
+  position: absolute;
+  z-index: 20;
+  top: 80px;
+  left: 50%;
 }
 main {
   position: absolute;

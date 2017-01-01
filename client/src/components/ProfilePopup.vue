@@ -1,5 +1,5 @@
 <template>
-  <popup title="Profile" v-bind:onClose="popup.close" class="profile-popup">
+  <popup title="Profile" v-bind:popup="popup" class="profile-popup">
     <p>
       <label>
         Display Name
@@ -17,7 +17,7 @@
 <script>
 import 'whatwg-fetch';
 
-import Popup from './common/Popup'
+import Popup from './common/Popup';
 
 export default {
   components: {
@@ -56,6 +56,8 @@ export default {
         credentials: 'same-origin'
       };
 
+      this.popup.status.pending('Updating');
+
       fetch('/api/profile', options)
         .then((response) => {
           if (!response.ok) {
@@ -67,9 +69,11 @@ export default {
         })
         .then((profile) => {
           this.user.profile = profile;
+          this.popup.status.success('Updated').dismiss();
         })
         .catch((error) => {
           console.error(error);
+          this.popup.status.error('Update failed').dismiss();
         });
     }
   }

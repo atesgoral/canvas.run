@@ -60,7 +60,7 @@ export default {
 </script>
 
 <style lang="less">
-@import "./common/colors";
+@import "./colors";
 
 @statusBgColor: @panelBgColor;
 @statusContentColor: @panelContentColor;
@@ -69,11 +69,6 @@ export default {
 @statusIndicatorErrorColor: @accent1Color;
 
 .status {
-  position: absolute;
-  z-index: 20;
-  top: 80px;
-  left: 50%;
-  text-align: center;
   color: @statusContentColor;
 
   > ._indicator {

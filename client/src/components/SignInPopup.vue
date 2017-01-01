@@ -1,5 +1,5 @@
 <template>
-  <popup title="Sign in" v-bind:onClose="popup.close" class="sign-in-popup">
+  <popup title="Sign in" v-bind:popup="popup" class="sign-in-popup">
     <h3>Sign in using:</h3>
     <div class="_auth-methods">
       <button class="-facebook" title="Facebook" v-on:click="auth('facebook')"><span>Facebook</span></button>
