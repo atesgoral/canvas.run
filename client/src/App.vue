@@ -2,7 +2,7 @@
   <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1>
-      <button class="_tool -accent-3" v-on:click="save" v-bind:disabled="!run.isDirty" v-if="run">{{ run.shortId ? 'Update' : 'Save' }}</button>
+      <action-button class="_tool -accent-3" v-bind:action="save" v-bind:disabled="!run.isDirty" v-if="run">{{ run.shortId ? 'Update' : 'Save' }}</action-button>
       <button class="_tool -accent-1" v-on:click="resetState" v-if="run">Reset State</button>
       <span class="_right-aligned" v-if="!isLoading">
         <button class="_tool -accent-2" v-on:click="showSettings">Settings</button>
@@ -41,6 +41,7 @@
 import * as _ from 'lodash/lodash.min'
 import 'whatwg-fetch';
 
+import ActionButton from './components/common/ActionButton'
 import Popup from './components/common/Popup'
 import Status from './components/common/Status'
 import EditorPane from './components/EditorPane'
@@ -52,6 +53,7 @@ import SettingsPopup from './components/SettingsPopup'
 
 export default {
   components: {
+    ActionButton,
     Status,
     EditorPane,
     Splitter,
@@ -210,7 +212,7 @@ export default {
         credentials: 'same-origin'
       };
 
-      fetch('/api/runs', options)
+      return fetch('/api/runs', options)
         .then((response) => {
           if (response.ok) {
             return response.json();

@@ -63,6 +63,12 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+if (process.env.NODE_ENV != 'production') {
+  app.use((req, res, next) => {
+    setTimeout(next, 1000);
+  });
+}
+
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
 

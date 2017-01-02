@@ -7,7 +7,7 @@
       </label>
     </p>
     <div class="_actions">
-      <button class="_action" v-on:click="update">Update</button>
+      <action-button class="_action" v-bind:action="update">Update</action-button>
       <button class="_action" v-on:click="signOut">Sign out</button>
       <button class="_action" v-on:click="popup.close">Close</button>
     </div>
@@ -18,10 +18,12 @@
 import 'whatwg-fetch';
 
 import Popup from './common/Popup';
+import ActionButton from './common/ActionButton';
 
 export default {
   components: {
-    Popup
+    Popup,
+    ActionButton
   },
   data() {
     return {
@@ -58,7 +60,7 @@ export default {
 
       this.popup.status.pending('Updating');
 
-      fetch('/api/profile', options)
+      return fetch('/api/profile', options)
         .then((response) => {
           if (!response.ok) {
             console.error(response.status);
