@@ -10,16 +10,42 @@ const upload = multer().none();
 router.get('/:shortId/:revision?', bifrost((req) => {
   const shortId = req.params.shortId;
   const revision = req.params.revision && parseInt(req.params.revision, 10);
+  const user = req.user;
+  const session = req.session;
+  const runOwnershipMap = session.runOwnershipMap;
 
-  return runController.readRun(shortId, revision);
+  return runController
+    .readRun(shortId, revision)
+    .then((run) => {
+      if (!user && runOwnershipMap && runOwnershipMap[run.id]) {
+        run.owningSession = session.id;
+      }
+
+      return run;
+    });
 }));
 
 router.post('/', upload, bifrost((req) => {
   const shortId = req.body.shortId;
   const source = req.body.source;
   const user = req.user;
+  const session = req.session;
+  let runOwnershipMap = session.runOwnershipMap;
 
-  return runController.saveRun(shortId, source, user);
+  return runController
+    .saveRun(shortId, source, user)
+    .then((run) => {
+      if (!user) {
+        if (!runOwnershipMap) {
+          session.runOwnershipMap = runOwnershipMap = {};
+        }
+
+        runOwnershipMap[run.id] = true;
+        run.owningSession = session.id;
+      }
+
+      return run;
+    });
 }));
 
 module.exports = router;
