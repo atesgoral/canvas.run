@@ -2,8 +2,10 @@
   <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1>
-      <action-button class="_tool -accent-3" v-bind:action="save" v-bind:disabled="!run.isDirty" v-if="run">{{ run.shortId ? 'Update' : 'Save' }}</action-button>
-      <button class="_tool -accent-1" v-on:click="resetState" v-if="run">Reset State</button>
+      <span v-if="run">
+        <action-button class="_tool -accent-3" v-bind:action="save" v-bind:disabled="!run.isDirty">{{ run.shortId ? 'Update' : 'Save' }}</action-button>
+        <button class="_tool -accent-1" v-on:click="resetState">Reset State</button>
+      </span>
       <span class="_right-aligned" v-if="!isLoading">
         <button class="_tool -accent-2" v-on:click="showSettings">Settings</button>
         <button class="_profile" v-on:click="showProfile" v-if="user">
