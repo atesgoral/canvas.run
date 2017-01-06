@@ -33,6 +33,8 @@ mongoose.connection.on('error', (err) => {
 bifrost.defaults.err = (res, next, error) => {
   if (error instanceof errors.ResourceNotFoundError) {
     res.status(404).end();
+  } else if (error instanceof errors.BadArgumentsError) {
+    res.status(400).end();
   } else {
     res.status(500).end();
   }
