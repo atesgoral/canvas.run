@@ -66,11 +66,12 @@ runSchema.statics.whenFound = function (shortId, revision) {
 
   return query
     .populate([{
-      path: '_ownerId',
-      select: 'profile.displayName'
+      path: '_ownerId'
     }, {
       path: '_parentId',
-      select: 'shortId revision'
+      populate: {
+        path: '_ownerId'
+      }
     }])
     .exec()
     .then((run) => {

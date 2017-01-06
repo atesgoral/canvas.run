@@ -6,7 +6,7 @@
         <action-button class="_tool -accent-3" v-if="!run.shortId" v-bind:action="save" v-bind:disabled="!run.isDirty">Save</action-button>
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
-        <!--action-button class="_tool -accent-3" v-if="run.shortId" v-bind:action="fork">Fork</action-button-->
+        <action-button class="_tool -accent-3" v-if="run.shortId" v-bind:action="fork">Fork</action-button>
         <button class="_tool -accent-1" v-on:click="resetState">Reset State</button>
       </span>
       <span class="_right-aligned" v-if="!isLoading">
@@ -267,7 +267,37 @@ export default {
         });
     },
     fork() {
-      return Promise.resolve();
+      this.status.pending('Forking');
+
+      const body = new FormData();
+      body.append('shortId', this.run.shortId);
+      body.append('source', this.run.source);
+      body.append('isForking', true);
+
+      const options = {
+        method: 'POST',
+        body,
+        credentials: 'same-origin'
+      };
+
+      return fetch('/api/runs', options)
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            console.error(response.status);
+            throw new Error('Forking failed');
+          }
+        })
+        .then((run) => {
+          history.pushState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
+          this.run = run;
+          this.status.success('Forked').dismiss();
+        })
+        .catch((error) => {
+          console.error(error);
+          this.status.error('Forking failed').dismiss();
+        });
     },
     resetState() {
       this.rendererState = {};

@@ -28,12 +28,13 @@ router.get('/:shortId/:revision?', bifrost((req) => {
 router.post('/', upload, bifrost((req) => {
   const shortId = req.body.shortId;
   const source = req.body.source;
+  const isForking = !!req.body.isForking;
   const user = req.user;
   const session = req.session;
   let runOwnershipMap = session.runOwnershipMap;
 
   return runController
-    .saveRun(shortId, source, user)
+    .saveRun(shortId, source, user, isForking)
     .then((run) => {
       if (!user) {
         if (!runOwnershipMap) {
