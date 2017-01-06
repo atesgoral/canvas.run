@@ -54,7 +54,7 @@ app.use('/', express.static(__dirname + '/client/dist'));
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  saveUninitialized: false,
+  saveUninitialized: true,
   resave: false,
   store: new MongoStore({
     mongooseConnection: mongoose.connection,
