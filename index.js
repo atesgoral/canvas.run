@@ -14,6 +14,16 @@ const twitterStrategy = require('./strategies/twitter');
 const gitHubStrategy = require('./strategies/gitHub');
 const googleStrategy = require('./strategies/google');
 
+bifrost.defaults.err = (res, next, error) => {
+  if (error instanceof errors.ResourceNotFoundError) {
+    res.status(404).end();
+  } else if (error instanceof errors.BadArgumentsError) {
+    res.status(400).end();
+  } else {
+    res.status(500).end();
+  }
+};
+
 const apiRouter = require('./routers/api');
 const authRouter = require('./routers/auth');
 
@@ -29,16 +39,6 @@ mongoose.connection.on('open', () => {
 mongoose.connection.on('error', (err) => {
   console.error('DB connection error', err);
 });
-
-bifrost.defaults.err = (res, next, error) => {
-  if (error instanceof errors.ResourceNotFoundError) {
-    res.status(404).end();
-  } else if (error instanceof errors.BadArgumentsError) {
-    res.status(400).end();
-  } else {
-    res.status(500).end();
-  }
-};
 
 passport.use(facebookStrategy);
 passport.use(twitterStrategy);
