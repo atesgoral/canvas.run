@@ -171,6 +171,22 @@ export default {
             color: @inputBackgroundColor;
           }
         }
+
+        ._error {
+          text-transform: none;
+          font-size: 1rem;
+          margin-top: 4px;
+
+          &:before {
+            content: '';
+            display: inline-block;
+            width: .75rem;
+            height: .75rem;
+            border-radius: .375rem;
+            background: @accent1Color;
+            margin-right: .25rem;
+          }
+        }
       }
 
       ._action {

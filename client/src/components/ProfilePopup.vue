@@ -4,6 +4,7 @@
       <label>
         Display Name
         <input v-model="profile.displayName">
+        <div class="_error" v-if="errorMap.displayName">{{ errorMap.displayName }}</div>
       </label>
     </p>
     <div class="_actions">
@@ -28,6 +29,9 @@ export default {
   data() {
     return {
       profile: {
+        displayName: null
+      },
+      errorMap: {
         displayName: null
       }
     };
@@ -71,6 +75,7 @@ export default {
         })
         .then((profile) => {
           this.user.profile = profile;
+          Object.assign(this.profile, profile);
           this.popup.status.success('Updated').dismiss();
         })
         .catch((error) => {
