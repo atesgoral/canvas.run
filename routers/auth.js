@@ -2,19 +2,17 @@ const express = require('express');
 const bifrost = require('express-bifrost');
 const passport = require('passport');
 
-const userController = require('../controllers/user');
-
 const router = express.Router();
 
 const notifySignIn = bifrost({
-  req: (req) => userController.readUser(req.user),
-  res: (res, data) => {
+  req: (req) => Promise.resolve(req.user.getSummary()),
+  res: (res, user) => {
     function popupNotifier(user) {
       window.opener.postMessage({ type: 'SIGNED_IN', user }, '*');
       window.close();
     }
 
-    res.send(`<script>(${popupNotifier})(${JSON.stringify(data)});</script>`);
+    res.send(`<script>(${popupNotifier})(${JSON.stringify(user)});</script>`);
   }
 });
 

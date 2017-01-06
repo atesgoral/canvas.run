@@ -3,16 +3,19 @@
     <header>
       <h1><a href="/">CanvasRun</a></h1>
       <span v-if="run">
-        <action-button class="_tool -accent-3" v-bind:action="save" v-bind:disabled="!run.isDirty">{{ run.shortId ? 'Update' : 'Save' }}</action-button>
+        <action-button class="_tool -accent-3" v-if="!run.shortId" v-bind:action="save" v-bind:disabled="!run.isDirty">Save</action-button>
+        <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
+        <action-button class="_tool -accent-3" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
+        <!--action-button class="_tool -accent-3" v-if="run.shortId" v-bind:action="fork">Fork</action-button-->
         <button class="_tool -accent-1" v-on:click="resetState">Reset State</button>
       </span>
       <span class="_right-aligned" v-if="!isLoading">
         <button class="_tool -accent-2" v-on:click="showSettings">Settings</button>
-        <button class="_profile" v-on:click="showProfile" v-if="user">
-          <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + user.profile.pictureUrl + ')' }"></span>
-          <span class="_display-name">{{ user.profile.displayName }}</span>
+        <button class="_profile" v-on:click="showProfile" v-if="session.user">
+          <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + session.user.profile.pictureUrl + ')' }"></span>
+          <span class="_display-name">{{ session.user.profile.displayName }}</span>
         </button>
-        <button class="_tool -accent-3" v-on:click="signIn" v-if="!user">Sign in</button>
+        <button class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in</button>
       </span>
     </header>
     <status v-bind:status="status"></status>
@@ -34,7 +37,7 @@
       <!-- error element -->
     </main>
     <sign-in-popup v-if="signInPopup.isOpen" v-bind:popup="signInPopup"></sign-in-popup>
-    <profile-popup v-if="profilePopup.isOpen" v-bind:popup="profilePopup" v-bind:user="user" v-on:signOut="signOut"></profile-popup>
+    <profile-popup v-if="profilePopup.isOpen" v-bind:popup="profilePopup" v-bind:user="session.user" v-on:signOut="signOut"></profile-popup>
     <settings-popup v-if="settingsPopup.isOpen" v-bind:popup="settingsPopup" v-bind:settings="settings" v-on:toggleLayout="toggleLayout"></settings-popup>
   </body>
 </template>
@@ -76,7 +79,10 @@ export default {
       rendererSource: null,
       rendererState: {},
       error: null,
-      user: null,
+      session: {
+        id: null,
+        user: null
+      },
       settings: {
         isLayoutHorizontal: true,
         splitterPercentage: 50
@@ -110,7 +116,7 @@ export default {
     window.addEventListener('message', (event) => {
       switch (event.data.type) {
       case 'SIGNED_IN':
-        this.user = event.data.user;
+        this.$set(this.session, 'user', event.data.user); // @todo return entire session?
         this.status.success('Signed in').dismiss();
         break;
       case 'RUNTIME_ERROR':
@@ -133,14 +139,14 @@ export default {
 
     Promise
       .all([
-        this.fetchCurrentUser(),
+        this.fetchCurrentSession(),
         this.fetchRun(shortId, revision)
       ])
       .then((results) => {
-        const user = results[0];
+        const session = results[0];
         const run = results[1];
 
-        this.user = user;
+        this.session = session;
         this.run = run;
 
         if (run.shortId) {
@@ -187,11 +193,11 @@ export default {
           }
         });
     },
-    fetchCurrentUser() {
-      return fetch('/api/user', { credentials: 'same-origin' })
+    fetchCurrentSession() {
+      return fetch('/api/session', { credentials: 'same-origin' })
         .then((response) => {
           if (!response.ok) {
-            throw new Error('User fetch failed');
+            throw new Error('Session fetch failed');
           }
 
           return response.json();
@@ -201,11 +207,6 @@ export default {
       this.status.pending('Saving');
 
       const body = new FormData();
-
-      if (this.run.shortId) {
-        body.append('shortId', this.run.shortId);
-      }
-
       body.append('source', this.run.source);
 
       const options = {
@@ -224,11 +225,7 @@ export default {
           }
         })
         .then((run) => {
-          if (run.shortId !== this.run.shortId) {
-            history.pushState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
-          } else {
-            history.replaceState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
-          }
+          history.pushState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
           this.run = run;
           this.status.success('Saved').dismiss();
         })
@@ -236,6 +233,41 @@ export default {
           console.error(error);
           this.status.error('Saving failed').dismiss();
         });
+    },
+    update() {
+      this.status.pending('Updating');
+
+      const body = new FormData();
+      body.append('shortId', this.run.shortId);
+      body.append('source', this.run.source);
+
+      const options = {
+        method: 'POST',
+        body,
+        credentials: 'same-origin'
+      };
+
+      return fetch('/api/runs', options)
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            console.error(response.status);
+            throw new Error('Updating failed');
+          }
+        })
+        .then((run) => {
+          history.replaceState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
+          this.run = run;
+          this.status.success('Updated').dismiss();
+        })
+        .catch((error) => {
+          console.error(error);
+          this.status.error('Updating failed').dismiss();
+        });
+    },
+    fork() {
+      return Promise.resolve();
     },
     resetState() {
       this.rendererState = {};
@@ -263,7 +295,8 @@ export default {
           }
         })
         .then(() => {
-          this.user = null;
+          //this.$set(this.session, 'user', null);
+          this.session.user = null;
           this.status.success('Signed out').dismiss();
         })
         .catch((error) => {
