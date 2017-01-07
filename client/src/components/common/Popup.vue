@@ -1,15 +1,17 @@
 <template>
   <transition name="fade-slide">
-    <div class="popup" tabindex="0" v-on:keyup.esc="popup.close">
+    <div class="popup" v-on:keyup.esc="popup.close">
       <div class="_modal-mask"></div>
-      <div class="_frame">
+      <button type="button" class="_tab-trap" v-on:focus="restoreFocus(-1)"></button>
+      <div class="_frame" ref="frame">
         <h2 class="_title">{{ title }}</h2>
-        <button class="_close-button" title="Close" v-on:click="popup.close">Close</button>
         <status v-bind:status="popup.status"></status>
         <div class="_content">
           <slot></slot>
         </div>
+        <button type="button" class="_close-button" title="Close" v-on:click="popup.close">Close</button>
       </div>
+      <button type="button" class="_tab-trap" v-on:focus="restoreFocus(0)"></button>
     </div>
   </transition>
 </template>
@@ -41,7 +43,22 @@ export default {
     popup: Object
   },
   mounted() {
-    this.$el.focus();
+    this.restoreFocus(0);
+  },
+  methods: {
+    restoreFocus(idx) {
+      const selector = 'input, button, select, textarea, a[href], *[tabindex]';
+      const candidates = Array.prototype.slice.call(this.$refs.frame.querySelectorAll(selector), 0);
+      const tabbables = candidates
+        .filter((el) => {
+          return el.tabIndex >= 0;
+        })
+        .slice(idx);
+
+      if (tabbables.length) {
+        tabbables[0].focus();
+      }
+    }
   },
   Model: Popup
 }
@@ -125,6 +142,11 @@ export default {
           color: @accent2Color;
         }
       }
+    }
+
+    > ._tab-trap {
+      position: absolute;
+      left: -9999px;
     }
 
     > .status {

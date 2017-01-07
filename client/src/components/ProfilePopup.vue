@@ -3,7 +3,7 @@
     <p>
       <label>
         Display Name
-        <input v-autofocus v-model="profile.displayName">
+        <input v-model="profile.displayName">
         <div class="_error" v-if="errorMap.displayName">{{ errorMap.displayName }}</div>
       </label>
     </p>
