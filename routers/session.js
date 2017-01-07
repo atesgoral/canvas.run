@@ -9,6 +9,7 @@ router.get('/', bifrost((req) => {
 
   return Promise.resolve({
     id: session.id,
+    runOwnershipMap: session.runOwnershipMap,
     user: user && user.getSummary()
   });
 }));

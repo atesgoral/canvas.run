@@ -18,6 +18,7 @@ router.get('/:shortId/:revision?', bifrost((req) => {
     .readRun(shortId, revision)
     .then((run) => {
       if (!user && runOwnershipMap && runOwnershipMap[run.id]) {
+        console.log('owningSession', user, runOwnershipMap, runOwnershipMap[run.id], session.id);
         run.owningSession = session.id;
       }
 
