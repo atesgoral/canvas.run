@@ -17,8 +17,7 @@ router.get('/:shortId/:revision?', bifrost((req) => {
   return runController
     .readRun(shortId, revision)
     .then((run) => {
-      if (!user && runOwnershipMap && runOwnershipMap[run.id]) {
-        console.log('owningSession', user, runOwnershipMap, runOwnershipMap[run.id], session.id);
+      if (!user && run.shortId && runOwnershipMap && runOwnershipMap[run.shortId]) {
         run.owningSession = session.id;
       }
 
@@ -42,7 +41,7 @@ router.post('/', upload, bifrost((req) => {
           session.runOwnershipMap = runOwnershipMap = {};
         }
 
-        runOwnershipMap[run.id] = true;
+        runOwnershipMap[run.shortId] = true;
         run.owningSession = session.id;
       }
 
