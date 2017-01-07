@@ -3,6 +3,7 @@
     <header>
       <h1><a href="/">CanvasRun</a></h1>
       <span v-if="run">
+        <button type="button" class="_tool -accent-3" v-on:click="start">Start</button>
         <action-button class="_tool -accent-3" v-if="!run.shortId" v-bind:action="save" v-bind:disabled="!run.isDirty">Save</action-button>
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
@@ -206,6 +207,12 @@ export default {
           return response.json();
         });
     },
+    start() {
+      // @todo immediately retrieve source in editor
+      // or let editor emit source on blur
+      this.rendererSource = this.run.source;
+      this.error = null;
+    },
     save() {
       this.status.pending('Saving');
 
@@ -361,8 +368,9 @@ export default {
         this.run.isDirty = true;
       }
       this.run.source = source;
-      this.rendererSource = source;
-      this.error = null;
+      // @todo only when auto-start is enabled
+      // this.rendererSource = source;
+      // this.error = null;
     },
     handleEditorSyntaxError() {
       this.rendererSource = null;
