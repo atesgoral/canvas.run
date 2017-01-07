@@ -50,6 +50,7 @@ export default () => {
     }
 
     if (epoch === null) {
+      canvasEl.getContext('2d').clearRect(0, 0, canvasEl.width, canvasEl.height);
       epoch = t;
     }
 

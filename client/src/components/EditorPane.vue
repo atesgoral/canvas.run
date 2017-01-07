@@ -73,7 +73,7 @@ export default {
       emitSourceUpdate(editor.getValue());
     }
 
-    editor.on('change', _.debounce(handleChange, 1000));
+    editor.on('change', _.debounce(handleChange, 250));
     editor.on('blur', handleBlur);
   }
 }

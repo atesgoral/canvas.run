@@ -3,7 +3,7 @@
     <header>
       <h1><a href="/">CanvasRun</a></h1>
       <span v-if="run">
-        <button type="button" class="_tool -accent-3" v-on:click="start">Start</button>
+        <button type="button" class="_tool" v-bind:class="isRunning ? '-accent-1' : '-accent-3'" v-on:click="toggleAnimation">{{ isRunning ? 'Stop' : 'Start' }}</button>
         <action-button class="_tool -accent-3" v-if="!run.shortId" v-bind:action="save" v-bind:disabled="!run.isDirty">Save</action-button>
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
@@ -76,6 +76,7 @@ export default {
       status: new Status.Model(),
       layoutChangeCnt: 0,
       run: null,
+      isRunning: false,
       editorSource: null,
       rendererSource: null,
       rendererState: {},
@@ -206,11 +207,26 @@ export default {
           return response.json();
         });
     },
+    toggleAnimation() {
+      if (this.isRunning) {
+        this.stop();
+      } else {
+        this.start();
+      }
+    },
     start() {
       // @todo immediately retrieve source in editor
       // or let editor emit source on blur
       this.rendererSource = this.run.source;
+      this.resetState();
       this.error = null;
+      this.isRunning = true;
+    },
+    stop() {
+      this.rendererSource = null;
+      this.resetState();
+      this.isRunning = false;
+      //this.error = null;
     },
     save() {
       this.status.pending('Saving');
@@ -367,6 +383,7 @@ export default {
         this.run.isDirty = true;
       }
       this.run.source = source;
+      this.stop();
       // @todo only when auto-start is enabled
       // this.rendererSource = source;
       // this.error = null;
