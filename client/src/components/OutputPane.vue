@@ -90,7 +90,6 @@ export default {
     padding: 1rem;
     z-index: 2;
     display: none;
-    overflow: auto;
 
     &:after {
       position: absolute;

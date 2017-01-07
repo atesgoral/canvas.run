@@ -7,6 +7,7 @@ export default () => {
   bodyEl.style.margin = 0;
   bodyEl.style.padding = 0;
   bodyEl.style.height = '100%';
+  bodyEl.style.overflow = 'hidden';
   canvasEl.style.position = 'absolute';
   canvasEl.style.background = '#000';
 
