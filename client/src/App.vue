@@ -23,7 +23,7 @@
       <editor-pane
         ref="editorPane"
         v-bind:style="{ flexBasis: settings.splitterPercentage + '%' }"
-        v-bind:run="run"
+        v-bind:source="editorSource"
         v-on:sourceUpdate="handleEditorSourceUpdate"
         v-on:syntaxError="handleEditorSyntaxError"></editor-pane>
       <splitter
@@ -76,6 +76,7 @@ export default {
       status: new Status.Model(),
       layoutChangeCnt: 0,
       run: null,
+      editorSource: null,
       rendererSource: null,
       rendererState: {},
       error: null,
@@ -110,6 +111,7 @@ export default {
     window.addEventListener('popstate', (event) => {
       if (event.state) {
         this.run = event.state;
+        this.editorSource = this.run.source;
       }
     });
 
@@ -148,6 +150,7 @@ export default {
 
         this.session = session;
         this.run = run;
+        this.editorSource = run.source;
 
         if (run.shortId) {
           history.replaceState(run, 'Run ' + run.shortId, '/' + path);
@@ -159,7 +162,7 @@ export default {
         this.status.close();
       })
       .catch((error) => {
-        this.run = { source: '' };
+        this.run = { source: '' }; // @todo or don't set at all?
         this.isLoading = false;
         console.error(error.message);
         this.status.error('Error during initialization').dismiss();

@@ -10,11 +10,11 @@ import * as _ from 'lodash/lodash.min'
 
 export default {
   props: {
-    run: Object
+    source: String
   },
   watch: {
-    run: function (run) {
-      this.editor.setValue(run.source, -1);
+    source: function (source) {
+      this.editor.setValue(source, -1);
     }
   },
   mounted() {
