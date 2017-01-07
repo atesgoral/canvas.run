@@ -2,7 +2,7 @@ const errors = require('../errors');
 const User = require('../models/user');
 
 function trim(s) {
-  return s.replace(/^\s*(.+*)\s*$/, '$1');
+  return s.replace(/^\s*(.*?)\s*$/, '$1');
 }
 
 function normalizeProfile(profile) {

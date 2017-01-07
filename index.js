@@ -20,6 +20,7 @@ bifrost.defaults.err = (res, next, error) => {
   } else if (error instanceof errors.BadArgumentsError) {
     res.status(400).end();
   } else {
+    console.error(error);
     res.status(500).end();
   }
 };
