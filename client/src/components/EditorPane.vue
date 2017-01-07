@@ -75,6 +75,8 @@ export default {
 
     editor.on('change', _.debounce(handleChange, 250));
     editor.on('blur', handleBlur);
+
+    editor.focus();
   }
 }
 </script>

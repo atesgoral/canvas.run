@@ -161,6 +161,10 @@ export default {
 
         this.isLoading = false;
         this.status.close();
+
+        setTimeout(() => {
+          this.start();
+        }, 500  );
       })
       .catch((error) => {
         this.run = { source: '' }; // @todo or don't set at all?
