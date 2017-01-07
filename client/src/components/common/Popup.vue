@@ -87,7 +87,7 @@ export default {
       margin: 0;
       text-transform: uppercase;
       text-align: center;
-      opacity: 0.5;
+      opacity: 0.75;
     }
 
     > ._close-button {
@@ -148,7 +148,7 @@ export default {
       label {
         display: block;
         text-transform: uppercase;
-        font-size: 0.75rem;
+        font-size: 12/16rem;
 
         input {
           margin: 4px 0 0;
@@ -192,7 +192,7 @@ export default {
       ._action {
         .button();
 
-        font-size: 0.75rem;
+        font-size: 12/16rem;
         text-transform: uppercase;
 
         padding: 8px;

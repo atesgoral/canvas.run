@@ -431,7 +431,7 @@ header {
     height: @headerHeight;
     line-height: @headerHeight;
     padding: 0 5px;
-    font-size: 0.75rem;
+    font-size: 12/16rem;
     margin-right: 4px;
     position: relative;
     overflow: hidden;
