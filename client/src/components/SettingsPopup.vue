@@ -3,10 +3,10 @@
     <p>
       Layout: {{ settings.isLayoutHorizontal ? 'Horizontal' : 'Vertical' }}
       &mdash;
-      <button class="_action" v-on:click="toggleLayout">Toggle Layout</button>
+      <button type="button" class="_action" v-on:click="toggleLayout">Toggle Layout</button>
     </p>
     <div class="_actions">
-      <button class="_action" v-on:click="popup.close">Close</button>
+      <button type="button" class="_action" v-on:click="popup.close">Close</button>
     </div>
   </popup>
 </template>

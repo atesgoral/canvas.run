@@ -9,8 +9,8 @@
     </p>
     <div class="_actions">
       <action-button class="_action" v-bind:action="update">Update</action-button>
-      <button class="_action" v-on:click="signOut">Sign out</button>
-      <button class="_action" v-on:click="popup.close">Close</button>
+      <button type="button" class="_action" v-on:click="signOut">Sign out</button>
+      <button type="button" class="_action" v-on:click="popup.close">Close</button>
     </div>
   </popup>
 </template>

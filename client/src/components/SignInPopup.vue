@@ -2,13 +2,13 @@
   <popup title="Sign in" v-bind:popup="popup" class="sign-in-popup">
     <h3>Sign in using:</h3>
     <div class="_auth-methods">
-      <button class="-facebook" title="Facebook" v-on:click="auth('facebook')"><span>Facebook</span></button>
-      <button class="-twitter" title="Twitter" v-on:click="auth('twitter')"><span>Twitter</span></button>
-      <button class="-github" title="GitHub" v-on:click="auth('github')"><span>GitHub</span></button>
-      <button class="-google" title="Google" v-on:click="auth('google')"><span>Google</span></button>
+      <button type="button" class="-facebook" title="Facebook" v-on:click="auth('facebook')"><span>Facebook</span></button>
+      <button type="button" class="-twitter" title="Twitter" v-on:click="auth('twitter')"><span>Twitter</span></button>
+      <button type="button" class="-github" title="GitHub" v-on:click="auth('github')"><span>GitHub</span></button>
+      <button type="button" class="-google" title="Google" v-on:click="auth('google')"><span>Google</span></button>
     </div>
     <p class="_actions">
-      <button class="_action" v-on:click="popup.close">Cancel</button>
+      <button type="button" class="_action" v-on:click="popup.close">Cancel</button>
     </p>
   </popup>
 </template>

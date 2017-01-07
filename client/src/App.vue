@@ -7,15 +7,15 @@
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3" v-if="run.shortId" v-bind:action="fork">Fork</action-button>
-        <button class="_tool -accent-1" v-on:click="resetState">Reset State</button>
+        <button type="button" class="_tool -accent-1" v-on:click="resetState">Reset State</button>
       </span>
       <span class="_right-aligned" v-if="!isLoading">
-        <button class="_tool -accent-2" v-on:click="showSettings">Settings</button>
-        <button class="_profile" v-on:click="showProfile" v-if="session.user">
+        <button type="button" class="_tool -accent-2" v-on:click="showSettings">Settings</button>
+        <button type="button" class="_profile" v-on:click="showProfile" v-if="session.user">
           <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + session.user.profile.pictureUrl + ')' }"></span>
           <span class="_display-name">{{ session.user.profile.displayName }}</span>
         </button>
-        <button class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in</button>
+        <button type="button" class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in</button>
       </span>
     </header>
     <status v-bind:status="status"></status>
