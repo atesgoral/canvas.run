@@ -454,15 +454,17 @@ header {
       }
     }
 
-    &:enabled:hover {
-      &:after {
-        bottom: 6px;
+    &:enabled {
+      &:hover {
+        &:after {
+          bottom: 6px;
+        }
       }
-    }
 
-    &:active {
-      &:after {
-        bottom: 8px;
+      &:active {
+        &:after {
+          bottom: 8px;
+        }
       }
     }
 

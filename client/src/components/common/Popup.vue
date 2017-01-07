@@ -136,15 +136,23 @@ export default {
         text-align: center;
       }
 
-      &:enabled:hover {
-        &:before {
-          color: @buttonHoverContentColor;
+      &:enabled {
+        &:hover {
+          &:before {
+            color: @buttonHoverContentColor;
+          }
         }
-      }
 
-      &:focus {
-        &:before {
-          color: @accent2Color;
+        &:focus {
+          &:before {
+            color: @accent2Color;
+          }
+        }
+
+        &:active {
+          &:before {
+            color: @accent3Color;
+          }
         }
       }
     }
@@ -221,8 +229,15 @@ export default {
         border: 1px solid @buttonBorderColor;
         border-radius: 4px;
 
-        &:enabled:hover {
-          border-color: @buttonHoverBorderColor;
+        &:enabled {
+          &:hover {
+            border-color: @buttonHoverBorderColor;
+          }
+
+          &:active {
+            color: @accent3Color;
+            border-color: @accent3Color;
+          }
         }
 
         &:focus {
