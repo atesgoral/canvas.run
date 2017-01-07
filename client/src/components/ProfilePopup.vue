@@ -21,6 +21,37 @@ import 'whatwg-fetch';
 import Popup from './common/Popup';
 import ActionButton from './common/ActionButton';
 
+function trim(s) {
+  return s.replace(/^\s*(.*?)\s*$/, '$1');
+}
+
+class ValidationError extends Error {
+  constructor(message, map) {
+    super(message);
+    this.map = map;
+  }
+}
+
+function normalizeProfile(profile) {
+  return {
+    displayName: profile.displayName && trim(profile.displayName)
+  };
+}
+
+function validateProfile(profile) {
+  const errorMap = {};
+
+  if (!profile.displayName) {
+    errorMap.displayName = 'Display name should not be empty';
+  }
+
+  if (Object.keys(errorMap).length) {
+    throw new ValidationError('Validation failed', errorMap);
+  }
+
+  return profile;
+}
+
 export default {
   components: {
     Popup,
@@ -49,38 +80,52 @@ export default {
       this.$emit('signOut');
     },
     update() {
-      const body = JSON.stringify(this.profile);
-      const headers = new Headers();
-
-      headers.append('Content-Type', 'application/json');
-      headers.append('Content-Length', body.length);
-
-      const options = {
-        method: 'PUT',
-        headers,
-        body,
-        credentials: 'same-origin'
-      };
-
-      this.popup.status.pending('Updating');
-
-      return fetch('/api/profile', options)
-        .then((response) => {
-          if (!response.ok) {
-            console.error(response.status);
-            throw new Error('Profile update failed');
-          }
-
-          return response.json();
-        })
+      return Promise
+        .resolve(this.profile)
+        .then(normalizeProfile)
+        .then(validateProfile)
         .then((profile) => {
-          this.user.profile = profile;
-          Object.assign(this.profile, profile);
-          this.popup.status.success('Updated').dismiss();
+          const body = JSON.stringify(profile);
+          const headers = new Headers();
+
+          headers.append('Content-Type', 'application/json');
+          headers.append('Content-Length', body.length);
+
+          const options = {
+            method: 'PUT',
+            headers,
+            body,
+            credentials: 'same-origin'
+          };
+
+          this.errorMap = {};
+          this.popup.status.pending('Updating');
+
+          return fetch('/api/profile', options)
+            .then((response) => {
+              if (!response.ok) {
+                console.error(response.status);
+                throw new Error('Profile update failed');
+              }
+
+              return response.json();
+            })
+            .then((profile) => {
+              this.user.profile = profile;
+              Object.assign(this.profile, profile);
+              this.popup.status.success('Updated').dismiss();
+            });
         })
         .catch((error) => {
-          console.error(error);
-          this.popup.status.error('Update failed').dismiss();
+          // @todo This currently doesn't work with Babel
+          // if (error instanceof ValidationError) {
+          if (error.map) {
+            this.errorMap = error.map;
+            this.popup.status.error(error.message).dismiss();
+          } else {
+            console.error(error);
+            this.popup.status.error('Update failed').dismiss();
+          }
         });
     }
   }
