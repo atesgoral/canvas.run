@@ -123,10 +123,14 @@ export default {
         this.status.success('Signed in').dismiss();
         break;
       case 'RUNTIME_ERROR':
-        this.error = 'Runtime error';
+        //this.error = 'Runtime error';
+        this.status.error('Runtime error').dismiss();
+        this.stop();
         break;
       case 'COMPILATION_ERROR':
-        this.error = 'Compilation error';
+        //this.error = 'Compilation error';
+        this.status.error('Compilation error').dismiss();
+        this.stop();
         break;
       }
     });
@@ -164,7 +168,7 @@ export default {
 
         setTimeout(() => {
           this.start();
-        }, 500  );
+        }, 500);
       })
       .catch((error) => {
         this.run = { source: '' }; // @todo or don't set at all?
@@ -219,8 +223,7 @@ export default {
       }
     },
     start() {
-      // @todo immediately retrieve source in editor
-      // or let editor emit source on blur
+      // @todo immediately retrieve source in editor?
       this.rendererSource = this.run.source;
       this.resetState();
       this.error = null;
@@ -385,9 +388,9 @@ export default {
     handleEditorSourceUpdate(source) {
       if (source !== this.run.source) {
         this.run.isDirty = true;
+        this.run.source = source;
+        this.stop();
       }
-      this.run.source = source;
-      this.stop();
       // @todo only when auto-start is enabled
       // this.rendererSource = source;
       // this.error = null;
@@ -395,6 +398,7 @@ export default {
     handleEditorSyntaxError() {
       this.rendererSource = null;
       this.error = 'Syntax error';
+      //this.status.error('Syntax error').dismiss();
     }
   }
 }

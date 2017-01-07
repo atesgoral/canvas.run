@@ -70,10 +70,12 @@ export default {
     }
 
     function handleBlur() {
+      // @todo: stop existing change debounce
       emitSourceUpdate(editor.getValue());
     }
 
-    editor.on('change', _.debounce(handleChange, 250));
+    // editor.on('change', _.debounce(handleChange, 250));
+    editor.on('input', handleChange);
     editor.on('blur', handleBlur);
 
     editor.focus();
