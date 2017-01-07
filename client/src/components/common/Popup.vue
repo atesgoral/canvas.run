@@ -88,6 +88,11 @@ export default {
     background: @modalMaskBgColor;
   }
 
+  > ._tab-trap {
+    position: absolute;
+    left: -9999px;
+  }
+
   > ._frame {
     position: relative;
     z-index: 2;
@@ -142,11 +147,6 @@ export default {
           color: @accent2Color;
         }
       }
-    }
-
-    > ._tab-trap {
-      position: absolute;
-      left: -9999px;
     }
 
     > .status {
