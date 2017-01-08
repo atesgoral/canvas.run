@@ -145,7 +145,7 @@ export default {
 
         &:focus {
           &:before {
-            color: @accent2Color;
+            color: @accent5Color;
           }
         }
 
@@ -193,11 +193,11 @@ export default {
 
           &:focus {
             outline: none;
-            border: 1px solid @accent2Color;
+            border: 1px solid @accent5Color;
           }
 
           &::selection {
-            background: @accent2Color;
+            background: @accent5Color;
             color: @inputBackgroundColor;
           }
         }
@@ -241,7 +241,7 @@ export default {
         }
 
         &:focus {
-          border-color: @accent2Color;
+          border-color: @accent5Color;
         }
       }
       > ._actions {

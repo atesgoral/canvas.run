@@ -9,7 +9,7 @@
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <span class="_gap"></span>
-        <action-button class="_tool -accent-3" v-if="run.shortId" v-bind:action="fork">Fork</action-button>
+        <action-button class="_tool -accent-4" v-if="run.shortId" v-bind:action="fork">Fork</action-button>
         <span class="_gap"></span>
         <button type="button" class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
       </span>
@@ -507,6 +507,8 @@ header {
     &.-accent-1:after { background: @buttonHoverAccent1Color; }
     &.-accent-2:after { background: @buttonHoverAccent2Color; }
     &.-accent-3:after { background: @buttonHoverAccent3Color; }
+    &.-accent-4:after { background: @buttonHoverAccent4Color; }
+    &.-accent-5:after { background: @buttonHoverAccent5Color; }
   }
 
   ._gap {

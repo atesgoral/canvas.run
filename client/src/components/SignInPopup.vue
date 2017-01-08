@@ -129,10 +129,10 @@ export default {
       }
 
       &:focus {
-        border-color: @accent2Color;
+        border-color: @accent5Color;
 
         > span {
-          color: @accent2Color;
+          color: @accent5Color;
         }
       }
 

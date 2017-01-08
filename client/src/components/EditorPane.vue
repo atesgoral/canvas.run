@@ -84,6 +84,12 @@ export default {
 <style lang="less">
 @import './common/colors';
 
+.ace_keyword { color: @accent1Color !important; }
+.ace_storage { color: @accent5Color !important; }
+.ace_string { color: @accent2Color !important; }
+.ace_numeric { color: @accent4Color !important; }
+.ace_language { color: @accent3Color !important; }
+
 .editor-pane {
   flex-basis: 50%;
 
