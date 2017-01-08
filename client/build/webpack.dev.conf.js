@@ -3,6 +3,7 @@ var webpack = require('webpack')
 var merge = require('webpack-merge')
 var utils = require('./utils')
 var baseWebpackConfig = require('./webpack.base.conf')
+var FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 // add hot-reload related code to entry chunks
@@ -25,6 +26,10 @@ module.exports = merge(baseWebpackConfig, {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
+    new FaviconsWebpackPlugin({
+      logo: 'src/favicon.png',
+      title: 'CanvasRun'
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: 'index.html',
