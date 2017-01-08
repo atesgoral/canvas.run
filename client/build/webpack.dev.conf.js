@@ -28,7 +28,8 @@ module.exports = merge(baseWebpackConfig, {
     // https://github.com/ampedandwired/html-webpack-plugin
     new FaviconsWebpackPlugin({
       logo: 'src/favicon.png',
-      title: 'CanvasRun'
+      title: 'CanvasRun',
+      background: '#4e4f4a'
     }),
     new HtmlWebpackPlugin({
       filename: 'index.html',

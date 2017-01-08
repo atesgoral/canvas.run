@@ -45,7 +45,8 @@ var webpackConfig = merge(baseWebpackConfig, {
     // see https://github.com/ampedandwired/html-webpack-plugin
     new FaviconsWebpackPlugin({
       logo: 'src/favicon.png',
-      title: 'CanvasRun'
+      title: 'CanvasRun',
+      background: '#4e4f4a'
     }),
     new HtmlWebpackPlugin({
       filename: process.env.NODE_ENV === 'testing'
