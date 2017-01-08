@@ -31,6 +31,7 @@ export default () => {
       try {
         renderer = new Function('canvas', 'state', 't', event.data.data);
       } catch (err) {
+        console.error(err);
         renderer = null;
         notifyParent('COMPILATION_ERROR');
       }
@@ -57,6 +58,7 @@ export default () => {
     try {
       renderer.call(null, canvasEl, rendererState, t - epoch);
     } catch (err) {
+      console.error(err);
       renderer = null;
       notifyParent('RUNTIME_ERROR');
     }
