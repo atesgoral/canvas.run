@@ -416,7 +416,7 @@ export default {
 @logoVPadding: 10px;
 @logoHPadding: 50px;
 @logoHeight: @headerHeight - @logoVPadding * 2;
-@logoAspectRatio: 2036 / 280;
+@logoAspectRatio: 291 / 40;
 
 body {
   font-family: 'Varela Round', sans-serif;
