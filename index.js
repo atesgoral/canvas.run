@@ -75,7 +75,7 @@ if (process.env.NODE_ENV != 'production') {
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
 
-app.get(/^\/(edit|view|embed)\/[A-Z\d]+(\/\d+)?$/i, (req, res) => {
+app.get(/^\/u\/(-|\w+)\/[A-Z\d]+(\/\d+)?$/i, (req, res) => {
   res.sendFile('index.html', {
     root: __dirname + '/client/dist'
   });

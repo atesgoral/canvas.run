@@ -138,12 +138,14 @@ export default {
       }
     });
 
+    // Expecting: /u/username/shortId/revision
+
     const path = window.location.pathname.slice(1);
 
     const tokens = path.split('/');
-    const mode = tokens[0];
-    const shortId = tokens[1];
-    const revision = tokens[2];
+    const username = tokens[1];
+    const shortId = tokens[2];
+    const revision = tokens[3];
 
     this.status.pending('Initializing');
 
@@ -258,7 +260,7 @@ export default {
           }
         })
         .then((run) => {
-          history.pushState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
+          history.pushState(run, 'Run ' + run.shortId, '/u/-/' + run.shortId);
           this.run = run;
           this.status.success('Saved').dismiss();
         })
@@ -290,7 +292,7 @@ export default {
           }
         })
         .then((run) => {
-          history.replaceState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
+          history.replaceState(run, 'Run ' + run.shortId, '/u/-/' + run.shortId);
           this.run = run;
           this.status.success('Updated').dismiss();
         })
@@ -323,7 +325,7 @@ export default {
           }
         })
         .then((run) => {
-          history.pushState(run, 'Run ' + run.shortId, '/' + 'edit' + '/' + run.shortId);
+          history.pushState(run, 'Run ' + run.shortId, '/u/-/' + run.shortId);
           this.run = run;
           this.status.success('Forked').dismiss();
         })
@@ -458,6 +460,17 @@ header {
       &:enabled:hover {
         opacity: 1;
       }
+    }
+
+    &:after {
+      content: 'Alpha';
+      display: inline-block;
+      text-transform: lowercase;
+      color: @accent1Color;
+      font-size: .75rem;
+      vertical-align: top;
+      transform: rotate(-10deg);
+      padding-left: .25rem;
     }
   }
 
