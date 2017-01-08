@@ -7,6 +7,7 @@
         <action-button class="_tool -accent-3" v-if="!run.shortId" v-bind:action="save" v-bind:disabled="!run.isDirty">Save</action-button>
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
+        <span></span>
         <action-button class="_tool -accent-3" v-if="run.shortId" v-bind:action="fork">Fork</action-button>
       </span>
       <span class="_right-aligned" v-if="!isLoading">
@@ -43,9 +44,9 @@
 </template>
 
 <script>
-import * as _ from 'lodash/lodash.min'
 import 'whatwg-fetch';
 
+import debounce from './debounce'
 import ActionButton from './components/common/ActionButton'
 import Popup from './components/common/Popup'
 import Status from './components/common/Status'
@@ -104,7 +105,7 @@ export default {
       Object.assign(this.settings, JSON.parse(localStorage.getItem('settings')));
     } catch (e) {}
 
-    window.addEventListener('resize', _.debounce(() => {
+    window.addEventListener('resize', debounce(() => {
       this.resetState();
       this.notifyLayoutChange();
     }, 250));
