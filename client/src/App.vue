@@ -1,9 +1,9 @@
 <template>
-  <body>
+  <body v-on:keydown.ctrl.enter.prevent="toggleAnimation">
     <header>
       <h1><a href="/">CanvasRun</a></h1>
       <span v-if="run">
-        <button type="button" class="_tool" v-bind:class="isRunning ? '-accent-1' : '-accent-3'" v-on:click="toggleAnimation">{{ isRunning ? 'Stop' : 'Start' }}</button>
+        <button type="button" class="_tool" title="Ctrl + Enter" v-bind:class="isRunning ? '-accent-1' : '-accent-3'" v-on:click="toggleAnimation">{{ isRunning ? 'Stop' : 'Start' }}</button>
         <action-button class="_tool -accent-3" v-if="!run.shortId" v-bind:action="save" v-bind:disabled="!run.isDirty">Save</action-button>
         <!--button type="button" class="_tool -accent-2" v-on:click="showSettings">Settings</button-->
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
