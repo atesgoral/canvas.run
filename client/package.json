@@ -71,5 +71,6 @@
     "webpack-hot-middleware": "^2.12.2",
     "webpack-merge": "^0.14.1",
     "whatwg-fetch": "^1.0.0"
-  }
+  },
+  "dependencies": {}
 }

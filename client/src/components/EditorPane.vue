@@ -6,7 +6,6 @@
 import 'ace-builds/src-min-noconflict/ace'
 import 'ace-builds/src-min-noconflict/mode-javascript'
 import 'ace-builds/src-min-noconflict/theme-monokai'
-import * as _ from 'lodash/lodash.min'
 
 export default {
   props: {
@@ -74,7 +73,6 @@ export default {
       emitSourceUpdate(editor.getValue());
     }
 
-    // editor.on('change', _.debounce(handleChange, 250));
     editor.on('input', handleChange);
     editor.on('blur', handleBlur);
 
