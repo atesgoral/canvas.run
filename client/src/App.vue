@@ -5,13 +5,15 @@
       <span v-if="run">
         <button type="button" class="_tool" v-bind:class="isRunning ? '-accent-1' : '-accent-3'" v-on:click="toggleAnimation">{{ isRunning ? 'Stop' : 'Start' }}</button>
         <action-button class="_tool -accent-3" v-if="!run.shortId" v-bind:action="save" v-bind:disabled="!run.isDirty">Save</action-button>
+        <!--button type="button" class="_tool -accent-2" v-on:click="showSettings">Settings</button-->
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
-        <span></span>
+        <span class="_gap"></span>
         <action-button class="_tool -accent-3" v-if="run.shortId" v-bind:action="fork">Fork</action-button>
+        <span class="_gap"></span>
+        <button type="button" class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
       </span>
       <span class="_right-aligned" v-if="!isLoading">
-        <button type="button" class="_tool -accent-2" v-on:click="showSettings">Settings</button>
         <button type="button" class="_profile" v-on:click="showProfile" v-if="session.user">
           <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + session.user.profile.pictureUrl + ')' }"></span>
           <span class="_display-name">{{ session.user.profile.displayName }}</span>
@@ -39,7 +41,7 @@
     </main>
     <sign-in-popup v-if="signInPopup.isOpen" v-bind:popup="signInPopup"></sign-in-popup>
     <profile-popup v-if="profilePopup.isOpen" v-bind:popup="profilePopup" v-bind:user="session.user" v-on:signOut="signOut"></profile-popup>
-    <settings-popup v-if="settingsPopup.isOpen" v-bind:popup="settingsPopup" v-bind:settings="settings" v-on:toggleLayout="toggleLayout"></settings-popup>
+    <!--settings-popup v-if="settingsPopup.isOpen" v-bind:popup="settingsPopup" v-bind:settings="settings"></settings-popup-->
   </body>
 </template>
 
@@ -505,6 +507,11 @@ header {
     &.-accent-1:after { background: @buttonHoverAccent1Color; }
     &.-accent-2:after { background: @buttonHoverAccent2Color; }
     &.-accent-3:after { background: @buttonHoverAccent3Color; }
+  }
+
+  ._gap {
+    display: inline-block;
+    width: 1rem;
   }
 
   ._right-aligned {
