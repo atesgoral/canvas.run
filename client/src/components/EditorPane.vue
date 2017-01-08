@@ -82,7 +82,33 @@ export default {
 </script>
 
 <style lang="less">
+@import './common/colors';
+
 .editor-pane {
   flex-basis: 50%;
+
+  @gutterIndicatorSize: 9px;
+
+  .gutterIndicator(@color) {
+    background: none;
+    position: relative;
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 50%;
+      margin-top: -@gutterIndicatorSize / 2;
+      display: inline-block;
+      width: @gutterIndicatorSize;
+      height: @gutterIndicatorSize;
+      border-radius: @gutterIndicatorSize / 2;
+      background: @color;
+    }
+  }
+
+  .ace_gutter-cell.ace_info { .gutterIndicator(@panelContentColor); opacity: .75; }
+  .ace_gutter-cell.ace_warning { .gutterIndicator(@accent2Color); }
+  .ace_gutter-cell.ace_error { .gutterIndicator(@accent1Color); }
 }
 </style>
