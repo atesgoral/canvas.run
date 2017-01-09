@@ -15,7 +15,7 @@
       </span>
       <span class="_right-aligned" v-if="!isLoading">
         <button type="button" class="_profile" v-on:click="showProfile" v-if="session.user">
-          <span class="_picture" v-bind:style="{ backgroundImage: 'url(' + session.user.profile.pictureUrl + ')' }"></span>
+          <span class="_picture" v-bind:style="{ backgroundImage: `url(${session.user.profile.pictureUrl})` }"></span>
           <span class="_display-name">{{ session.user.profile.displayName }}</span>
         </button>
         <button type="button" class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in</button>
@@ -168,7 +168,7 @@ export default {
         this.editorSource = run.source;
 
         if (run.shortId) {
-          history.replaceState(run, 'Run ' + run.shortId, '/' + path);
+          history.replaceState(run, `Run ${run.shortId}`, `/${path}`);
         } else {
           history.replaceState(run, 'Default run');
         }
@@ -193,7 +193,7 @@ export default {
         url += shortId;
 
         if (revision) {
-          url += '/' + revision;
+          url += `/${revision}`;
         }
       } else {
         url += 'default';
@@ -265,7 +265,9 @@ export default {
           }
         })
         .then((run) => {
-          history.pushState(run, 'Run ' + run.shortId, '/u/-/' + run.shortId);
+          const username = this.session.user && this.session.user.profile.username || '-';
+
+          history.pushState(run, `Run ${run.shortId}`, `/u/${username}/${run.shortId}`);
           this.run = run;
           this.status.success('Saved').dismiss();
         })
@@ -297,7 +299,9 @@ export default {
           }
         })
         .then((run) => {
-          history.replaceState(run, 'Run ' + run.shortId, '/u/-/' + run.shortId);
+          const username = this.session.user && this.session.user.profile.username || '-';
+
+          history.replaceState(run, `Run ${run.shortId}`, `/u/${username}/${run.shortId}`);
           this.run = run;
           this.status.success('Updated').dismiss();
         })
@@ -330,7 +334,9 @@ export default {
           }
         })
         .then((run) => {
-          history.pushState(run, 'Run ' + run.shortId, '/u/-/' + run.shortId);
+          const username = this.session.user && this.session.user.profile.username || '-';
+
+          history.pushState(run, `Run ${run.shortId}`, `/u/${username}/${run.shortId}`);
           this.run = run;
           this.status.success('Forked').dismiss();
         })

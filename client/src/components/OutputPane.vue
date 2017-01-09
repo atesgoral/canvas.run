@@ -39,9 +39,9 @@ export default {
     const bootstrapSrc = iframeBootstrap.toString();
     const runtimeSrc = iframeRuntime.toString();
 
-    const iframeHtml = '<' + 'script>(' + bootstrapSrc + ')()<' + '/script>';
+    const iframeHtml = `<${'script'}>(${bootstrapSrc})()</${'script'}>`;
 
-    const iframeUrl = 'data:text/html;base64,' + btoa(iframeHtml);
+    const iframeUrl = `data:text/html;base64,${btoa(iframeHtml)}`;
 
     addEventListener('message', (e) => {
       if (e.data.type === 'IFRAME_READY') {

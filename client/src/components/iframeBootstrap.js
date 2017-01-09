@@ -5,7 +5,7 @@ export default () => {
 
   window.onMessage = (e) => {
     if (e.data.type === 'RUNTIME') {
-      eval('(' + e.data.data + ')()');
+      eval(`(${e.data.data})()`);
     }
   };
 

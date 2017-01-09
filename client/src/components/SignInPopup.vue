@@ -48,7 +48,7 @@ export default {
       const featureStr = Object.keys(featureMap)
         .map(name => `${name}=${featureMap[name]}`)
         .join();
-      this.authPopupWindow = window.open('/auth/' + provider, 'auth', featureStr);
+      this.authPopupWindow = window.open(`/auth/${provider}`, 'auth', featureStr);
     }
   }
 }
