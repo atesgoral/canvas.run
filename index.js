@@ -1,8 +1,10 @@
 require('env-deploy')();
 
+const winston = require('winston');
 const express = require('express');
 const bifrost = require('express-bifrost');
 const session = require('express-session');
+const expressWinston = require('express-winston');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
@@ -18,10 +20,10 @@ bifrost.defaults.err = (res, next, error) => {
   if (error instanceof errors.ResourceNotFoundError) {
     res.status(404).end();
   } else if (error instanceof errors.BadArgumentsError) {
-    console.log('Bad argument', error.message);
+    winston.debug('Bad argument', error.message);
     res.status(400).end();
   } else {
-    console.error(error);
+    winston.error(error);
     res.status(500).end();
   }
 };
@@ -35,11 +37,11 @@ mongoose.Promise = Promise;
 mongoose.connect(process.env.MONGODB_URI);
 
 mongoose.connection.on('open', () => {
-  console.log('Connected to DB');
+  winston.info('Connected to DB');
 });
 
 mongoose.connection.on('error', (err) => {
-  console.error('DB connection error', err);
+  winston.error('DB connection error', err);
 });
 
 passport.use(facebookStrategy);
@@ -53,6 +55,8 @@ passport.deserializeUser((userId, done) => User.findById(userId, done));
 const app = express();
 
 app.use('/', express.static(__dirname + '/client/dist'));
+
+app.use(expressWinston.logger({ winstonInstance: winston }));
 
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -82,8 +86,10 @@ app.get(/^\/u\/(-|\w+)\/[A-Z\d]+(\/\d+)?$/i, (req, res) => {
   });
 });
 
+app.use(expressWinston.errorLogger({ winstonInstance: winston }));
+
 const port = parseInt(process.env.PORT || '6543', 10);
 
 app.listen(port, () => {
-  console.log('Listening on port ' + port);
+  winston.info('Listening on port ' + port);
 });
