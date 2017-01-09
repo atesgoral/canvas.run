@@ -1,6 +1,12 @@
 <template>
   <popup title="Profile" v-bind:popup="popup" class="profile-popup">
     <p>
+      <p class="_instructions" v-if="instructions">{{ instructions }}</p>
+      <label>
+        Username
+        <input v-model="profile.username">
+        <div class="_error" v-if="errorMap.username">{{ errorMap.username }}</div>
+      </label>
       <label>
         Display Name
         <input v-model="profile.displayName">
@@ -34,6 +40,7 @@ class ValidationError extends Error {
 
 function normalizeProfile(profile) {
   return {
+    username: profile.username && trim(profile.username),
     displayName: profile.displayName && trim(profile.displayName)
   };
 }
@@ -43,6 +50,14 @@ function validateProfile(profile) {
 
   if (!profile.displayName) {
     errorMap.displayName = 'Display name should not be empty';
+  }
+
+  if (!profile.username) {
+    errorMap.username = 'Username should not be empty';
+  } else if (!/^[a-z0-9]+$/.test(profile.username)) {
+    errorMap.username = 'Username should consist of only lowercase English letters and numbers';
+  } else if (/^\d/.test(profile.username)) {
+    errorMap.username = 'Username should start with a letter';
   }
 
   if (Object.keys(errorMap).length) {
@@ -59,10 +74,13 @@ export default {
   },
   data() {
     return {
+      instructions: null,
       profile: {
+        username: null,
         displayName: null
       },
       errorMap: {
+        username: null,
         displayName: null
       }
     };
@@ -73,6 +91,14 @@ export default {
   },
   mounted() {
     Object.assign(this.profile, this.user.profile);
+
+    if (!this.profile.username) {
+      this.instructions = 'Please pick a username consisting of only lowercase English letters or numbers, and that starts with a letter.';
+      this.profile.username = this.profile.displayName
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '')
+        .replace(/^\d+/, '');
+    }
   },
   methods: {
     signOut() {
@@ -114,6 +140,7 @@ export default {
               this.user.profile = profile;
               Object.assign(this.profile, profile);
               this.popup.status.success('Updated').dismiss();
+              this.instructions = null;
             });
         })
         .catch((error) => {

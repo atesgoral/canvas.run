@@ -18,6 +18,7 @@ bifrost.defaults.err = (res, next, error) => {
   if (error instanceof errors.ResourceNotFoundError) {
     res.status(404).end();
   } else if (error instanceof errors.BadArgumentsError) {
+    console.log('Bad argument', error.message);
     res.status(400).end();
   } else {
     console.error(error);

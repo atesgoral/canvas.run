@@ -175,10 +175,34 @@ export default {
         margin-bottom: 0;
       }
 
+      @dotSize: .75rem;
+      @dotGap: .25em;
+
+      .text-dot(@color) {
+        text-indent: -(@dotSize + @dotGap);
+
+        &:before {
+          content: '';
+          display: inline-block;
+          width: @dotSize;
+          height: @dotSize;
+          border-radius: @dotSize / 2;
+          background: @color;
+          margin-right: @dotGap;
+        }
+      }
+
+      ._instructions {
+        font-size: 1rem;
+
+        .text-dot(@accent5Color);
+      }
+
       label {
         display: block;
         text-transform: uppercase;
         font-size: 12/16rem;
+        margin-bottom: 1rem;
 
         input {
           margin: 4px 0 0;
@@ -207,15 +231,7 @@ export default {
           font-size: 1rem;
           margin-top: 4px;
 
-          &:before {
-            content: '';
-            display: inline-block;
-            width: .75rem;
-            height: .75rem;
-            border-radius: .375rem;
-            background: @accent1Color;
-            margin-right: .25rem;
-          }
+          .text-dot(@accent1Color);
         }
       }
 

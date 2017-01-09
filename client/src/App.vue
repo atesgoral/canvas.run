@@ -124,6 +124,11 @@ export default {
       case 'SIGNED_IN':
         this.$set(this.session, 'user', event.data.user); // @todo return entire session?
         this.status.success('Signed in').dismiss();
+
+        if (!this.session.user.username) {
+          this.showProfile();
+        }
+
         break;
       case 'RUNTIME_ERROR':
         //this.error = 'Runtime error';
