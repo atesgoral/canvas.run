@@ -340,7 +340,7 @@ export default {
         });
     },
     toggleLike() {
-      return !this.run.isLikedByUser
+      return !this.runLikes.isLikedByUser
         ? this.like()
         : this.unlike();
     },
