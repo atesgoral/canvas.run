@@ -1,9 +1,8 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 
 const mongoose = require('mongoose');
+const ObjectId = mongoose.Schema.Types.ObjectId;
 const basek = require('basek');
 const ShortId = require('mongoose-shortid-nodeps');
 
@@ -11,12 +10,12 @@ const errors = require('../errors');
 
 const runSchema = mongoose.Schema({
   _ownerId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: ObjectId,
     ref: 'User',
     index: true
   },
   _parentId: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: ObjectId,
     ref: 'Run',
     index: true
   },
