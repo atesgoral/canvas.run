@@ -8,6 +8,13 @@ const runController = require('../controllers/run');
 const router = express.Router();
 const upload = multer().none();
 
+router.get('/:shortId/likes', bifrost((req) => {
+  const shortId = req.params.shortId;
+  const user = req.user;
+
+  return runController.readRunLikes(shortId, user && user.id);
+}));
+
 router.get('/:shortId/:revision?', bifrost((req) => {
   const shortId = req.params.shortId;
   const revision = req.params.revision && parseInt(req.params.revision, 10);
@@ -16,7 +23,7 @@ router.get('/:shortId/:revision?', bifrost((req) => {
   const runOwnershipMap = session.runOwnershipMap;
 
   return runController
-    .readRun(shortId, revision, user && user.id)
+    .readRun(shortId, revision)
     .then((run) => {
       if (!user && run.shortId && runOwnershipMap && runOwnershipMap[run.shortId]) {
         run.owningSession = session.id; // @todo owningSessionId

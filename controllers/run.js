@@ -3,16 +3,10 @@ const crypto = require('crypto');
 const Run = require('../models/run');
 const RunLikes = require('../models/runLikes');
 
-function readRun(shortId, revision, userId) {
-  return Promise
-    .all([
-      Run.whenFound(shortId, revision),
-      RunLikes.findOne({ runId: shortId })
-    ])
-    .then((results) => {
-      const run = results[0];
-      const runLikes = results[1];
-
+function readRun(shortId, revision) {
+  return Run
+    .whenFound(shortId, revision)
+    .then((run) => {
       return {
         owner: run._ownerId && run._ownerId.getSummary(),
         parent: run._parentId && {
@@ -23,9 +17,21 @@ function readRun(shortId, revision, userId) {
         shortId: run.shortId,
         revision: run.revision,
         source: run.source,
-        createdAt: run.createdAt,
-        isLikedByUser: runLikes && runLikes._likedUserIdList.some((runLike) => runLike.equals(userId)),
-        likeCount: runLikes && runLikes._likedUserIdList.length
+        createdAt: run.createdAt
+      };
+    });
+}
+
+function readRunLikes(shortId, userId) {
+  return RunLikes
+    .findOne({ runId: shortId })
+    .then((runLikes) => {
+      return {
+        isLikedByUser: !!(
+          runLikes && userId
+          && runLikes._likedUserIdList.some((runLike) => runLike.equals(userId))
+        ),
+        likeCount: runLikes && runLikes._likedUserIdList.length || 0
       };
     });
 }
@@ -124,6 +130,7 @@ function unlikeRun(shortId, userId) {
 
 module.exports = {
   readRun,
+  readRunLikes,
   saveRun,
   likeRun,
   unlikeRun

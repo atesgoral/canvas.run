@@ -9,7 +9,7 @@
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <span class="_gap"></span>
-        <action-button class="_tool -accent-4" v-if="run.shortId" v-bind:action="toggleLike">{{ run.isLikedByUser ? 'Unlike' : 'Like' }} ({{ run.likeCount }})</action-button>
+        <action-button class="_tool -accent-4" v-if="runLikes" v-bind:action="toggleLike" v-bind:disabled="!session.user">{{ runLikes.isLikedByUser ? 'Unlike' : 'Like' }} ({{ runLikes.likeCount }})</action-button>
         <action-button class="_tool -accent-4" v-if="run.shortId" v-bind:action="fork">Fork</action-button>
         <span class="_gap"></span>
         <button type="button" class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
@@ -80,6 +80,7 @@ export default {
       status: new Status.Model(),
       layoutChangeCnt: 0,
       run: null,
+      runLikes: null,
       isRunning: false,
       editorSource: null,
       rendererSource: null,
@@ -117,6 +118,7 @@ export default {
       if (event.state) {
         this.run = event.state;
         this.editorSource = this.run.source;
+        this.updateRunLikes();
       }
     });
 
@@ -129,6 +131,8 @@ export default {
         if (!this.session.user.username) {
           this.showProfile();
         }
+
+        this.updateRunLikes();
 
         break;
       case 'RUNTIME_ERROR':
@@ -170,6 +174,7 @@ export default {
 
         if (run.shortId) {
           history.replaceState(run, `Run ${run.shortId}`, `/${path}`);
+          this.updateRunLikes();
         } else {
           history.replaceState(run, 'Default run');
         }
@@ -224,6 +229,27 @@ export default {
           return response.json();
         });
     },
+    updateRunLikes() {
+      if (this.run.shortId) {
+        return fetch(`/api/runs/${this.run.shortId}/likes`, { credentials: 'same-origin' })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error('Likes fetch failed');
+            }
+
+            return response.json();
+          })
+          .then((runLikes) => {
+            this.runLikes = runLikes;
+          })
+          .catch((error) => {
+            this.runLikes = null;
+            this.status.error('Could not fetch likes').dismiss();
+          });
+      } else {
+        this.runLikes = null;
+      }
+    },
     toggleAnimation() {
       if (this.isRunning) {
         this.stop();
@@ -271,6 +297,7 @@ export default {
           history.pushState(run, `Run ${run.shortId}`, `/u/${username}/${run.shortId}`);
           this.run = run;
           this.status.success('Saved').dismiss();
+          this.updateRunLikes();
         })
         .catch((error) => {
           console.error(error);
@@ -305,6 +332,7 @@ export default {
           history.replaceState(run, `Run ${run.shortId}`, `/u/${username}/${run.shortId}`);
           this.run = run;
           this.status.success('Updated').dismiss();
+          this.updateRunLikes();
         })
         .catch((error) => {
           console.error(error);
@@ -334,8 +362,7 @@ export default {
           }
         })
         .then((runLikes) => {
-          this.$set(this.run, 'isLikedByUser', runLikes.isLikedByUser);
-          this.$set(this.run, 'likeCount', runLikes.likeCount);
+          this.runLikes = runLikes;
           this.status.success('Liked').dismiss();
         })
         .catch((error) => {
@@ -361,8 +388,7 @@ export default {
           }
         })
         .then((runLikes) => {
-          this.$set(this.run, 'isLikedByUser', runLikes.isLikedByUser);
-          this.$set(this.run, 'likeCount', runLikes.likeCount);
+          this.runLikes = runLikes;
           this.status.success('Unliked').dismiss();
         })
         .catch((error) => {
@@ -399,6 +425,7 @@ export default {
           history.pushState(run, `Run ${run.shortId}`, `/u/${username}/${run.shortId}`);
           this.run = run;
           this.status.success('Forked').dismiss();
+          this.updateRunLikes();
         })
         .catch((error) => {
           console.error(error);
@@ -434,6 +461,7 @@ export default {
           //this.$set(this.session, 'user', null);
           this.session.user = null;
           this.status.success('Signed out').dismiss();
+          this.updateRunLikes();
         })
         .catch((error) => {
           console.error(error);
