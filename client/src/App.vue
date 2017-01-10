@@ -130,7 +130,7 @@ export default {
         this.$set(this.session, 'user', user); // @todo return entire session?
         this.status.success('Signed in').dismiss();
 
-        if (!user.username) {
+        if (!user.profile.username) {
           this.showProfile();
         }
 
