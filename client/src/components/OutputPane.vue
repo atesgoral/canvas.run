@@ -1,6 +1,6 @@
 <template>
   <div class="output-pane">
-    <iframe></iframe>
+    <iframe ref="iframe"></iframe>
     <div class="_iframe-overlay"></div>
     <div class="_error" v-bind:class="{ '-visible': error }">{{ error }}</div>
   </div>
@@ -19,7 +19,7 @@ export default {
   },
   methods: {
     notifyIframe: function (type, data) {
-      this.iframeEl.contentWindow.postMessage({ type, data }, '*');
+      this.$refs.iframe.contentWindow.postMessage({ type, data }, '*');
     }
   },
   watch: {
@@ -34,8 +34,6 @@ export default {
     }
   },
   mounted() {
-    this.iframeEl = this.$el.querySelector('iframe');
-
     const bootstrapSrc = iframeBootstrap.toString();
     const runtimeSrc = iframeRuntime.toString();
 
@@ -49,7 +47,7 @@ export default {
       }
     });
 
-    this.iframeEl.src = iframeUrl;
+    this.$refs.iframe.src = iframeUrl;
   }
 }
 </script>
