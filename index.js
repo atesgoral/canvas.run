@@ -9,22 +9,12 @@ const passport = require('passport');
 
 const errors = require('./errors');
 
+const errorMiddleware = require('./middleware/error');
+
 const facebookStrategy = require('./strategies/facebook');
 const twitterStrategy = require('./strategies/twitter');
 const gitHubStrategy = require('./strategies/gitHub');
 const googleStrategy = require('./strategies/google');
-
-bifrost.defaults.err = (res, next, error) => {
-  if (error instanceof errors.ResourceNotFoundError) {
-    res.status(404).end();
-  } else if (error instanceof errors.BadArgumentsError) {
-    console.log('Bad argument', error.message);
-    res.status(400).end();
-  } else {
-    console.error(error);
-    res.status(500).end();
-  }
-};
 
 const apiRouter = require('./routers/api');
 const authRouter = require('./routers/auth');
@@ -81,6 +71,8 @@ app.get(/^\/u\/(-|\w+)\/[A-Z\d]+(\/\d+)?$/i, (req, res) => {
     root: __dirname + '/client/dist'
   });
 });
+
+app.use(errorMiddleware);
 
 const port = parseInt(process.env.PORT || '6543', 10);
 
