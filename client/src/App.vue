@@ -125,10 +125,12 @@ export default {
     window.addEventListener('message', (event) => {
       switch (event.data.type) {
       case 'SIGNED_IN':
-        this.$set(this.session, 'user', event.data.user); // @todo return entire session?
+        const user = event.data.user;
+
+        this.$set(this.session, 'user', user); // @todo return entire session?
         this.status.success('Signed in').dismiss();
 
-        if (!this.session.user.username) {
+        if (!user.username) {
           this.showProfile();
         }
 
