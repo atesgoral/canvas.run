@@ -1,11 +1,18 @@
 const crypto = require('crypto');
 
 const Run = require('../models/run');
+const RunLikes = require('../models/runLikes');
 
 function readRun(shortId, revision, userId) {
-  return Run
-    .whenFound(shortId, revision)
-    .then(run => {
+  return Promise
+    .all([
+      Run.whenFound(shortId, revision),
+      RunLikes.findOne({ runId: shortId })
+    ])
+    .then((results) => {
+      const run = results[0];
+      const runLikes = results[1];
+
       return {
         owner: run._ownerId && run._ownerId.getSummary(),
         parent: run._parentId && {
@@ -16,7 +23,9 @@ function readRun(shortId, revision, userId) {
         shortId: run.shortId,
         revision: run.revision,
         source: run.source,
-        createdAt: run.createdAt
+        createdAt: run.createdAt,
+        isLikedByUser: runLikes && runLikes._likedUserIdList.some((runLike) => runLike.equals(userId)),
+        likeCount: runLikes && runLikes._likedUserIdList.length
       };
     });
 }
@@ -83,7 +92,39 @@ function saveRun(shortId, source, userId, isForking) {
     });
 }
 
+function likeRun(shortId, userId) {
+  return RunLikes
+    .findOneAndUpdate(
+      { runId: shortId },
+      { $addToSet: { _likedUserIdList: userId } },
+      { upsert: true, new: true }
+    )
+    .then((runLikes) => {
+      return {
+        isLikedByUser: true,
+        likeCount: runLikes._likedUserIdList.length
+      };
+    });
+}
+
+function unlikeRun(shortId, userId) {
+  return RunLikes
+    .findOneAndUpdate(
+      { runId: shortId },
+      { $pull: { _likedUserIdList: userId } },
+      { upsert: true, new: true }
+    )
+    .then((runLikes) => {
+      return {
+        isLikedByUser: false,
+        likeCount: runLikes._likedUserIdList.length
+      };
+    });
+}
+
 module.exports = {
   readRun,
-  saveRun
+  saveRun,
+  likeRun,
+  unlikeRun
 };

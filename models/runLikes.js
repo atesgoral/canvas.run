@@ -1,17 +1,16 @@
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
-const likeSchema = mongoose.Schema({
+const runLikesSchema = mongoose.Schema({
   _runId: {
     type: ObjectId,
     ref: 'Run',
     index: true
   },
-  _userId: {
+  _likedUserIdList: [{
     type: ObjectId,
-    ref: 'User',
-    index: true
-  }
+    ref: 'User'
+  }]
 });
 
-module.exports = mongoose.model('Like', likeSchema);
+module.exports = mongoose.model('RunLikes', runLikesSchema);

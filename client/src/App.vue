@@ -9,6 +9,7 @@
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <span class="_gap"></span>
+        <action-button class="_tool -accent-4" v-if="run.shortId" v-bind:action="toggleLike">{{ run.isLikedByUser ? 'Unlike' : 'Like' }} ({{ run.likeCount }})</action-button>
         <action-button class="_tool -accent-4" v-if="run.shortId" v-bind:action="fork">Fork</action-button>
         <span class="_gap"></span>
         <button type="button" class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
@@ -308,6 +309,65 @@ export default {
         .catch((error) => {
           console.error(error);
           this.status.error('Updating failed').dismiss();
+        });
+    },
+    toggleLike() {
+      return !this.run.isLikedByUser
+        ? this.like()
+        : this.unlike();
+    },
+    like() {
+      this.status.pending('Liking');
+
+      const options = {
+        method: 'POST',
+        credentials: 'same-origin'
+      };
+
+      return fetch(`/api/runs/${this.run.shortId}/like`, options)
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            console.error(response.status);
+            throw new Error('Liking failed');
+          }
+        })
+        .then((runLikes) => {
+          this.$set(this.run, 'isLikedByUser', runLikes.isLikedByUser);
+          this.$set(this.run, 'likeCount', runLikes.likeCount);
+          this.status.success('Liked').dismiss();
+        })
+        .catch((error) => {
+          console.error(error);
+          this.status.error('Liking failed').dismiss();
+        });
+    },
+    unlike() {
+      this.status.pending('Unliking');
+
+      const options = {
+        method: 'POST',
+        credentials: 'same-origin'
+      };
+
+      return fetch(`/api/runs/${this.run.shortId}/unlike`, options)
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            console.error(response.status);
+            throw new Error('Unliking failed');
+          }
+        })
+        .then((runLikes) => {
+          this.$set(this.run, 'isLikedByUser', runLikes.isLikedByUser);
+          this.$set(this.run, 'likeCount', runLikes.likeCount);
+          this.status.success('Unliked').dismiss();
+        })
+        .catch((error) => {
+          console.error(error);
+          this.status.error('Unliking failed').dismiss();
         });
     },
     fork() {

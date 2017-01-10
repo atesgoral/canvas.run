@@ -55,4 +55,18 @@ router.post('/', upload, bifrost((req) => {
 // router.put('/:shortId', bifrost((req) => {
 // });
 
+router.post('/:shortId/like', authMiddleware.requireUser, bifrost((req) => {
+  const shortId = req.params.shortId;
+  const user = req.user;
+
+  return runController.likeRun(shortId, user.id);
+}));
+
+router.post('/:shortId/unlike', authMiddleware.requireUser, bifrost((req) => {
+  const shortId = req.params.shortId;
+  const user = req.user;
+
+  return runController.unlikeRun(shortId, user.id);
+}));
+
 module.exports = router;
