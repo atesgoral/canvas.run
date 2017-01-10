@@ -28,7 +28,7 @@ function validateProfile(profile) {
   return profile;
 }
 
-exports.updateProfile = (user, profile) => {
+function updateProfile(user, profile) {
   return Promise
     .resolve(profile || {})
     .then(normalizeProfile)
@@ -42,4 +42,8 @@ exports.updateProfile = (user, profile) => {
           return user.profile;
         });
     });
+}
+
+module.exports = {
+  updateProfile
 };

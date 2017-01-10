@@ -2,6 +2,7 @@ const express = require('express');
 const bifrost = require('express-bifrost');
 const multer = require('multer');
 
+const authMiddleware = require('../middleware/auth');
 const runController = require('../controllers/run');
 
 const router = express.Router();
@@ -15,16 +16,17 @@ router.get('/:shortId/:revision?', bifrost((req) => {
   const runOwnershipMap = session.runOwnershipMap;
 
   return runController
-    .readRun(shortId, revision)
+    .readRun(shortId, revision, user && user.id)
     .then((run) => {
       if (!user && run.shortId && runOwnershipMap && runOwnershipMap[run.shortId]) {
-        run.owningSession = session.id;
+        run.owningSession = session.id; // @todo owningSessionId
       }
 
       return run;
     });
 }));
 
+// @todo To save and to fork only
 router.post('/', upload, bifrost((req) => {
   const shortId = req.body.shortId;
   const source = req.body.source;
@@ -34,7 +36,7 @@ router.post('/', upload, bifrost((req) => {
   let runOwnershipMap = session.runOwnershipMap;
 
   return runController
-    .saveRun(shortId, source, user, isForking)
+    .saveRun(shortId, source, user && user.id, isForking)
     .then((run) => {
       if (!user) {
         if (!runOwnershipMap) {
@@ -48,5 +50,9 @@ router.post('/', upload, bifrost((req) => {
       return run;
     });
 }));
+
+// @todo to update
+// router.put('/:shortId', bifrost((req) => {
+// });
 
 module.exports = router;

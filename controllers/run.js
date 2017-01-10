@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const Run = require('../models/run');
 
-exports.readRun = (shortId, revision) => {
+function readRun(shortId, revision, userId) {
   return Run
     .whenFound(shortId, revision)
     .then(run => {
@@ -19,10 +19,10 @@ exports.readRun = (shortId, revision) => {
         createdAt: run.createdAt
       };
     });
-};
+}
 
 // @todo might be better to split to save/update/fork
-exports.saveRun = (shortId, source, user, isForking) => {
+function saveRun(shortId, source, userId, isForking) {
   let parentRun = undefined;
 
   return Promise
@@ -47,7 +47,7 @@ exports.saveRun = (shortId, source, user, isForking) => {
       const hash = shasum.digest('hex');
 
       const run = new Run({
-        _ownerId: user && user._id,
+        _ownerId: userId,
         _parentId: parentRun && parentRun.id,
         shortId: isForking ? undefined : shortId,
         revision: isForking ? 0 : revision,
@@ -81,4 +81,9 @@ exports.saveRun = (shortId, source, user, isForking) => {
           };
         });
     });
+}
+
+module.exports = {
+  readRun,
+  saveRun
 };
