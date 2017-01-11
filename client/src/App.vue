@@ -15,9 +15,13 @@
         <button type="button" class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
       </span>
       <span class="_right-aligned" v-if="!isLoading">
-        <button type="button" class="_profile" v-on:click="showProfile" v-if="session.user">
+        <button type="button" class="_profile" v-on:click="profileDropdown.open" v-deep-blur="profileDropdown.close" v-if="session.user">
           <span class="_picture" v-bind:style="{ backgroundImage: `url(${session.user.profile.pictureUrl})` }"></span>
           <span class="_display-name">{{ session.user.profile.displayName }}</span>
+          <dropdown class="_profile-dropdown" v-if="profileDropdown.isOpen" v-bind:dropdown="profileDropdown">
+            <button type="button" v-on:click.stop="showProfile">Edit Profile</button>
+            <button type="button" v-on:click="signOut">Sign out</button>
+          </dropdown>
         </button>
         <button type="button" class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in</button>
       </span>
@@ -51,6 +55,7 @@ import 'whatwg-fetch';
 
 import debounce from './debounce'
 import ActionButton from './components/common/ActionButton'
+import Dropdown from './components/common/Dropdown'
 import Popup from './components/common/Popup'
 import Status from './components/common/Status'
 import EditorPane from './components/EditorPane'
@@ -63,6 +68,7 @@ import SettingsPopup from './components/SettingsPopup'
 export default {
   components: {
     ActionButton,
+    Dropdown,
     Status,
     EditorPane,
     Splitter,
@@ -73,6 +79,7 @@ export default {
   },
   data() {
     return {
+      profileDropdown: new Dropdown.Model(),
       signInPopup: new Popup.Model(),
       profilePopup: new Popup.Model(),
       settingsPopup: new Popup.Model(),
@@ -668,6 +675,11 @@ header {
       margin-left: 4px;
       margin-right: 0;
     }
+  }
+  > ._profile-dropdown {
+    top: @headerHeight;
+    right: 0;
+    width: 10rem;
   }
 }
 body > .status {
