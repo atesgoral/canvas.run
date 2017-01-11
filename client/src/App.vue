@@ -1,5 +1,5 @@
 <template>
-  <body v-on:keydown.ctrl.enter.prevent="toggleAnimation">
+  <body>
     <header>
       <h1><a href="/">CanvasRun</a></h1>
       <span v-if="run">
