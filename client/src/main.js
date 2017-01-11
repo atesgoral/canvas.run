@@ -3,24 +3,16 @@
 import Vue from 'vue'
 import App from './App'
 
-function containsNode(parent, node) {
-  let needle = node;
-
-  while (needle) {
-    if (needle === parent) {
-      return true;
-    }
-
-    needle = needle.parentNode;
-  }
-
-  return false;
-}
-
 Vue.directive('deep-blur', {
   bind: function (el, binding) {
     function onBlur(event) {
-      if (!containsNode(el, event.relatedTarget)) {
+      let node = event.relatedTarget;
+
+      while (node && node !== el) {
+        node = node.parentNode;
+      }
+
+      if (!node) {
         binding.value();
       }
     }
