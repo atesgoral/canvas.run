@@ -60,7 +60,7 @@ export default {
 </script>
 
 <style lang="less">
-@import "./colors";
+@import "colors";
 
 @statusBgColor: @panelBgColor;
 @statusContentColor: @panelContentColor;

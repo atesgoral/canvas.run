@@ -15,7 +15,6 @@
     </p>
     <div class="_actions">
       <action-button class="_action" v-bind:action="update">Update</action-button>
-      <button type="button" class="_action" v-on:click="signOut">Sign out</button>
       <button type="button" class="_action" v-on:click="popup.close">Close</button>
     </div>
   </popup>
@@ -101,10 +100,6 @@ export default {
     }
   },
   methods: {
-    signOut() {
-      this.popup.close();
-      this.$emit('signOut');
-    },
     update() {
       return Promise
         .resolve(this.profile)
