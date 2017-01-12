@@ -15,7 +15,7 @@
         <button type="button" class="_tool -accent-2" v-on:click="toggleLayout">Toggle Layout</button>
       </span>
       <span class="_right-aligned" v-if="!isLoading">
-        <button type="button" class="_profile" v-on:click="profileDropdown.open" v-deep-blur="profileDropdown.close" v-if="session.user">
+        <button type="button" class="_profile" v-on:click="profileDropdown.toggle" v-deep-blur="profileDropdown.close" v-if="session.user">
           <span class="_picture" v-bind:style="{ backgroundImage: `url(${session.user.profile.pictureUrl})` }"></span>
           <span class="_display-name">{{ session.user.profile.displayName }}</span>
           <dropdown class="_profile-dropdown" v-if="profileDropdown.isOpen" v-bind:dropdown="profileDropdown">
@@ -520,9 +520,10 @@ export default {
 @import "components/common/button";
 
 @headerHeight: 40px;
+@aceGutterSize: 50px;
 
 @logoVPadding: 10px;
-@logoHPadding: 50px;
+@logoHPadding: @aceGutterSize;
 @logoHeight: @headerHeight - @logoVPadding * 2;
 @logoAspectRatio: 291 / 40;
 
@@ -606,8 +607,10 @@ header {
     }
 
     &:focus {
+      color: @buttonHoverContentColor;
+
       &:after {
-        bottom: 4px;
+        //bottom: 4px;
       }
     }
 
@@ -640,13 +643,14 @@ header {
   ._right-aligned {
     flex-grow: 1;
     text-align: right;
-    margin-right: 50px;
+    margin-right: @aceGutterSize;
 
     > ._profile {
       .button();
 
       padding-right: 0;
       font-size: 1rem;
+      position: relative;
 
       ._picture {
         display: inline-block;
@@ -669,17 +673,20 @@ header {
       &:focus {
         color: @buttonHoverContentColor;
       }
+
+      > ._profile-dropdown {
+        top: @headerHeight - 5px;
+        left: 0;
+        margin-left: -1rem;
+        margin-right: -1rem;
+        right: 0;
+      }
     }
 
     > ._tool {
       margin-left: 4px;
       margin-right: 0;
     }
-  }
-  > ._profile-dropdown {
-    top: @headerHeight;
-    right: 0;
-    width: 10rem;
   }
 }
 body > .status {
