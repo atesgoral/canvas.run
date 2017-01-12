@@ -95,7 +95,7 @@ export default {
         margin: 0;
         text-transform: uppercase;
         text-align: center;
-        opacity: 0.75;
+        opacity: 0.5;
       }
 
       > ._close-button {
@@ -207,8 +207,7 @@ export default {
             }
 
             &::selection {
-              background: @accent5Color;
-              color: @inputBackgroundColor;
+              background: darken(@accent5Color, 20%);
             }
           }
 

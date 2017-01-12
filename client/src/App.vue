@@ -19,7 +19,7 @@
           <span class="_picture" v-bind:style="{ backgroundImage: `url(${session.user.profile.pictureUrl})` }"></span>
           <span class="_display-name">{{ session.user.profile.displayName }}</span>
           <dropdown class="_profile-dropdown" v-if="profileDropdown.isOpen" v-bind:dropdown="profileDropdown">
-            <button type="button" v-on:click.stop="showProfile">Edit Profile</button>
+            <button type="button" v-on:click.stop="showProfile">Update Profile</button>
             <button type="button" v-on:click="signOut">Sign out</button>
           </dropdown>
         </button>
@@ -608,10 +608,6 @@ header {
 
     &:focus {
       color: @buttonHoverContentColor;
-
-      &:after {
-        //bottom: 4px;
-      }
     }
 
     &:enabled {

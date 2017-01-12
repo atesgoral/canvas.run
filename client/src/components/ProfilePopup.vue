@@ -1,5 +1,5 @@
 <template>
-  <popup title="Profile" v-bind:popup="popup" class="profile-popup">
+  <popup title="Update Profile" v-bind:popup="popup" class="profile-popup">
     <p>
       <p class="_instructions" v-if="instructions">{{ instructions }}</p>
       <label>
