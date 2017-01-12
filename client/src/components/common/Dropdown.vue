@@ -1,12 +1,14 @@
 <template>
   <transition name="fade-slide">
-    <div class="dropdown" v-on:keyup.esc="dropdown.close">
+    <tab-trap class="dropdown" v-on:keyup.esc="dropdown.close">
       <slot></slot>
-    </div>
+    </tab-trap>
   </transition>
 </template>
 
 <script>
+import TabTrap from './TabTrap';
+
 class Dropdown {
   constructor() {
     this.isOpen = false;
@@ -26,6 +28,9 @@ class Dropdown {
 }
 
 export default {
+  components: {
+    TabTrap
+  },
   props: {
     dropdown: Object
   },

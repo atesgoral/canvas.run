@@ -1,8 +1,8 @@
 <template>
   <div class="tab-trap">
-    <button type="button" v-on:focus="restoreFocus(-1)"></button>
+    <button type="button" class="_tab-trap" v-on:focus="restoreFocus(-1)"></button>
     <slot></slot>
-    <button type="button" v-on:focus="restoreFocus(0)"></button>
+    <button type="button" class="_tab-trap" v-on:focus="restoreFocus(0)"></button>
   </div>
 </template>
 
@@ -32,7 +32,7 @@ export default {
 
 <style lang="less">
 .tab-trap {
-  > button {
+  > ._tab-trap {
     position: absolute;
     left: -9999px;
   }
