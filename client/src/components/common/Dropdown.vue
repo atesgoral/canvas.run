@@ -57,18 +57,6 @@ export default {
     width: 100%;
     padding: .5rem 1rem;
     text-align: left;
-
-    &:enabled {
-      &:hover {
-      }
-
-      &:focus {
-        color: #fff;
-      }
-
-      &:active {
-      }
-    }
   }
 }
 </style>

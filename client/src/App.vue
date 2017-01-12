@@ -19,8 +19,8 @@
           <span class="_picture" v-bind:style="{ backgroundImage: `url(${session.user.profile.pictureUrl})` }"></span>
           <span class="_display-name">{{ session.user.profile.displayName }}</span>
           <dropdown class="_profile-dropdown" v-if="profileDropdown.isOpen" v-bind:dropdown="profileDropdown">
-            <button type="button" v-on:click.stop="showProfile">Update Profile</button>
-            <button type="button" v-on:click="signOut">Sign out</button>
+            <button type="button" class="-accent-2" v-on:click.stop="showProfile">Update Profile</button>
+            <button type="button" class="-accent-1" v-on:click="signOut">Sign out</button>
           </dropdown>
         </button>
         <button type="button" class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in</button>
@@ -676,6 +676,46 @@ header {
         margin-left: -1rem;
         margin-right: -1rem;
         right: 0;
+
+        button {
+          position: relative;
+          overflow: hidden;
+
+          &:after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            bottom: 5px;
+            width: 3px;
+            border-radius: 1.5px;
+            left: -3px;
+            transition: left 100ms;
+          }
+
+          &:focus {
+            color: @buttonHoverContentColor;
+          }
+
+          &:enabled {
+            &:hover {
+              &:after {
+                left: 6px;
+              }
+            }
+
+            &:active {
+              &:after {
+                left: 8px;
+              }
+            }
+          }
+
+          &.-accent-1:after { background: @buttonHoverAccent1Color; }
+          &.-accent-2:after { background: @buttonHoverAccent2Color; }
+          &.-accent-3:after { background: @buttonHoverAccent3Color; }
+          &.-accent-4:after { background: @buttonHoverAccent4Color; }
+          &.-accent-5:after { background: @buttonHoverAccent5Color; }
+        }
       }
     }
 
