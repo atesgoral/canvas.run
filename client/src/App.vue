@@ -644,6 +644,7 @@ header {
     > ._profile {
       .button();
 
+      padding-left: 0;
       padding-right: 0;
       font-size: 1rem;
       position: relative;
