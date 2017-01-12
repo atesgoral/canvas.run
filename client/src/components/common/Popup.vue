@@ -90,7 +90,7 @@ export default {
 
       > ._title {
         height: 3rem;
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         line-height: 3rem;
         margin: 0;
         text-transform: uppercase;
