@@ -1,6 +1,7 @@
 <template>
   <div class="output-pane">
     <iframe ref="iframe"></iframe>
+    <div class="_footer"></div>
     <div class="_iframe-overlay"></div>
     <div class="_error" v-bind:class="{ '-visible': error }">{{ error }}</div>
   </div>
@@ -56,8 +57,6 @@ export default {
 @import "common/colors";
 
 .output-pane {
-  padding: 1px;
-  box-sizing: border-box;
   flex: 1;
   position: relative;
   overflow: hidden;
@@ -65,9 +64,13 @@ export default {
   flex-direction: column;
 
   > iframe {
-    width: 100%;
+    padding: 1px;
     flex: 1;
     border: 0;
+  }
+  > ._footer {
+    display: none;
+    height: 30px;
   }
   > ._iframe-overlay {
     position: absolute;

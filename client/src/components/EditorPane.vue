@@ -1,5 +1,8 @@
 <template>
-  <div class="editor-pane"></div>
+  <div class="editor-pane">
+    <div class="_editor" ref="editor"></div>
+    <div class="_footer"></div>
+  </div>
 </template>
 
 <script>
@@ -19,7 +22,7 @@ export default {
   mounted() {
     ace.config.set('workerPath', '/static');
 
-    const editor = ace.edit(this.$el)
+    const editor = ace.edit(this.$refs.editor)
 
     this.editor = editor;
 
@@ -92,29 +95,40 @@ export default {
 
 .editor-pane {
   flex-basis: 50%;
+  display: flex;
+  flex-flow: column;
 
-  @gutterIndicatorSize: 9px;
+  > ._editor {
+    flex: 1;
 
-  .gutterIndicator(@color) {
-    background: none;
-    position: relative;
+    @gutterIndicatorSize: 9px;
 
-    &:before {
-      content: '';
-      position: absolute;
-      left: 2px;
-      top: 50%;
-      margin-top: -@gutterIndicatorSize / 2;
-      display: inline-block;
-      width: @gutterIndicatorSize;
-      height: @gutterIndicatorSize;
-      border-radius: @gutterIndicatorSize / 2;
-      background: @color;
+    .gutterIndicator(@color) {
+      background: none;
+      position: relative;
+
+      &:before {
+        content: '';
+        position: absolute;
+        left: 2px;
+        top: 50%;
+        margin-top: -@gutterIndicatorSize / 2;
+        display: inline-block;
+        width: @gutterIndicatorSize;
+        height: @gutterIndicatorSize;
+        border-radius: @gutterIndicatorSize / 2;
+        background: @color;
+      }
     }
+
+    .ace_gutter-cell.ace_info { .gutterIndicator(@panelContentColor); opacity: .75; }
+    .ace_gutter-cell.ace_warning { .gutterIndicator(@accent2Color); }
+    .ace_gutter-cell.ace_error { .gutterIndicator(@accent1Color); }
   }
 
-  .ace_gutter-cell.ace_info { .gutterIndicator(@panelContentColor); opacity: .75; }
-  .ace_gutter-cell.ace_warning { .gutterIndicator(@accent2Color); }
-  .ace_gutter-cell.ace_error { .gutterIndicator(@accent1Color); }
+  > ._footer {
+    display: none;
+    height: 30px;
+  }
 }
 </style>

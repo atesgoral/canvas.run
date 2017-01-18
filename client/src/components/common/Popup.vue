@@ -257,20 +257,20 @@ export default {
         }
       }
     }
+  }
 
-    &.fade-slide-enter-active, &.fade-slide-leave-active {
-      transition: opacity .5s;
+  &.fade-slide-enter-active, &.fade-slide-leave-active {
+    transition: opacity .5s;
 
-      > ._frame {
-        transition: transform .5s;
-      }
+    > ._frame {
+      transition: transform .5s;
     }
-    &.fade-slide-enter, &.fade-slide-leave-active {
-      opacity: 0;
+  }
+  &.fade-slide-enter, &.fade-slide-leave-active {
+    opacity: 0;
 
-      > ._frame {
-        transform: translateY(-500px);
-      }
+    > ._frame {
+      transform: translateY(-500px);
     }
   }
 }
