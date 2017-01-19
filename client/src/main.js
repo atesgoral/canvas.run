@@ -23,6 +23,6 @@ Vue.directive('deep-blur', {
 
 /* eslint-disable no-new */
 new Vue({
-  el: 'body',
+  el: '#app',
   render: h => h(App)
 })
