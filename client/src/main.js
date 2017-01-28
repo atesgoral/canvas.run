@@ -5,16 +5,12 @@ import VueRouter from 'vue-router'
 import App from './App'
 
 import Editor from './components/Editor'
-import Profile from './components/Profile'
 
 Vue.use(VueRouter);
 
 const router = new VueRouter({
   mode: 'history',
   routes: [{
-    path: '/u/:username',
-    component: Profile
-  }, {
     name: 'editor',
     path: '/u/:username/:shortId/:revision?',
     component: Editor
