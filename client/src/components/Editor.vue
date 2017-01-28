@@ -109,6 +109,11 @@ export default {
         localStorage.setItem('settings', JSON.stringify(settings));
       },
       deep: true
+    },
+    $route: function () {
+      if (this.$route.params.shortId !== this.run.shortId) {
+        this.fetchRun();
+      }
     }
   },
   mounted() {
@@ -121,14 +126,7 @@ export default {
       this.notifyLayoutChange();
     }, 250));
 
-    window.addEventListener('popstate', (event) => {
-      if (event.state) {
-        this.run = event.state;
-        this.editorSource = this.run.source;
-        this.updateRunLikes();
-      }
-    });
-
+    // @todo remove when unmounted ie. go to profile
     window.addEventListener('message', (event) => {
       switch (event.data.type) {
       case 'SIGNED_IN':
@@ -157,37 +155,16 @@ export default {
       }
     });
 
-    // Expecting: /u/username/shortId/revision
-
-    const path = window.location.pathname.slice(1);
-
-    const tokens = path.split('/');
-    const username = tokens[1];
-    const shortId = tokens[2];
-    const revision = tokens[3];
-
+    // of still loading when mounted
     this.status.pending('Initializing');
 
+    // @todo do this in created
     Promise
       .all([
         this.fetchCurrentSession(),
-        this.fetchRun(shortId, revision)
+        this.fetchRun()
       ])
-      .then((results) => {
-        const session = results[0];
-        const run = results[1];
-
-        this.session = session;
-        this.run = run;
-        this.editorSource = run.source;
-
-        if (run.shortId) {
-          history.replaceState(run, `Run ${run.shortId}`, `/${path}`);
-          this.updateRunLikes();
-        } else {
-          history.replaceState(run, 'Default run');
-        }
-
+      .then(() => {
         this.isLoading = false;
         this.status.close();
 
@@ -201,7 +178,10 @@ export default {
       });
   },
   methods: {
-    fetchRun(shortId, revision) {
+    fetchRun() {
+      const shortId = this.$route.params.shortId;
+      const revision = this.$route.params.revision;
+
       let url = '/api/runs/';
 
       if (shortId) {
@@ -226,6 +206,11 @@ export default {
               throw new Error('Could not fetch run');
             }
           }
+        })
+        .then((run) => {
+          this.run = run;
+          this.editorSource = run.source;
+          this.updateRunLikes();
         });
     },
     fetchCurrentSession() {
@@ -236,6 +221,9 @@ export default {
           }
 
           return response.json();
+        })
+        .then((session) => {
+          this.session = session;
         });
     },
     updateRunLikes() {
@@ -303,7 +291,8 @@ export default {
         .then((run) => {
           const username = this.session.user && this.session.user.profile.username || '-';
 
-          history.pushState(run, `Run ${run.shortId}`, `/u/${username}/${run.shortId}`);
+          // @todo use run.owner.username?
+          this.$router.push({ name: 'editor', params: { username, shortId: run.shortId } });
           this.run = run;
           this.status.success('Saved').dismiss();
           this.updateRunLikes();
@@ -338,7 +327,6 @@ export default {
         .then((run) => {
           const username = this.session.user && this.session.user.profile.username || '-';
 
-          history.replaceState(run, `Run ${run.shortId}`, `/u/${username}/${run.shortId}`);
           this.run = run;
           this.status.success('Updated').dismiss();
           this.updateRunLikes();
@@ -431,7 +419,7 @@ export default {
         .then((run) => {
           const username = this.session.user && this.session.user.profile.username || '-';
 
-          history.pushState(run, `Run ${run.shortId}`, `/u/${username}/${run.shortId}`);
+          this.$router.push({ name: 'editor', params: { username, shortId: run.shortId } });
           this.run = run;
           this.status.success('Forked').dismiss();
           this.updateRunLikes();
