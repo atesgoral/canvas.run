@@ -12,14 +12,14 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   mode: 'history',
   routes: [{
-    path: '/',
-    component: Editor
-  }, {
     path: '/u/:username',
     component: Profile
   }, {
     name: 'editor',
     path: '/u/:username/:shortId/:revision?',
+    component: Editor
+  }, {
+    path: '*',
     component: Editor
   }]
 });
