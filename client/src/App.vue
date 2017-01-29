@@ -1,13 +1,7 @@
 <template>
-  <editor></editor>
+  <router-view></router-view>
 </template>
 
 <script>
-import Editor from './components/Editor';
-
-export default {
-  components: {
-    Editor
-  }
-};
+export default {};
 </script>
