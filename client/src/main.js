@@ -5,18 +5,37 @@ import VueRouter from 'vue-router'
 import App from './App'
 
 import Editor from './components/Editor'
+import Refresh from './components/Refresh'
+import NotFound from './components/NotFound'
 
 Vue.use(VueRouter);
 
 const router = new VueRouter({
   mode: 'history',
   routes: [{
-    name: 'editor',
-    path: '/u/:username/:shortId/:revision?',
+    name: 'home',
+    path: '/',
+    component: Refresh
+  }, {
+    name: 'new',
+    path: '/~:username/new',
     component: Editor
   }, {
-    path: '*',
+    name: 'anon-new',
+    path: '/~/new',
     component: Editor
+  }, {
+    name: 'edit',
+    path: '/~:username/:shortId/:revision?',
+    component: Editor
+  }, {
+    name: 'anon-edit',
+    path: '/~/:shortId/:revision?',
+    component: Editor
+  }, {
+    name: 'not-found',
+    path: '*',
+    component: NotFound
   }]
 });
 

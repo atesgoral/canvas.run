@@ -42,6 +42,10 @@ passport.deserializeUser((userId, done) => User.findById(userId, done));
 
 const app = express();
 
+app.get('/', (req, res) => {
+  res.send('<h1>Homepage</h1>');
+});
+
 app.use('/', express.static(__dirname + '/client/dist'));
 
 app.use(session({
@@ -66,7 +70,8 @@ if (process.env.NODE_ENV != 'production') {
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
 
-app.get(/^\/u\/(-|\w+)\/[A-Z\d]+(\/\d+)?$/i, (req, res) => {
+// @todo handle 404s
+app.get('*', (req, res) => {
   res.sendFile('index.html', {
     root: __dirname + '/client/dist'
   });

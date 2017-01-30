@@ -289,10 +289,20 @@ export default {
           }
         })
         .then((run) => {
-          const username = this.session.user && this.session.user.profile.username || '-';
-
-          // @todo use run.owner.username?
-          this.$router.push({ name: 'editor', params: { username, shortId: run.shortId } });
+          if (run.owner) {
+            this.$router.push({
+              name: 'edit',
+              params: {
+                username: run.owner.profile.username,
+                shortId: run.shortId
+              }
+            });
+          } else {
+            this.$router.push({
+              name: 'anon-edit',
+              params: { shortId: run.shortId }
+            });
+          }
           this.run = run;
           this.status.success('Saved').dismiss();
           this.updateRunLikes();
@@ -325,8 +335,6 @@ export default {
           }
         })
         .then((run) => {
-          const username = this.session.user && this.session.user.profile.username || '-';
-
           this.run = run;
           this.status.success('Updated').dismiss();
           this.updateRunLikes();
@@ -417,9 +425,20 @@ export default {
           }
         })
         .then((run) => {
-          const username = this.session.user && this.session.user.profile.username || '-';
-
-          this.$router.push({ name: 'editor', params: { username, shortId: run.shortId } });
+          if (run.owner) {
+            this.$router.push({
+              name: 'edit',
+              params: {
+                username: run.owner.profile.username,
+                shortId: run.shortId
+              }
+            });
+          } else {
+            this.$router.push({
+              name: 'anon-edit',
+              params: { shortId: run.shortId }
+            });
+          }
           this.run = run;
           this.status.success('Forked').dismiss();
           this.updateRunLikes();
