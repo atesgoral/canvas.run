@@ -70,7 +70,7 @@
     "vue-style-loader": "^1.0.0",
     "vue-template-compiler": "^2.1.10",
     "webpack": "^1.13.2",
-    "webpack-dev-middleware": "^1.8.3",
+    "webpack-dev-middleware": "^1.9.0",
     "webpack-hot-middleware": "^2.12.2",
     "webpack-merge": "^0.14.1",
     "whatwg-fetch": "^1.0.0"
