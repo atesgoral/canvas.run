@@ -15,22 +15,14 @@ const router = new VueRouter({
   routes: [{
     name: 'home',
     path: '/',
-    component: Refresh
+    component: Refresh // Refreshes page to delegate page serving to backend
   }, {
     name: 'new',
-    path: '/~:username/new',
-    component: Editor
-  }, {
-    name: 'anon-new',
-    path: '/~/new',
+    path: '/new',
     component: Editor
   }, {
     name: 'edit',
-    path: '/~:username/:shortId/:revision?',
-    component: Editor
-  }, {
-    name: 'anon-edit',
-    path: '/~/:shortId/:revision?',
+    path: '/@:username([^\\/]*)/:shortId/:revision?',
     component: Editor
   }, {
     name: 'not-found',

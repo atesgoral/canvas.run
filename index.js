@@ -43,7 +43,7 @@ passport.deserializeUser((userId, done) => User.findById(userId, done));
 const app = express();
 
 app.get('/', (req, res) => {
-  res.send('<h1>Homepage</h1>');
+  res.redirect('/new'); // @todo until there is a homepage
 });
 
 app.use('/', express.static(__dirname + '/client/dist'));
