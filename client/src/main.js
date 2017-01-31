@@ -4,6 +4,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App'
 
+import paths from './paths.json'
+
 import Editor from './components/Editor'
 
 Vue.use(VueRouter);
@@ -11,11 +13,12 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   mode: 'history',
   routes: [{
-    name: 'editor',
-    path: '/u/:username/:shortId/:revision?',
+    name: 'new',
+    path: paths.new,
     component: Editor
   }, {
-    path: '*',
+    name: 'edit',
+    path: paths.edit,
     component: Editor
   }]
 });

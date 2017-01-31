@@ -208,6 +208,13 @@ export default {
           }
         })
         .then((run) => {
+          if (run.owner && run.owner.profile.username !== this.$route.params.username) {
+            this.$router.replace({
+              name: 'edit',
+              params: { username: run.owner.profile.username, shortId: this.$route.params.shortId }
+            });
+          }
+
           this.run = run;
           this.editorSource = run.source;
           this.updateRunLikes();
@@ -289,10 +296,13 @@ export default {
           }
         })
         .then((run) => {
-          const username = this.session.user && this.session.user.profile.username || '-';
-
-          // @todo use run.owner.username?
-          this.$router.push({ name: 'editor', params: { username, shortId: run.shortId } });
+          this.$router.push({
+            name: 'edit',
+            params: {
+              username: run.owner && run.owner.profile.username || '',
+              shortId: run.shortId
+            }
+          });
           this.run = run;
           this.status.success('Saved').dismiss();
           this.updateRunLikes();
@@ -325,8 +335,6 @@ export default {
           }
         })
         .then((run) => {
-          const username = this.session.user && this.session.user.profile.username || '-';
-
           this.run = run;
           this.status.success('Updated').dismiss();
           this.updateRunLikes();
@@ -417,9 +425,13 @@ export default {
           }
         })
         .then((run) => {
-          const username = this.session.user && this.session.user.profile.username || '-';
-
-          this.$router.push({ name: 'editor', params: { username, shortId: run.shortId } });
+          this.$router.push({
+            name: 'edit',
+            params: {
+              username: run.owner && run.owner.profile.username || '',
+              shortId: run.shortId
+            }
+          });
           this.run = run;
           this.status.success('Forked').dismiss();
           this.updateRunLikes();

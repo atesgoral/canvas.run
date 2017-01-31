@@ -2,8 +2,8 @@ const express = require('express');
 const bifrost = require('express-bifrost');
 const multer = require('multer');
 
-const authMiddleware = require('../middleware/auth');
-const runController = require('../controllers/run');
+const authMiddleware = require('../../middleware/auth');
+const runController = require('../../controllers/run');
 
 const router = express.Router();
 const upload = multer().none();
