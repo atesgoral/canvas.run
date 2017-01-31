@@ -8,7 +8,6 @@ import paths from './paths.json'
 
 import Editor from './components/Editor'
 import Refresh from './components/Refresh'
-import NotFound from './components/NotFound'
 
 Vue.use(VueRouter);
 
@@ -26,10 +25,6 @@ const router = new VueRouter({
     name: 'edit',
     path: paths.edit,
     component: Editor
-  }, {
-    name: 'not-found',
-    path: '*',
-    component: NotFound
   }]
 });
 
