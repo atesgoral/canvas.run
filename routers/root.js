@@ -12,6 +12,7 @@ function sendClientIndex(res) {
 
 router.get('/', (req, res) => {
   res.redirect('/new'); // @todo until there is a homepage
+  // res.send('<h1>Homepage</h1>');
 });
 
 Object.keys(paths).forEach((key) => router.get(paths[key], (req, res) => sendClientIndex(res)));

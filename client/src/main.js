@@ -7,17 +7,12 @@ import App from './App'
 import paths from './paths.json'
 
 import Editor from './components/Editor'
-import Refresh from './components/Refresh'
 
 Vue.use(VueRouter);
 
 const router = new VueRouter({
   mode: 'history',
   routes: [{
-    name: 'home',
-    path: '/',
-    component: Refresh // Refreshes page to delegate page serving to backend
-  }, {
     name: 'new',
     path: paths.new,
     component: Editor
