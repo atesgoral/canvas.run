@@ -2,7 +2,7 @@ const express = require('express');
 const bifrost = require('express-bifrost');
 const bodyParser = require('body-parser');
 
-const profileController = require('../controllers/profile');
+const profileController = require('../../controllers/profile');
 
 const router = express.Router();
 

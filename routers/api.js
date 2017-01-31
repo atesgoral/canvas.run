@@ -1,8 +1,8 @@
 const express = require('express');
 
-const sessionRouter = require('./session');
-const runRouter = require('./run');
-const profileRouter = require('./profile');
+const sessionRouter = require('./api/session');
+const runRouter = require('./api/run');
+const profileRouter = require('./api/profile');
 
 const router = express.Router();
 

@@ -16,6 +16,7 @@ const twitterStrategy = require('./strategies/twitter');
 const gitHubStrategy = require('./strategies/gitHub');
 const googleStrategy = require('./strategies/google');
 
+const rootRouter = require('./routers/root');
 const apiRouter = require('./routers/api');
 const authRouter = require('./routers/auth');
 
@@ -42,9 +43,7 @@ passport.deserializeUser((userId, done) => User.findById(userId, done));
 
 const app = express();
 
-app.get('/', (req, res) => {
-  res.redirect('/new'); // @todo until there is a homepage
-});
+app.use('/', rootRouter);
 
 app.use('/', express.static(__dirname + '/client/dist'));
 
@@ -69,13 +68,6 @@ if (process.env.NODE_ENV != 'production') {
 
 app.use('/api', apiRouter);
 app.use('/auth', authRouter);
-
-// @todo handle 404s
-app.get('*', (req, res) => {
-  res.sendFile('index.html', {
-    root: __dirname + '/client/dist'
-  });
-});
 
 app.use(errorMiddleware);
 

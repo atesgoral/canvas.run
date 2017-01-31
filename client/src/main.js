@@ -4,6 +4,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App'
 
+import paths from './paths.json'
+
 import Editor from './components/Editor'
 import Refresh from './components/Refresh'
 import NotFound from './components/NotFound'
@@ -18,11 +20,11 @@ const router = new VueRouter({
     component: Refresh // Refreshes page to delegate page serving to backend
   }, {
     name: 'new',
-    path: '/new',
+    path: paths.new,
     component: Editor
   }, {
     name: 'edit',
-    path: '/@:username([^\\/]*)/:shortId/:revision?',
+    path: paths.edit,
     component: Editor
   }, {
     name: 'not-found',
