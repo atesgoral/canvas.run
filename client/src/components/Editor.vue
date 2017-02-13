@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import 'whatwg-fetch';
+import { mapState, mapMutations } from 'vuex';
 
 import debounce from '../debounce'
 import ActionButton from './common/ActionButton'
@@ -77,6 +77,12 @@ export default {
     ProfilePopup,
     SettingsPopup
   },
+  computed: {
+    ...mapState([
+      'settings',
+      'session'
+    ])
+  },
   data() {
     return {
       profileDropdown: new Dropdown.Model(),
@@ -92,24 +98,10 @@ export default {
       editorSource: null,
       rendererSource: null,
       rendererState: {},
-      error: null,
-      session: {
-        id: null,
-        user: null
-      },
-      settings: {
-        isLayoutHorizontal: true,
-        splitterPercentage: 50
-      }
+      error: null
     }
   },
   watch: {
-    settings: {
-      handler: (settings) => {
-        localStorage.setItem('settings', JSON.stringify(settings));
-      },
-      deep: true
-    },
     $route: function () {
       if (this.$route.params.shortId !== this.run.shortId) {
         this.fetchRun();
@@ -117,10 +109,6 @@ export default {
     }
   },
   mounted() {
-    try {
-      Object.assign(this.settings, JSON.parse(localStorage.getItem('settings')));
-    } catch (e) {}
-
     window.addEventListener('resize', debounce(() => {
       this.resetState();
       this.notifyLayoutChange();
@@ -132,7 +120,7 @@ export default {
       case 'SIGNED_IN':
         const user = event.data.user;
 
-        this.$set(this.session, 'user', user); // @todo return entire session?
+        this.updateSession({ user }); // @todo return entire session?
         this.status.success('Signed in').dismiss();
 
         if (!user.profile.username) {
@@ -159,11 +147,7 @@ export default {
     this.status.pending('Initializing');
 
     // @todo do this in created
-    Promise
-      .all([
-        this.fetchCurrentSession(),
-        this.fetchRun()
-      ])
+    this.fetchRun()
       .then(() => {
         this.isLoading = false;
         this.status.close();
@@ -218,19 +202,6 @@ export default {
           this.run = run;
           this.editorSource = run.source;
           this.updateRunLikes();
-        });
-    },
-    fetchCurrentSession() {
-      return fetch('/api/session', { credentials: 'same-origin' })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error('Session fetch failed');
-          }
-
-          return response.json();
-        })
-        .then((session) => {
-          this.session = session;
         });
     },
     updateRunLikes() {
@@ -450,7 +421,8 @@ export default {
       }, 1);
     },
     toggleLayout() {
-      this.settings.isLayoutHorizontal = !this.settings.isLayoutHorizontal
+      this.updateSettings({ isLayoutHorizontal: !this.settings.isLayoutHorizontal });
+      this.saveSettings();
       this.resetState();
       this.notifyLayoutChange();
     },
@@ -467,8 +439,7 @@ export default {
           }
         })
         .then(() => {
-          //this.$set(this.session, 'user', null);
-          this.session.user = null;
+          this.updateSession({ user: null });
           this.status.success('Signed out').dismiss();
           this.updateRunLikes();
         })
@@ -489,9 +460,12 @@ export default {
       const mainBounds = mainEl.getBoundingClientRect();
       const editorBounds = editorPaneEl.getBoundingClientRect();
 
-      this.settings.splitterPercentage = this.settings.isLayoutHorizontal
+      const splitterPercentage = this.settings.isLayoutHorizontal
         ? (editorBounds.width + offset) / mainBounds.width * 100
         : (editorBounds.height + offset) / mainBounds.height * 100;
+
+      this.updateSettings({ splitterPercentage });
+      this.saveSettings();
 
       this.resetState();
       this.notifyLayoutChange();
@@ -510,6 +484,13 @@ export default {
       this.rendererSource = null;
       this.error = 'Syntax error';
       //this.status.error('Syntax error').dismiss();
+    },
+    ...mapMutations([
+      'updateSettings',
+      'updateSession'
+    ]),
+    saveSettings() {
+      localStorage.setItem('settings', JSON.stringify(this.settings));
     }
   }
 }
@@ -654,6 +635,7 @@ header {
         vertical-align: middle;
         width: @headerHeight - 10px;
         height: @headerHeight - 10px;
+        background-color: @panelImagePlaceholderColor;
         border-radius: (@headerHeight - 10px) / 2;
 
         background-repeat: no-repeat;

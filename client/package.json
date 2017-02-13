@@ -69,6 +69,7 @@
     "vue-router": "^2.1.2",
     "vue-style-loader": "^1.0.0",
     "vue-template-compiler": "^2.1.10",
+    "vuex": "^2.1.2",
     "webpack": "^1.13.2",
     "webpack-dev-middleware": "^1.9.0",
     "webpack-hot-middleware": "^2.12.2",

@@ -42,13 +42,18 @@ export default {
 
     const iframeUrl = `data:text/html;base64,${btoa(iframeHtml)}`;
 
-    addEventListener('message', (e) => {
+    this.onMessage = (e) => {
       if (e.data.type === 'IFRAME_READY') {
         this.notifyIframe('RUNTIME', runtimeSrc);
       }
-    });
+    };
+
+    addEventListener('message', this.onMessage);
 
     this.$refs.iframe.src = iframeUrl;
+  },
+  destroyed() {
+    removeEventListener('message', this.onMessage);
   }
 }
 </script>
