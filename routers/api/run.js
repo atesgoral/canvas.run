@@ -4,6 +4,7 @@ const multer = require('multer');
 
 const authMiddleware = require('../../middleware/auth');
 const runController = require('../../controllers/run');
+const likeController = require('../../controllers/like');
 
 const router = express.Router();
 const upload = multer().none();
@@ -66,14 +67,14 @@ router.post('/:shortId/like', authMiddleware.requireUser, bifrost((req) => {
   const shortId = req.params.shortId;
   const user = req.user;
 
-  return runController.likeRun(shortId, user.id);
+  return likeController.likeRun(shortId, user.id);
 }));
 
 router.post('/:shortId/unlike', authMiddleware.requireUser, bifrost((req) => {
   const shortId = req.params.shortId;
   const user = req.user;
 
-  return runController.unlikeRun(shortId, user.id);
+  return likeController.unlikeRun(shortId, user.id);
 }));
 
 module.exports = router;
