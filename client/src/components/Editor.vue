@@ -206,21 +206,7 @@ export default {
     },
     updateRunLikes() {
       if (this.run.shortId) {
-        return fetch(`/api/runs/${this.run.shortId}/likes`, { credentials: 'same-origin' })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('Likes fetch failed');
-            }
-
-            return response.json();
-          })
-          .then((runLikes) => {
-            this.runLikes = runLikes;
-          })
-          .catch((error) => {
-            this.runLikes = null;
-            this.status.error('Could not fetch likes').dismiss();
-          });
+        this.runLikes = null;
       } else {
         this.runLikes = null;
       }
