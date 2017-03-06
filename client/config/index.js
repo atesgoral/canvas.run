@@ -23,12 +23,6 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-      '/': {
-        target: 'http://localhost:6543',
-        filter: (pathname, req) => {
-          return pathname === '/';
-        }
-      },
       '/api': {
         target: 'http://localhost:6543'
       },

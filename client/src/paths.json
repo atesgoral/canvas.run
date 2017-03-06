@@ -1,4 +1,6 @@
 {
+  "home": "/",
+  "profile": "/@:username([^\\/]*)",
   "new": "/new",
   "edit": "/@:username([^\\/]*)/:shortId/:revision?"
 }

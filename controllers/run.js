@@ -1,39 +1,26 @@
 const crypto = require('crypto');
 
 const Run = require('../models/run');
-const RunLikes = require('../models/runLikes');
+
+function readTopRuns() {
+  return [];
+}
+
+function readRecentRuns() {
+  return Run
+    .find({})
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .populate([{
+      path: '_ownerId'
+    }])
+    .then((runList) => runList.map((run) => run.getSummary()));
+}
 
 function readRun(shortId, revision) {
   return Run
     .whenFound(shortId, revision)
-    .then((run) => {
-      return {
-        owner: run._ownerId && run._ownerId.getSummary(),
-        parent: run._parentId && {
-          owner: run._parentId._ownerId && run._parentId._ownerId.getSummary(),
-          shortId: run._parentId.shortId,
-          revision: run._parentId.revision
-        },
-        shortId: run.shortId,
-        revision: run.revision,
-        source: run.source,
-        createdAt: run.createdAt
-      };
-    });
-}
-
-function readRunLikes(shortId, userId) {
-  return RunLikes
-    .findOne({ runId: shortId })
-    .then((runLikes) => {
-      return {
-        isLikedByUser: !!(
-          runLikes && userId
-          && runLikes._likedUserIdList.some((runLike) => runLike.equals(userId))
-        ),
-        likeCount: runLikes && runLikes._likedUserIdList.length || 0
-      };
-    });
+    .then((run) => run.getDetails());
 }
 
 // @todo might be better to split to save/update/fork
@@ -81,57 +68,13 @@ function saveRun(shortId, source, userId, isForking) {
             path: '_ownerId'
           }
         }]))
-        .then(() => {
-          return {
-            owner: run._ownerId && run._ownerId.getSummary(),
-            parent: run._parentId && {
-              owner: run._parentId._ownerId && run._parentId._ownerId.getSummary(),
-              shortId: run._parentId.shortId,
-              revision: run._parentId.revision
-            },
-            shortId: run.shortId,
-            revision: run.revision,
-            source: run.source,
-            createdAt: run.createdAt
-          };
-        });
-    });
-}
-
-function likeRun(shortId, userId) {
-  return RunLikes
-    .findOneAndUpdate(
-      { runId: shortId },
-      { $addToSet: { _likedUserIdList: userId } },
-      { upsert: true, new: true }
-    )
-    .then((runLikes) => {
-      return {
-        isLikedByUser: true,
-        likeCount: runLikes._likedUserIdList.length
-      };
-    });
-}
-
-function unlikeRun(shortId, userId) {
-  return RunLikes
-    .findOneAndUpdate(
-      { runId: shortId },
-      { $pull: { _likedUserIdList: userId } },
-      { upsert: true, new: true }
-    )
-    .then((runLikes) => {
-      return {
-        isLikedByUser: false,
-        likeCount: runLikes._likedUserIdList.length
-      };
+        .then(() => run.getDetails());
     });
 }
 
 module.exports = {
+  readTopRuns,
+  readRecentRuns,
   readRun,
-  readRunLikes,
-  saveRun,
-  likeRun,
-  unlikeRun
+  saveRun
 };

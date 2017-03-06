@@ -9,6 +9,9 @@ import App from './components/App'
 
 import paths from './paths.json'
 
+import Main from './components/Main'
+import Home from './components/Home'
+import Profile from './components/Profile'
 import Editor from './components/Editor'
 
 Vue.use(VueRouter);
@@ -16,6 +19,18 @@ Vue.use(VueRouter);
 const router = new VueRouter({
   mode: 'history',
   routes: [{
+    path: '/',
+    component: Main,
+    children: [{
+      name: 'home',
+      path: paths.home,
+      component: Home
+    }, {
+      name: 'profile',
+      path: paths.profile,
+      component: Profile
+    }]
+  }, {
     name: 'new',
     path: paths.new,
     component: Editor

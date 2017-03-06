@@ -8,12 +8,15 @@ const runController = require('../../controllers/run');
 const router = express.Router();
 const upload = multer().none();
 
-router.get('/:shortId/likes', bifrost((req) => {
-  const shortId = req.params.shortId;
-  const user = req.user;
+router.get('/top', bifrost(() => runController.readTopRuns()));
+router.get('/recent', bifrost(() => runController.readRecentRuns()));
 
-  return runController.readRunLikes(shortId, user && user.id);
-}));
+// router.get('/:shortId/likes', bifrost((req) => {
+//   const shortId = req.params.shortId;
+//   const user = req.user;
+//
+//   return runController.readRunLikes(shortId, user && user.id);
+// }));
 
 router.get('/:shortId/:revision?', bifrost((req) => {
   const shortId = req.params.shortId;
@@ -62,18 +65,18 @@ router.post('/', upload, bifrost((req) => {
 // router.put('/:shortId', bifrost((req) => {
 // });
 
-router.post('/:shortId/like', authMiddleware.requireUser, bifrost((req) => {
-  const shortId = req.params.shortId;
-  const user = req.user;
-
-  return runController.likeRun(shortId, user.id);
-}));
-
-router.post('/:shortId/unlike', authMiddleware.requireUser, bifrost((req) => {
-  const shortId = req.params.shortId;
-  const user = req.user;
-
-  return runController.unlikeRun(shortId, user.id);
-}));
+// router.post('/:shortId/like', authMiddleware.requireUser, bifrost((req) => {
+//   const shortId = req.params.shortId;
+//   const user = req.user;
+//
+//   return runController.likeRun(shortId, user.id);
+// }));
+//
+// router.post('/:shortId/unlike', authMiddleware.requireUser, bifrost((req) => {
+//   const shortId = req.params.shortId;
+//   const user = req.user;
+//
+//   return runController.unlikeRun(shortId, user.id);
+// }));
 
 module.exports = router;
