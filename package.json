@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node index",
-    "postinstall": "cd client && npm install --only=dev && npm run build"
+    "postinstall": "cd client && yarn install --production && yarn run build"
   },
   "cacheDirectories": [
     "node_modules",
