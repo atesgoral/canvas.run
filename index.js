@@ -3,6 +3,7 @@ require('env-deploy')();
 const express = require('express');
 const bifrost = require('express-bifrost');
 const session = require('express-session');
+const morgan = require('morgan');
 const mongoose = require('mongoose');
 const MongoStore = require('connect-mongo')(session);
 const passport = require('passport');
@@ -43,9 +44,11 @@ passport.deserializeUser((userId, done) => User.findById(userId, done));
 
 const app = express();
 
-app.use('/', rootRouter);
-
 app.use('/', express.static(__dirname + '/client/dist'));
+
+app.use(morgan('combined'));
+
+app.use('/', rootRouter);
 
 app.use(session({
   secret: process.env.SESSION_SECRET,

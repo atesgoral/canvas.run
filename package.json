@@ -24,6 +24,7 @@
     "express-session": "^1.14.1",
     "mongoose": "4.6.2",
     "mongoose-shortid-nodeps": "0.6.5",
+    "morgan": "^1.8.1",
     "multer": "1.2.0",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.1",
