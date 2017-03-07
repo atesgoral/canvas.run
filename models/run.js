@@ -75,9 +75,10 @@ runSchema.statics.whenFound = function (shortId, revision) {
         if (err) {
           reject(err);
         } else {
-          resolve({
-            source: data
-          });
+          resolve(new this({
+            source: data,
+            createdAt: null
+          }));
         }
       })
     });
