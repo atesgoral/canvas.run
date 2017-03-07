@@ -5,20 +5,7 @@ const Run = require('../models/run');
 function readRun(shortId, revision) {
   return Run
     .whenFound(shortId, revision)
-    .then((run) => {
-      return {
-        owner: run._ownerId && run._ownerId.getSummary(),
-        parent: run._parentId && {
-          owner: run._parentId._ownerId && run._parentId._ownerId.getSummary(),
-          shortId: run._parentId.shortId,
-          revision: run._parentId.revision
-        },
-        shortId: run.shortId,
-        revision: run.revision,
-        source: run.source,
-        createdAt: run.createdAt
-      };
-    });
+    .then((run) => run.getDetails());
 }
 
 function readRunLikes(shortId, userId) {

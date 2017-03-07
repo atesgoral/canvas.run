@@ -48,6 +48,26 @@ const runSchema = mongoose.Schema({
   }
 });
 
+runSchema.methods.getSummary = function () {
+  return {
+    owner: this._ownerId && this._ownerId.getSummary(),
+    shortId: this.shortId,
+    revision: this.revision,
+    createdAt: this.createdAt
+  };
+};
+
+runSchema.methods.getDetails = function () {
+  return Object.assign(this.getSummary(), {
+    parent: this._parentId && {
+      owner: this._parentId._ownerId && this._parentId._ownerId.getSummary(),
+      shortId: this._parentId.shortId,
+      revision: this._parentId.revision
+    },
+    source: this.source
+  });
+};
+
 runSchema.statics.whenFound = function (shortId, revision) {
   if (shortId === 'default') {
     return new Promise((resolve, reject) => {
