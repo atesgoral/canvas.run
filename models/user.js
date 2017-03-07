@@ -2,9 +2,8 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const userSchema = mongoose.Schema({
-  _likedRunIdList: [{
-    type: ObjectId,
-    ref: 'Run'
+  _likedRunShortIdList: [{
+    type: String
   }],
   profile: {
     username: {

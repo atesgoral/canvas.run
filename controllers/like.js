@@ -2,33 +2,45 @@ const User = require('../models/user');
 const Run = require('../models/run');
 
 function likeRun(shortId, userId) {
-  // return RunLikes
-  //   .findOneAndUpdate(
-  //     { runId: shortId },
-  //     { $addToSet: { _likedUserIdList: userId } },
-  //     { upsert: true, new: true }
-  //   )
-  //   .then((runLikes) => {
-  //     return {
-  //       isLikedByUser: true,
-  //       likeCount: runLikes._likedUserIdList.length
-  //     };
-  //   });
+  return Promise
+    .all([
+      Run.findOneAndUpdate(
+        { shortId },
+        { $addToSet: { _likedUserIdList: userId } },
+        { new: true }
+      ),
+      // @todo rollback previous update if this one fails
+      User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { _likedRunShortIdList: shortId } },
+        { new: true }
+      )
+    ])
+    .then((results) => ({
+      isLikedByUser: true,
+      likeCount: results[0]._likedUserIdList.length
+    }));
 }
 
 function unlikeRun(shortId, userId) {
-  // return RunLikes
-  //   .findOneAndUpdate(
-  //     { runId: shortId },
-  //     { $pull: { _likedUserIdList: userId } },
-  //     { upsert: true, new: true }
-  //   )
-  //   .then((runLikes) => {
-  //     return {
-  //       isLikedByUser: false,
-  //       likeCount: runLikes._likedUserIdList.length
-  //     };
-  //   });
+  return Promise
+    .all([
+      Run.findOneAndUpdate(
+        { shortId },
+        { $pull: { _likedUserIdList: userId } },
+        { new: true }
+      ),
+      // @todo rollback previous update if this one fails
+      User.findByIdAndUpdate(
+        userId,
+        { $pull: { _likedRunShortIdList: shortId } },
+        { new: true }
+      )
+    ])
+    .then((results) => ({
+      isLikedByUser: false,
+      likeCount: results[0]._likedUserIdList.length
+    }));
 }
 
 module.exports = {
