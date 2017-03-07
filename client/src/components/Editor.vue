@@ -1,7 +1,7 @@
 <template>
   <body>
     <header>
-      <h1><a href="/">CanvasRun</a></h1>
+      <h1><router-link :to="{ name: 'new' }">CanvasRun</router-link></h1>
       <span v-if="run">
         <button type="button" class="_tool" title="Ctrl + Enter" v-bind:class="isRunning ? '-accent-1' : '-accent-3'" v-on:click="toggleAnimation">{{ isRunning ? 'Stop' : 'Start' }}</button>
         <action-button class="_tool -accent-3" v-if="!run.shortId" v-bind:action="save" v-bind:disabled="!run.isDirty">Save</action-button>

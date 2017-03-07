@@ -1,4 +1,4 @@
 {
-  "new": "/new",
+  "new": "/",
   "edit": "/@:username([^\\/]*)/:shortId/:revision?"
 }
