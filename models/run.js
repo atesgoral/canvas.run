@@ -19,6 +19,10 @@ const runSchema = mongoose.Schema({
     ref: 'Run',
     index: true
   },
+  _likedUserIdList: [{
+    type: ObjectId,
+    ref: 'User'
+  }],
   shortId: {
     type: ShortId,
     len: 5,
