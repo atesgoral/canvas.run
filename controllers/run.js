@@ -64,20 +64,7 @@ function saveRun(shortId, source, userId, isForking) {
             path: '_ownerId'
           }
         }]))
-        .then(() => {
-          return {
-            owner: run._ownerId && run._ownerId.getSummary(),
-            parent: run._parentId && {
-              owner: run._parentId._ownerId && run._parentId._ownerId.getSummary(),
-              shortId: run._parentId.shortId,
-              revision: run._parentId.revision
-            },
-            shortId: run.shortId,
-            revision: run.revision,
-            source: run.source,
-            createdAt: run.createdAt
-          };
-        });
+        .then(() => run.getDetails());
     });
 }
 
