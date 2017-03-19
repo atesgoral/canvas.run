@@ -1,11 +1,11 @@
-FROM node
+FROM docker pull atesgoral/node-yarn:0.17.2-node-6.9.1
 
-RUN npm install -g wait-for-port nodemon
+RUN yarn global add wait-for-port nodemon
 
-COPY . /api/
+COPY . /app/
 
-WORKDIR /api
+WORKDIR /app
 
-RUN npm install
+RUN yarn
 
 CMD bin/start.sh
