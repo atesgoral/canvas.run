@@ -1,8 +1,8 @@
 const Run = require('../models/run');
 
-function readRun(shortId, revision) {
+function readRun(shortId) {
   return Run
-    .whenFound(shortId, revision)
+    .whenFound(shortId)
     .then((run) => run.getDetails());
 }
 
@@ -17,35 +17,54 @@ function readRunLikes(shortId, userId) {
     }));
 }
 
-// @todo might be better to split to save/update/fork
-function saveRun(shortId, source, userId, owningSessionId, isForking) {
-  let parentRun = undefined;
+function saveRun(source, ownerId, owningSessionId) {
+  const run = new Run({
+    _ownerId: ownerId,
+    owningSessionId,
+    source
+  });
 
-  return Promise
-    .resolve()
-    .then(() => {
-      if (shortId) {
-        return Run
-          .whenFound(shortId)
-          .then((run) => {
-            parentRun = run;
-            return run.revision + 1;
-          });
-      } else {
-        return 0;
-      }
-    })
-    .then((revision) => {
+  return run
+    .save()
+    .then(() => Run.populate(run, [{
+      path: '_ownerId'
+    }]))
+    .then(() => run.getDetails());
+}
+
+function updateRun(shortId, source, ownerId) {
+  return Run
+    .whenFound(shortId)
+    .then((run) => {
+      // @todo assert run.ownerId === ownerId
+      run.source = source;
+
+      return run
+        .save()
+        .then(() => Run.populate(run, [{
+          path: '_ownerId'
+        }, {
+          path: '_parentId',
+          populate: {
+            path: '_ownerId'
+          }
+        }]))
+        .then(() => run.getDetails());
+    });
+
+}
+
+function forkRun(shortId, ownerId, owningSessionId) {
+  return Run
+    .whenFound(shortId)
+    .then((parentRun) => {
       const run = new Run({
-        _ownerId: userId,
-        _parentId: parentRun && parentRun.id,
+        _ownerId: ownerId,
+        _parentId: parentRun.id,
         owningSessionId,
-        shortId: isForking ? undefined : shortId,
-        revision: isForking ? 0 : revision,
-        source
+        source: parentRun.source
       });
 
-      // @todo HTTP redirect to getter to unify?
       return run
         .save()
         .then(() => Run.populate(run, [{
@@ -63,5 +82,7 @@ function saveRun(shortId, source, userId, owningSessionId, isForking) {
 module.exports = {
   readRun,
   readRunLikes,
-  saveRun
+  saveRun,
+  updateRun,
+  forkRun
 };

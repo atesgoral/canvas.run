@@ -164,16 +164,11 @@ export default {
   methods: {
     fetchRun() {
       const shortId = this.$route.params.shortId;
-      const revision = this.$route.params.revision;
 
       let url = '/api/runs/';
 
       if (shortId) {
         url += shortId;
-
-        if (revision) {
-          url += `/${revision}`;
-        }
       } else {
         url += 'default';
       }
@@ -287,16 +282,15 @@ export default {
       this.status.pending('Updating');
 
       const body = new FormData();
-      body.append('shortId', this.run.shortId);
       body.append('source', this.run.source);
 
       const options = {
-        method: 'POST',
+        method: 'PUT',
         body,
         credentials: 'same-origin'
       };
 
-      return fetch('/api/runs', options)
+      return fetch(`/api/runs/${this.run.shortId}`, options)
         .then((response) => {
           if (response.ok) {
             return response.json();
@@ -313,6 +307,40 @@ export default {
         .catch((error) => {
           console.error(error);
           this.status.error('Updating failed').dismiss();
+        });
+    },
+    fork() {
+      this.status.pending('Forking');
+
+      const options = {
+        method: 'POST',
+        credentials: 'same-origin'
+      };
+
+      return fetch(`/api/runs/${this.run.shortId}/fork`, options)
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            console.error(response.status);
+            throw new Error('Forking failed');
+          }
+        })
+        .then((run) => {
+          this.$router.push({
+            name: 'edit',
+            params: {
+              username: run.owner && run.owner.profile.username || '',
+              shortId: run.shortId
+            }
+          });
+          this.run = run;
+          this.status.success('Forked').dismiss();
+          this.updateRunLikes();
+        })
+        .catch((error) => {
+          console.error(error);
+          this.status.error('Forking failed').dismiss();
         });
     },
     toggleLike() {
@@ -370,46 +398,6 @@ export default {
         .catch((error) => {
           console.error(error);
           this.status.error('Unliking failed').dismiss();
-        });
-    },
-    fork() {
-      this.status.pending('Forking');
-
-      const body = new FormData();
-      body.append('shortId', this.run.shortId);
-      body.append('source', this.run.source);
-      body.append('isForking', true);
-
-      const options = {
-        method: 'POST',
-        body,
-        credentials: 'same-origin'
-      };
-
-      return fetch('/api/runs', options)
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            console.error(response.status);
-            throw new Error('Forking failed');
-          }
-        })
-        .then((run) => {
-          this.$router.push({
-            name: 'edit',
-            params: {
-              username: run.owner && run.owner.profile.username || '',
-              shortId: run.shortId
-            }
-          });
-          this.run = run;
-          this.status.success('Forked').dismiss();
-          this.updateRunLikes();
-        })
-        .catch((error) => {
-          console.error(error);
-          this.status.error('Forking failed').dismiss();
         });
     },
     resetState() {

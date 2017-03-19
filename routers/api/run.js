@@ -16,39 +16,39 @@ router.get('/:shortId/likes', bifrost((req) => {
   return runController.readRunLikes(shortId, user && user.id);
 }));
 
-router.get('/:shortId/:revision?', bifrost((req) => {
+router.get('/:shortId', bifrost((req) => {
   const shortId = req.params.shortId;
-  const revision = req.params.revision && parseInt(req.params.revision, 10);
-  const user = req.user;
-  const session = req.session;
-  const runOwnershipMap = session.runOwnershipMap;
 
   return runController
-    .readRun(shortId, revision)
-    .then((run) => {
-      if (!user && run.shortId && runOwnershipMap && runOwnershipMap[run.shortId]) {
-        run.owningSession = session.id; // @todo owningSessionId
-      }
-
-      return run;
-    });
+    .readRun(shortId);
 }));
 
-// @todo To save and to fork only
 router.post('/', upload, bifrost((req) => {
-  const shortId = req.body.shortId;
   const source = req.body.source;
-  const isForking = !!req.body.isForking;
   const userId = req.user && req.user.id;
   const sessionId = req.session.id;
 
   return runController
-    .saveRun(shortId, source, userId, sessionId, isForking);
+    .saveRun(source, userId, sessionId);
 }));
 
-// @todo to update
-// router.put('/:shortId', bifrost((req) => {
-// });
+router.put('/:shortId', upload, bifrost((req) => {
+  const shortId = req.params.shortId;
+  const source = req.body.source;
+  const userId = req.user && req.user.id;
+
+  return runController
+    .updateRun(shortId, source, userId);
+}));
+
+router.post('/:shortId/fork', bifrost((req) => {
+  const shortId = req.params.shortId;
+  const userId = req.user && req.user.id;
+  const sessionId = req.session.id;
+
+  return runController
+    .forkRun(shortId, userId, sessionId);
+}));
 
 router.post('/:shortId/like', authMiddleware.requireUser, bifrost((req) => {
   const shortId = req.params.shortId;
