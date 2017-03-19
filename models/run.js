@@ -68,6 +68,7 @@ runSchema.methods.getDetails = function () {
 };
 
 runSchema.statics.whenFound = function (shortId) {
+  // @todo make special route
   if (shortId === 'default') {
     return new Promise((resolve, reject) => {
       fs.readFile(path.join(__dirname, '..', 'data', 'defaultRun.js'), 'utf8', (err, data) => {
@@ -84,7 +85,7 @@ runSchema.statics.whenFound = function (shortId) {
   }
 
   return this
-    .findOne({ shortId }).sort({ revision: -1 })
+    .findOne({ shortId }).sort({ revision: -1 }) // @todo sort by rev for backwards compatibility; remove later
     .populate([{
       path: '_ownerId'
     }, {
