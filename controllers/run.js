@@ -1,5 +1,3 @@
-const crypto = require('crypto');
-
 const Run = require('../models/run');
 
 function readRun(shortId, revision) {
@@ -38,19 +36,12 @@ function saveRun(shortId, source, userId, isForking) {
       }
     })
     .then((revision) => {
-      const shasum = crypto.createHash('sha1');
-
-      shasum.update(source);
-
-      const hash = shasum.digest('hex');
-
       const run = new Run({
         _ownerId: userId,
         _parentId: parentRun && parentRun.id,
         shortId: isForking ? undefined : shortId,
         revision: isForking ? 0 : revision,
-        source,
-        hash
+        source
       });
 
       // @todo HTTP redirect to getter to unify?

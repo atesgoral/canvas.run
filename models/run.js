@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Schema.Types.ObjectId;
@@ -106,5 +107,15 @@ runSchema.statics.whenFound = function (shortId, revision) {
       return run;
     });
 };
+
+runSchema.pre('validate', function (next) {
+  const shasum = crypto.createHash('sha1');
+
+  shasum.update(this.source);
+
+  this.hash = shasum.digest('hex');
+
+  next();
+});
 
 module.exports = mongoose.model('Run', runSchema);
