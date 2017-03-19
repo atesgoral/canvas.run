@@ -39,24 +39,11 @@ router.post('/', upload, bifrost((req) => {
   const shortId = req.body.shortId;
   const source = req.body.source;
   const isForking = !!req.body.isForking;
-  const user = req.user;
-  const session = req.session;
-  let runOwnershipMap = session.runOwnershipMap;
+  const userId = req.user && req.user.id;
+  const sessionId = req.session.id;
 
   return runController
-    .saveRun(shortId, source, user && user.id, isForking)
-    .then((run) => {
-      if (!user) {
-        if (!runOwnershipMap) {
-          session.runOwnershipMap = runOwnershipMap = {};
-        }
-
-        runOwnershipMap[run.shortId] = true;
-        run.owningSession = session.id;
-      }
-
-      return run;
-    });
+    .saveRun(shortId, source, userId, sessionId, isForking);
 }));
 
 // @todo to update

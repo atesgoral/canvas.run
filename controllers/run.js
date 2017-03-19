@@ -18,7 +18,7 @@ function readRunLikes(shortId, userId) {
 }
 
 // @todo might be better to split to save/update/fork
-function saveRun(shortId, source, userId, isForking) {
+function saveRun(shortId, source, userId, owningSessionId, isForking) {
   let parentRun = undefined;
 
   return Promise
@@ -39,6 +39,7 @@ function saveRun(shortId, source, userId, isForking) {
       const run = new Run({
         _ownerId: userId,
         _parentId: parentRun && parentRun.id,
+        owningSessionId,
         shortId: isForking ? undefined : shortId,
         revision: isForking ? 0 : revision,
         source

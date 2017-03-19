@@ -24,6 +24,10 @@ const runSchema = mongoose.Schema({
     type: ObjectId,
     ref: 'User'
   }],
+  owningSessionId: {
+    type: String,
+    required: true
+  },
   shortId: {
     type: ShortId,
     len: 5,
@@ -65,7 +69,8 @@ runSchema.methods.getDetails = function () {
       shortId: this._parentId.shortId,
       revision: this._parentId.revision
     },
-    source: this.source
+    source: this.source,
+    owningSessionId: this.owningSessionId
   });
 };
 

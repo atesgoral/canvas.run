@@ -7,7 +7,7 @@
         <action-button class="_tool -accent-3" v-if="!run.shortId" v-bind:action="save" v-bind:disabled="!run.isDirty">Save</action-button>
         <!--button type="button" class="_tool -accent-2" v-on:click="showSettings">Settings</button-->
         <action-button class="_tool -accent-3" v-if="session.user &amp;&amp; run.owner &amp;&amp; session.user.id === run.owner.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
-        <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSession === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
+        <action-button class="_tool -accent-3 -anon" v-if="!session.user &amp;&amp; !run.owner &amp;&amp; run.owningSessionId === session.id" v-bind:action="update" v-bind:disabled="!run.isDirty">Update</action-button>
         <span class="_gap"></span>
         <action-button class="_tool -accent-4" v-if="runLikes" v-bind:action="toggleLike" v-bind:disabled="!session.user">{{ runLikes.isLikedByUser ? 'Unlike' : 'Like' }} ({{ runLikes.likeCount }})</action-button>
         <action-button class="_tool -accent-4" v-if="run.shortId" v-bind:action="fork">Fork</action-button>
