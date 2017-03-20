@@ -1,6 +1,4 @@
 .DS_Store
-.vagrant/
-provisioning/playbook.retry
 node_modules/
 npm-debug.log
 .env
