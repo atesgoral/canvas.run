@@ -1,11 +1,10 @@
-FROM docker pull atesgoral/node-yarn:0.17.2-node-6.9.1
-
-RUN yarn global add wait-for-port nodemon
+FROM atesgoral/node-yarn:0.17.2-node-6.9.1
 
 COPY . /app/
 
 WORKDIR /app
 
+RUN yarn add nodemon
 RUN yarn
 
-CMD bin/start.sh
+CMD node_modules/.bin/nodemon index

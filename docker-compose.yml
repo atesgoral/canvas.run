@@ -9,25 +9,12 @@ services:
     environment:
       NODE_ENV: development
       MONGODB_URI: mongodb://mongodb/canvasrun
-    volumes:
-      - .:/api
-      - /api/node_modules
-    depends_on:
-      - mongodb
-    links:
-      - mongodb
-
-  ui:
-    build:
-      context: ./client
-    environment:
-      NODE_ENV: development
     ports:
       - "6543:6543"
     volumes:
-      - .:/ui
-      - /ui/node_modules
+      - .:/app
+      - /app/node_modules
     depends_on:
-      - api
+      - mongodb
     links:
-      - api
+      - mongodb
