@@ -16,14 +16,14 @@ const notifySignIn = bifrost({
   }
 });
 
-router.get('/facebook', passport.authenticate('facebook'));
-router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), notifySignIn);
-router.get('/twitter', passport.authenticate('twitter'));
-router.get('/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), notifySignIn);
+// router.get('/facebook', passport.authenticate('facebook'));
+// router.get('/facebook/callback', passport.authenticate('facebook', { failureRedirect: '/login' }), notifySignIn);
+// router.get('/twitter', passport.authenticate('twitter'));
+// router.get('/twitter/callback', passport.authenticate('twitter', { failureRedirect: '/login' }), notifySignIn);
 router.get('/github', passport.authenticate('github'));
 router.get('/github/callback', passport.authenticate('github', { failureRedirect: '/login' }), notifySignIn);
-router.get('/google', passport.authenticate('google', { scope: [ 'profile' ] }));
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), notifySignIn);
+// router.get('/google', passport.authenticate('google', { scope: [ 'profile' ] }));
+// router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), notifySignIn);
 
 router.post('/signOut', (req, res) => {
   req.logout();
