@@ -17,13 +17,13 @@
       <span class="_right-aligned" v-if="!isLoading">
         <button type="button" class="_profile" v-on:click="profileDropdown.toggle" v-deep-blur="profileDropdown.close" v-if="session.user">
           <span class="_picture" v-bind:style="{ backgroundImage: `url(${session.user.profile.pictureUrl})` }"></span>
-          <span class="_display-name">{{ session.user.profile.displayName }}</span>
+          <span class="_username">{{ session.user.profile.username }}</span>
           <dropdown class="_profile-dropdown" v-if="profileDropdown.isOpen" v-bind:dropdown="profileDropdown">
             <button type="button" class="-accent-2" v-on:click.stop="showProfile">Update Profile</button>
             <button type="button" class="-accent-1" v-on:click="signOut">Sign out</button>
           </dropdown>
         </button>
-        <button type="button" class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in</button>
+        <button type="button" class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in with GitHub</button>
       </span>
     </header>
     <status v-bind:status="status"></status>
@@ -44,8 +44,6 @@
         v-bind:error="error"></output-pane>
       <!-- error element -->
     </main>
-    <sign-in-popup v-if="signInPopup.isOpen" v-bind:popup="signInPopup"></sign-in-popup>
-    <profile-popup v-if="profilePopup.isOpen" v-bind:popup="profilePopup" v-bind:user="session.user" v-on:signOut="signOut"></profile-popup>
     <!--settings-popup v-if="settingsPopup.isOpen" v-bind:popup="settingsPopup" v-bind:settings="settings"></settings-popup-->
   </body>
 </template>
@@ -61,8 +59,6 @@ import Status from './common/Status'
 import EditorPane from './EditorPane'
 import Splitter from './Splitter'
 import OutputPane from './OutputPane'
-import SignInPopup from './SignInPopup'
-import ProfilePopup from './ProfilePopup'
 import SettingsPopup from './SettingsPopup'
 
 export default {
@@ -73,8 +69,6 @@ export default {
     EditorPane,
     Splitter,
     OutputPane,
-    SignInPopup,
-    ProfilePopup,
     SettingsPopup
   },
   computed: {
@@ -86,8 +80,6 @@ export default {
   data() {
     return {
       profileDropdown: new Dropdown.Model(),
-      signInPopup: new Popup.Model(),
-      profilePopup: new Popup.Model(),
       settingsPopup: new Popup.Model(),
       isLoading: true,
       status: new Status.Model(),
@@ -122,10 +114,6 @@ export default {
 
         this.updateSession({ user }); // @todo return entire session?
         this.status.success('Signed in').dismiss();
-
-        if (!user.profile.username) {
-          this.showProfile();
-        }
 
         this.updateRunLikes();
 
@@ -414,8 +402,32 @@ export default {
       this.resetState();
       this.notifyLayoutChange();
     },
+    auth(provider) {
+      if (this.authPopupWindow && !this.authPopupWindow.closed) {
+        this.authPopupWindow.close();
+      }
+
+      const width = 600;
+      const height = 500;
+      const left = window.screenX + Math.floor(Math.max(0, window.outerWidth - width) / 2);
+      const top = window.screenY + Math.floor(Math.max(0, window.outerHeight - height) / 2);
+      const featureMap = {
+        width,
+        height,
+        left,
+        top,
+        menubar: 0,
+        toolbar: 0,
+        location: 0,
+        personalbar: 0
+      };
+      const featureStr = Object.keys(featureMap)
+        .map(name => `${name}=${featureMap[name]}`)
+        .join();
+      this.authPopupWindow = window.open(`/auth/${provider}`, 'auth', featureStr);
+    },
     signIn() {
-      this.signInPopup.open();
+      this.auth('github');
     },
     signOut() {
       this.status.pending('Signing out');
@@ -435,9 +447,6 @@ export default {
           console.error(error);
           this.status.error('Error while signing out').dismiss();
         });
-    },
-    showProfile() {
-      this.profilePopup.open();
     },
     showSettings() {
       this.settingsPopup.open();
@@ -631,7 +640,7 @@ header {
         background-size: cover;
       }
 
-      ._display-name {
+      ._username {
         display: inline-block;
         margin-left: 5px;
         font-size: 0.75rem;
