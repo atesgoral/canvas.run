@@ -17,7 +17,7 @@
       <span class="_right-aligned" v-if="!isLoading">
         <button type="button" class="_profile" v-on:click="profileDropdown.toggle" v-deep-blur="profileDropdown.close" v-if="session.user">
           <span class="_picture" v-bind:style="{ backgroundImage: `url(${session.user.profile.pictureUrl})` }"></span>
-          <span class="_display-name">{{ session.user.profile.displayName }}</span>
+          <span class="_username">{{ session.user.profile.username }}</span>
           <dropdown class="_profile-dropdown" v-if="profileDropdown.isOpen" v-bind:dropdown="profileDropdown">
             <button type="button" class="-accent-2" v-on:click.stop="showProfile">Update Profile</button>
             <button type="button" class="-accent-1" v-on:click="signOut">Sign out</button>
@@ -44,7 +44,6 @@
         v-bind:error="error"></output-pane>
       <!-- error element -->
     </main>
-    <profile-popup v-if="profilePopup.isOpen" v-bind:popup="profilePopup" v-bind:user="session.user" v-on:signOut="signOut"></profile-popup>
     <!--settings-popup v-if="settingsPopup.isOpen" v-bind:popup="settingsPopup" v-bind:settings="settings"></settings-popup-->
   </body>
 </template>
@@ -60,7 +59,6 @@ import Status from './common/Status'
 import EditorPane from './EditorPane'
 import Splitter from './Splitter'
 import OutputPane from './OutputPane'
-import ProfilePopup from './ProfilePopup'
 import SettingsPopup from './SettingsPopup'
 
 export default {
@@ -71,7 +69,6 @@ export default {
     EditorPane,
     Splitter,
     OutputPane,
-    ProfilePopup,
     SettingsPopup
   },
   computed: {
@@ -83,7 +80,6 @@ export default {
   data() {
     return {
       profileDropdown: new Dropdown.Model(),
-      profilePopup: new Popup.Model(),
       settingsPopup: new Popup.Model(),
       isLoading: true,
       status: new Status.Model(),
@@ -118,10 +114,6 @@ export default {
 
         this.updateSession({ user }); // @todo return entire session?
         this.status.success('Signed in').dismiss();
-
-        if (!user.profile.username) {
-          this.showProfile();
-        }
 
         this.updateRunLikes();
 
@@ -456,9 +448,6 @@ export default {
           this.status.error('Error while signing out').dismiss();
         });
     },
-    showProfile() {
-      this.profilePopup.open();
-    },
     showSettings() {
       this.settingsPopup.open();
     },
@@ -651,7 +640,7 @@ header {
         background-size: cover;
       }
 
-      ._display-name {
+      ._username {
         display: inline-block;
         margin-left: 5px;
         font-size: 0.75rem;

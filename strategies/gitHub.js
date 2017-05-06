@@ -13,12 +13,13 @@ function verify(accessToken, refreshToken, profile, callback) {
     .findOne({ gitHubId: profile.id })
     .then((user) => {
       if (user) {
+        //@todo Update username in case it has changed
         return user;
       }
-
       const newUser = new User({
         profile: {
-          displayName: profile.displayName,
+          username: profile.username,
+          //displayName: profile.displayName,
           pictureUrl: profile.photos && profile.photos[0].value
         },
         gitHubId: profile.id
