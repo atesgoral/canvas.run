@@ -5,7 +5,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "node index",
-    "postinstall": "if test \"$NODE_ENV\" = \"production\" ; then cd client && yarn install && yarn run build ; fi"
+    "postinstall": "if test \"$NODE_ENV\" = \"production\" ; then cd client && yarn install --production && yarn run build ; fi"
   },
   "cacheDirectories": [
     "node_modules",
