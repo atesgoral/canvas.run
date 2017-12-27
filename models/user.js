@@ -8,7 +8,10 @@ const userSchema = mongoose.Schema({
   profile: {
     username: {
       type: String,
-      index: { unique: true, sparse: true },
+      index: { unique: true, sparse: true }
+    },
+    displayName: {
+      type: String,
       required: true
     },
     pictureUrl: {
