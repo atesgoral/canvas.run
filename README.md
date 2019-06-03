@@ -2,7 +2,7 @@
 
 ## Dev
 
-Make a copy of .env.exampe as .env and edit it accordingly.
+Make a copy of .env.example as .env and edit it accordingly.
 
 Bring up a local MongoDB instance. With Docker:
 
