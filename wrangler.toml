@@ -1,0 +1,29 @@
+name = "canvas-run"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Development/preview configuration
+[[d1_databases]]
+binding = "DB"
+database_name = "canvas-run-dev"
+database_id = "YOUR_DEV_DATABASE_ID"
+
+# You can test locally with this
+# Run: wrangler d1 create canvas-run-dev
+# Run: wrangler d1 execute canvas-run-dev --file=./src/db/schema.sql
+
+# Static assets
+[assets]
+directory = "./client/dist"
+binding = "ASSETS"
+
+# Production configuration
+[env.production]
+routes = [
+  { pattern = "canvas.run/*", zone_name = "canvas.run" }
+]
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "canvas-run-prod"
+database_id = "YOUR_PRODUCTION_DATABASE_ID"
