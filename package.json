@@ -4,14 +4,12 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "start": "node index",
     "dev": "wrangler dev",
     "deploy": "npm run build:client && wrangler deploy",
     "build:client": "cd client && npm install && npm run build",
     "db:create": "wrangler d1 create canvas-run-dev",
     "db:init": "wrangler d1 execute canvas-run-dev --file=./src/db/schema.sql",
-    "db:init:prod": "wrangler d1 execute canvas-run-prod --file=./src/db/schema.sql --env production",
-    "postinstall": "if test \"$NODE_ENV\" = \"production\" ; then cd client && npm install --production && npm build ; fi"
+    "db:init:prod": "wrangler d1 execute canvas-run-prod --file=./src/db/schema.sql --env production"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -21,26 +19,8 @@
     "client/node_modules"
   ],
   "dependencies": {
-    "@hono/node-server": "^1.19.5",
-    "basek": "1.0.5",
-    "body-parser": "^1.19.0",
-    "connect-mongo": "^1.3.2",
-    "env-deploy": "^0.2.1",
-    "express": "^4.17.1",
-    "express-bifrost": "0.0.4",
-    "express-session": "^1.17.1",
     "hono": "^4.9.10",
-    "mongoose": "^5.11.15",
-    "mongoose-shortid-nodeps": "0.6.5",
-    "morgan": "^1.10.0",
-    "multer": "1.2.0",
-    "nanoid": "^5.1.6",
-    "passport": "^0.3.2",
-    "passport-facebook": "^2.1.1",
-    "passport-github": "^1.1.0",
-    "passport-google-oauth20": "^1.0.0",
-    "passport-twitter": "^1.0.4",
-    "path-to-regexp": "^1.8.0"
+    "nanoid": "^5.1.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251004.0",
