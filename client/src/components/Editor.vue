@@ -23,7 +23,8 @@
             <button type="button" class="-accent-1" v-on:click="signOut">Sign out</button>
           </dropdown>
         </button>
-        <button type="button" class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in</button>
+        <!-- OAuth removed - sign in button hidden -->
+        <!-- <button type="button" class="_tool -accent-3" v-on:click="signIn" v-if="!session.user">Sign in</button> -->
       </span>
     </header>
     <status v-bind:status="status"></status>
