@@ -1,5 +1,6 @@
 import { Context } from 'hono';
 import { createMiddleware } from 'hono/factory';
+import { getCookie, setCookie } from 'hono/cookie';
 import { nanoid } from 'nanoid';
 
 export interface SessionData {
@@ -12,7 +13,7 @@ const SESSION_COOKIE_NAME = 'canvas_run_session';
 const SESSION_EXPIRY_DAYS = 30;
 
 export async function getSession(c: Context, db: D1Database): Promise<SessionData> {
-  const sessionId = c.req.cookie(SESSION_COOKIE_NAME);
+  const sessionId = getCookie(c, SESSION_COOKIE_NAME);
 
   if (sessionId) {
     const result = await db
@@ -51,7 +52,7 @@ export async function saveSession(db: D1Database, session: SessionData) {
 }
 
 export function setSessionCookie(c: Context, sessionId: string) {
-  c.cookie(SESSION_COOKIE_NAME, sessionId, {
+  setCookie(c, SESSION_COOKIE_NAME, sessionId, {
     httpOnly: true,
     secure: true,
     sameSite: 'Lax',
