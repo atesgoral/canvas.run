@@ -1,0 +1,65 @@
+header {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  background: #2d2d2d;
+  color: #e0e0e0;
+  padding: 0 20px;
+  gap: 20px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+header h1 a {
+  color: #e0e0e0;
+  text-decoration: none;
+  opacity: 0.75;
+}
+
+header h1 a:hover {
+  opacity: 1;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+}
+
+.tool {
+  height: 32px;
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: 12px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 4px;
+  background: #3d3d3d;
+  color: #e0e0e0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tool:hover {
+  background: #4d4d4d;
+}
+
+.tool.accent-1 {
+  background: #d9534f;
+}
+
+.tool.accent-1:hover {
+  background: #c9302c;
+}
+
+.tool.accent-3 {
+  background: #5bc0de;
+  color: #000;
+}
+
+.tool.accent-3:hover {
+  background: #46b8da;
+}

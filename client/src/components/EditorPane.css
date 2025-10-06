@@ -1,0 +1,13 @@
+.editor-pane {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.ace-editor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
