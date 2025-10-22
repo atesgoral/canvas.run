@@ -19,7 +19,7 @@
     "client/node_modules"
   ],
   "dependencies": {
-    "hono": "^4.9.10",
+    "hono": "^4.10.2",
     "nanoid": "^5.1.6"
   },
   "devDependencies": {
